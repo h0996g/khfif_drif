@@ -33,6 +33,7 @@ class PhoneInputField extends StatefulWidget {
 class _PhoneInputFieldState extends State<PhoneInputField> {
   late final FocusNode _focusNode;
   bool _isFocused = false;
+  String? _localError;
 
   @override
   void initState() {
@@ -49,8 +50,31 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
     super.dispose();
   }
 
+  void _handlePhoneChanged(String value) {
+    String? error;
+    if (value.isNotEmpty) {
+      if (!value.startsWith('0')) {
+        error = 'Number must start with 0';
+      } else if (value.length >= 2 && !RegExp(r'^0[567]').hasMatch(value)) {
+        error = 'Number must start with 05, 06, or 07';
+      }
+    }
+
+    setState(() {
+      _localError = error;
+    });
+
+    widget.onChanged(value);
+  }
+
   bool get _hasError =>
-      widget.errorMessage != null && widget.errorMessage!.isNotEmpty;
+      (_localError != null && _localError!.isNotEmpty) ||
+      (widget.errorMessage != null && widget.errorMessage!.isNotEmpty);
+
+  String get _displayError =>
+      (_localError != null && _localError!.isNotEmpty)
+          ? _localError!
+          : (widget.errorMessage ?? '');
 
   Color _getBorderColor(BuildContext context) {
     if (_hasError) return AppColors.error;
@@ -79,22 +103,12 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
           child: Row(
             children: [
               SizedBox(width: 12.w),
-              // Flag + country code pill
-              _CountryPill(),
-              SizedBox(width: 12.w),
-              // Vertical divider
-              Container(
-                width: 1.w,
-                height: 24.h,
-                color: AppColors.borderDefault(context),
-              ),
-              SizedBox(width: 12.w),
               // Text field
               Expanded(
                 child: TextField(
                   controller: widget.controller,
                   focusNode: _focusNode,
-                  onChanged: widget.onChanged,
+                  onChanged: _handlePhoneChanged,
                   keyboardType: TextInputType.phone,
                   maxLength: AppConstants.phoneMaxLength,
                   style: AppTextStyles.inputText(context),
@@ -129,7 +143,7 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
               ? Padding(
                   padding: EdgeInsets.only(top: 6.h, left: 4.w),
                   child: Text(
-                    widget.errorMessage!,
+                    _displayError,
                     style: AppTextStyles.inputError(context),
                   ),
                 )
@@ -140,36 +154,3 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
   }
 }
 
-/// The 🇩🇿 DZ country-code pill displayed as a prefix inside the input.
-class _CountryPill extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 60.w,
-      height: 32.h,
-      decoration: BoxDecoration(
-        color: AppColors.surface(context),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Center(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              AppConstants.countryFlag,
-              style: TextStyle(fontSize: 16.sp),
-            ),
-            SizedBox(width: 4.w),
-            Text(
-              AppConstants.countryIso,
-              style: AppTextStyles.bodySmall(context).copyWith(
-                fontWeight: FontWeight.w600,
-                fontSize: 13.sp,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
