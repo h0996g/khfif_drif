@@ -21,5 +21,4 @@ abstract final class AppConstants {
   // Design system — reference size (used by ScreenUtil)
   static const double designWidth = 375.0;
   static const double designHeight = 812.0;
-
 }

@@ -21,4 +21,18 @@ final class AuthRepository {
     // throw 'Could not send OTP. Please try again.';
     // ─────────────────────────────────────────────────────────────────────
   }
+
+  /// Verifies the submitted [otp] code for the active session.
+  ///
+  /// Returns normally on correct code.
+  /// Throws on wrong code so the cubit can track attempts.
+  ///
+  /// Replace the mock body with real API logic when ready.
+  Future<void> verifyOtp(String otp) async {
+    await Future<void>.delayed(const Duration(milliseconds: 1200));
+
+    // ── Mock: treat "000000" as always-wrong, everything else succeeds ────
+    if (otp == '000000') throw 'Wrong OTP';
+    // ─────────────────────────────────────────────────────────────────────
+  }
 }

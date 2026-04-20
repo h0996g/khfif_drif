@@ -13,21 +13,24 @@ abstract final class AppTextStyles {
 
   // ── Display (Plus Jakarta Sans) ──────────────────────────────────────────
 
-  static TextStyle displayLarge(BuildContext context) => GoogleFonts.plusJakartaSans(
+  static TextStyle displayLarge(BuildContext context) =>
+      GoogleFonts.plusJakartaSans(
         fontSize: 32.sp,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).colorScheme.onSurface,
         height: 1.2,
       );
 
-  static TextStyle displayMedium(BuildContext context) => GoogleFonts.plusJakartaSans(
+  static TextStyle displayMedium(BuildContext context) =>
+      GoogleFonts.plusJakartaSans(
         fontSize: 28.sp,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).colorScheme.onSurface,
         height: 1.25,
       );
 
-  static TextStyle displaySmall(BuildContext context) => GoogleFonts.plusJakartaSans(
+  static TextStyle displaySmall(BuildContext context) =>
+      GoogleFonts.plusJakartaSans(
         fontSize: 24.sp,
         fontWeight: FontWeight.w700,
         color: Theme.of(context).colorScheme.onSurface,
@@ -36,14 +39,16 @@ abstract final class AppTextStyles {
 
   // ── Headings ──────────────────────────────────────────────────────────────
 
-  static TextStyle headingMedium(BuildContext context) => GoogleFonts.plusJakartaSans(
+  static TextStyle headingMedium(BuildContext context) =>
+      GoogleFonts.plusJakartaSans(
         fontSize: 20.sp,
         fontWeight: FontWeight.w600,
         color: Theme.of(context).colorScheme.onSurface,
         height: 1.35,
       );
 
-  static TextStyle headingSmall(BuildContext context) => GoogleFonts.plusJakartaSans(
+  static TextStyle headingSmall(BuildContext context) =>
+      GoogleFonts.plusJakartaSans(
         fontSize: 18.sp,
         fontWeight: FontWeight.w600,
         color: Theme.of(context).colorScheme.onSurface,

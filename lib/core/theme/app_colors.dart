@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 
 /// Design-system colour tokens — all colours are defined once here.
-/// We use a maximum of 2 or 3 colors across the app. 
+/// We use a maximum of 2 or 3 colors across the app.
 abstract final class AppColors {
   AppColors._();
 
@@ -19,7 +19,8 @@ abstract final class AppColors {
   // ── Dynamic Colors (Context Aware) ────────────────────────────────────────
 
   /// General dark mode check helper if needed
-  static bool isDark(BuildContext context) => Theme.of(context).brightness == Brightness.dark;
+  static bool isDark(BuildContext context) =>
+      Theme.of(context).brightness == Brightness.dark;
 
   static Color background(BuildContext context) =>
       isDark(context) ? const Color(0xFF121212) : const Color(0xFFFFFFFF);
@@ -27,11 +28,11 @@ abstract final class AppColors {
   static Color surface(BuildContext context) =>
       isDark(context) ? const Color(0xFF1A1A1A) : const Color(0xFFF7F8FA);
 
-  static Color text(BuildContext context) =>
-      isDark(context) ? white : black;
+  static Color text(BuildContext context) => isDark(context) ? white : black;
 
-  static Color textSecondary(BuildContext context) =>
-      isDark(context) ? white.withValues(alpha: 0.7) : black.withValues(alpha: 0.7);
+  static Color textSecondary(BuildContext context) => isDark(context)
+      ? white.withValues(alpha: 0.7)
+      : black.withValues(alpha: 0.7);
 
   static Color borderDefault(BuildContext context) =>
       text(context).withValues(alpha: 0.15);

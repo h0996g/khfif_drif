@@ -6,8 +6,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_names.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../shared/widgets/app_logo_widget.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
 import '../../../../shared/widgets/primary_button.dart';
 import '../cubit/phone_cubit.dart';
@@ -54,8 +54,8 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
         final phoneCubit = context.read<PhoneCubit>();
 
         final bool isLoading = state.status == PhoneStatus.loading;
-        final bool hasError =
-            state.status == PhoneStatus.failure && state.errorMessage.isNotEmpty;
+        final bool hasError = state.status == PhoneStatus.failure &&
+            state.errorMessage.isNotEmpty;
 
         return AppScaffold(
           body: GestureDetector(
@@ -68,50 +68,38 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: 80.h),
-
-                  _AppLogo(),
-
+                  const AppLogoWidget(),
                   SizedBox(height: 48.h),
-
                   Text(
                     'Enter your phone number',
                     style: AppTextStyles.displayMedium(context),
                     textAlign: TextAlign.center,
                   ),
-
                   SizedBox(height: 8.h),
-
                   Text(
                     "We'll send you a verification code",
                     style: AppTextStyles.bodyMedium(context),
                     textAlign: TextAlign.center,
                   ),
-
                   SizedBox(height: 32.h),
-
                   PhoneInputField(
                     controller: _phoneController,
                     onChanged: phoneCubit.phoneChanged,
                     errorMessage: hasError ? state.errorMessage : null,
                   ),
-
                   SizedBox(height: 24.h),
-
                   PrimaryButton(
                     label: 'Continue',
                     isEnabled: state.isValid,
                     isLoading: isLoading,
                     onPressed: phoneCubit.sendOtp,
                   ),
-
                   SizedBox(height: 24.h),
-
                   Text(
                     'By continuing you agree to our Terms & Privacy',
                     style: AppTextStyles.labelSmall(context),
                     textAlign: TextAlign.center,
                   ),
-
                   SizedBox(height: 24.h),
                 ],
               ),
@@ -119,35 +107,6 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
           ),
         );
       },
-    );
-  }
-}
-
-/// Branded logo mark at the top of the view.
-class _AppLogo extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 64.w,
-      height: 64.h,
-      decoration: BoxDecoration(
-        color: AppColors.primary,
-        borderRadius: BorderRadius.circular(16.r),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Center(
-        child: Icon(
-          Icons.directions_car_rounded,
-          color: AppColors.white,
-          size: 32.w,
-        ),
-      ),
     );
   }
 }

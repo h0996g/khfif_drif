@@ -5,7 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/data/repo/auth_repository.dart';
+import '../../features/auth/presentation/cubit/otp_cubit.dart';
 import '../../features/auth/presentation/cubit/phone_cubit.dart';
+import '../../features/auth/presentation/views/otp_verification_view.dart';
 import '../../features/auth/presentation/views/phone_entry_view.dart';
 import 'route_names.dart';
 
@@ -33,16 +35,19 @@ final class AppRouter {
       GoRoute(
         path: RouteNames.otp,
         builder: (BuildContext context, GoRouterState state) {
-          // Placeholder — replaced in Story 2.
           final phone = state.extra as String? ?? '';
-          return Scaffold(
-            appBar: AppBar(title: const Text('Verify OTP')),
-            body: Center(
-              child: Text(
-                'OTP Page — Story 2\nPhone: $phone',
-                textAlign: TextAlign.center,
-              ),
-            ),
+          return BlocProvider<OtpCubit>(
+            create: (_) => OtpCubit(authRepository, phoneNumber: phone),
+            child: const OtpVerificationView(),
+          );
+        },
+      ),
+      GoRoute(
+        path: RouteNames.home,
+        builder: (BuildContext context, GoRouterState state) {
+          // Placeholder — replaced in Story 3+.
+          return const Scaffold(
+            body: Center(child: Text('Home — Story 3+')),
           );
         },
       ),

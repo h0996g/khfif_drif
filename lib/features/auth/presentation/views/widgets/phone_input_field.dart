@@ -71,10 +71,9 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
       (_localError != null && _localError!.isNotEmpty) ||
       (widget.errorMessage != null && widget.errorMessage!.isNotEmpty);
 
-  String get _displayError =>
-      (_localError != null && _localError!.isNotEmpty)
-          ? _localError!
-          : (widget.errorMessage ?? '');
+  String get _displayError => (_localError != null && _localError!.isNotEmpty)
+      ? _localError!
+      : (widget.errorMessage ?? '');
 
   Color _getBorderColor(BuildContext context) {
     if (_hasError) return AppColors.error;
@@ -114,7 +113,8 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
                   style: AppTextStyles.inputText(context),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(AppConstants.phoneMaxLength),
+                    LengthLimitingTextInputFormatter(
+                        AppConstants.phoneMaxLength),
                   ],
                   decoration: InputDecoration(
                     hintText: AppConstants.phoneHint,
@@ -153,4 +153,3 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
     );
   }
 }
-
