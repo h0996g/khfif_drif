@@ -1,5 +1,6 @@
 // lib/core/router/app_router.dart
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,10 @@ final class AppRouter {
 
   late final GoRouter router = GoRouter(
     initialLocation: RouteNames.phone,
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: kDebugMode,
+    errorBuilder: (context, state) => const Scaffold(
+      body: Center(child: Text('Page not found')),
+    ),
     routes: [
       GoRoute(
         path: RouteNames.phone,
@@ -39,7 +43,7 @@ final class AppRouter {
       GoRoute(
         path: RouteNames.otp,
         builder: (BuildContext context, GoRouterState state) {
-          final phone = state.extra as String? ?? '';
+          final phone = state.extra is String ? state.extra as String : '';
           return BlocProvider<OtpCubit>(
             create: (_) => OtpCubit(authRepository, phoneNumber: phone),
             child: const OtpVerificationView(),

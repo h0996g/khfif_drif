@@ -3,7 +3,6 @@
 import 'package:flutter/material.dart';
 
 /// Design-system colour tokens — all colours are defined once here.
-/// We use a maximum of 2 or 3 colors across the app.
 abstract final class AppColors {
   AppColors._();
 

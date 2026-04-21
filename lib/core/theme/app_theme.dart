@@ -37,6 +37,8 @@ abstract final class AppTheme {
   }
 
   static ThemeData _buildTheme(ColorScheme colorScheme) {
+    const inputRadius = BorderRadius.all(Radius.circular(12));
+
     final base = ThemeData(
       useMaterial3: true,
       colorScheme: colorScheme,
@@ -72,23 +74,23 @@ abstract final class AppTheme {
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: colorScheme.outlineVariant, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: colorScheme.primary, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: colorScheme.error, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: inputRadius,
           borderSide: BorderSide(color: colorScheme.error, width: 1.5),
         ),
       ),
@@ -97,12 +99,12 @@ abstract final class AppTheme {
           backgroundColor: colorScheme.primary,
           foregroundColor: colorScheme.onPrimary,
           disabledBackgroundColor:
-              colorScheme.onSurface.withValues(alpha: 0.12),
+              colorScheme.onSurface.withValues(alpha: 0.12), // M3 disabled container
           disabledForegroundColor:
-              colorScheme.onSurface.withValues(alpha: 0.38),
+              colorScheme.onSurface.withValues(alpha: 0.38), // M3 disabled content
           elevation: 0,
           shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              const RoundedRectangleBorder(borderRadius: inputRadius),
           minimumSize: const Size(double.infinity, 56),
         ),
       ),

@@ -12,6 +12,7 @@ abstract final class PhoneFormatter {
   ///
   /// Assumes [localNumber] is already validated (10 digits, starts with 0).
   static String toE164(String localNumber) {
+    assert(localNumber.isNotEmpty, 'localNumber must not be empty');
     final stripped = localNumber.startsWith(AppConstants.phonePrefix)
         ? localNumber.substring(1)
         : localNumber;

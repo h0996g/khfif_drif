@@ -1,7 +1,7 @@
 // lib/core/errors/failures.dart
 
 /// Base class for all domain-level failures.
-abstract class Failure {
+sealed class Failure {
   const Failure({required this.message});
 
   final String message;
