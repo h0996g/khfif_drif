@@ -6,9 +6,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/data/repo/auth_repository.dart';
-import '../../features/auth/presentation/cubit/otp_cubit.dart';
-import '../../features/auth/presentation/cubit/passenger_profile_cubit.dart';
-import '../../features/auth/presentation/cubit/phone_cubit.dart';
+import '../../features/auth/presentation/cubit/otp_cubit/otp_cubit.dart';
+import '../../features/auth/presentation/cubit/passenger_profile_cubit/passenger_profile_cubit.dart';
+import '../../features/auth/presentation/cubit/phone_cubit/phone_cubit.dart';
 import '../../features/auth/presentation/views/mode_selection_view.dart';
 import '../../features/auth/presentation/views/otp_verification_view.dart';
 import '../../features/auth/presentation/views/passenger_profile_view.dart';

@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../cubit/otp_cubit.dart';
+import '../../../cubit/otp_cubit/otp_cubit.dart';
 import 'otp_digit_field.dart';
 
 /// 6-box OTP digit row.

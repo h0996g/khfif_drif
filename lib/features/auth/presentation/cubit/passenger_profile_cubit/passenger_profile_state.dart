@@ -1,8 +1,8 @@
 // lib/features/auth/presentation/cubit/passenger_profile_state.dart
 
-import '../../data/models/gender.dart';
+import '../../../data/models/gender.dart';
 
-export '../../data/models/gender.dart' show Gender;
+export '../../../data/models/gender.dart' show Gender;
 
 enum ProfileStatus { idle, submitting, success, failure }
 
@@ -49,7 +49,10 @@ final class PassengerProfileState {
 
   /// The Continue button is only active when all required fields are valid.
   bool get canSubmit =>
-      isNameValid && isGenderSelected && isEmailValid && status != ProfileStatus.submitting;
+      isNameValid &&
+      isGenderSelected &&
+      isEmailValid &&
+      status != ProfileStatus.submitting;
 
   PassengerProfileState copyWith({
     String? fullName,

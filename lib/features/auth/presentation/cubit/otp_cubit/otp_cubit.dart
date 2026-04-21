@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/repo/auth_repository.dart';
+import '../../../data/repo/auth_repository.dart';
 import 'otp_state.dart';
 
 /// Drives the OTP verification screen.

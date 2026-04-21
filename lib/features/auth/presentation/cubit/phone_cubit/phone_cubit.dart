@@ -2,9 +2,9 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/validation_patterns.dart';
-import '../../../../core/utils/phone_formatter.dart';
-import '../../data/repo/auth_repository.dart';
+import '../../../../../core/constants/validation_patterns.dart';
+import '../../../../../core/utils/phone_formatter.dart';
+import '../../../data/repo/auth_repository.dart';
 import 'phone_state.dart';
 
 /// Manages state for the phone-entry screen.

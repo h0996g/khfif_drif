@@ -2,7 +2,7 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../data/repo/auth_repository.dart';
+import '../../../data/repo/auth_repository.dart';
 import 'passenger_profile_state.dart';
 
 /// Drives the Passenger Profile screen (Step 5).
@@ -11,7 +11,8 @@ import 'passenger_profile_state.dart';
 /// and Email (optional, basic format). Calls [AuthRepository.savePassengerProfile]
 /// on submit and emits [ProfileStatus.success] to trigger navigation.
 final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
-  PassengerProfileCubit(this._repository) : super(const PassengerProfileState());
+  PassengerProfileCubit(this._repository)
+      : super(const PassengerProfileState());
 
   final AuthRepository _repository;
 
@@ -48,7 +49,8 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
   // ── Gender ────────────────────────────────────────────────────────────────
 
   void genderChanged(Gender gender) {
-    emit(state.copyWith(gender: gender, status: ProfileStatus.idle, errorMessage: ''));
+    emit(state.copyWith(
+        gender: gender, status: ProfileStatus.idle, errorMessage: ''));
   }
 
   // ── Email ─────────────────────────────────────────────────────────────────
@@ -71,7 +73,8 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
   }
 
   String _validateEmail(String value) {
-    final pattern = RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
+    final pattern =
+        RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
     if (!pattern.hasMatch(value)) return 'Enter a valid email address';
     return '';
   }
@@ -93,7 +96,8 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
     } catch (e) {
       emit(state.copyWith(
         status: ProfileStatus.failure,
-        errorMessage: e is String ? e : 'Something went wrong. Please try again.',
+        errorMessage:
+            e is String ? e : 'Something went wrong. Please try again.',
       ));
     }
   }
