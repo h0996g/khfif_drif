@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../core/constants/app_constants.dart';
 import '../../../../../../core/theme/app_colors.dart';
 import '../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../core/utils/validators.dart';
 
 /// Algeria-specific phone input field with DZ flag prefix pill and
 /// animated error message.
@@ -51,19 +52,7 @@ class _PhoneInputFieldState extends State<PhoneInputField> {
   }
 
   void _handlePhoneChanged(String value) {
-    String? error;
-    if (value.isNotEmpty) {
-      if (!value.startsWith('0')) {
-        error = 'Number must start with 0';
-      } else if (value.length >= 2 && !RegExp(r'^0[567]').hasMatch(value)) {
-        error = 'Number must start with 05, 06, or 07';
-      }
-    }
-
-    setState(() {
-      _localError = error;
-    });
-
+    setState(() => _localError = Validators.dzPhonePartial(value));
     widget.onChanged(value);
   }
 

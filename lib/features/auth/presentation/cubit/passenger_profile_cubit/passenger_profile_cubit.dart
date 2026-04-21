@@ -2,6 +2,8 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/utils/validators.dart';
+import '../../../data/models/gender.dart';
 import '../../../data/repo/auth_repository.dart';
 import 'passenger_profile_state.dart';
 
@@ -20,7 +22,7 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
 
   void nameChanged(String value) {
     final trimmed = value.trim();
-    final error = _validateName(trimmed);
+    final error = Validators.name(trimmed);
     emit(state.copyWith(
       fullName: value,
       nameError: error,
@@ -32,18 +34,7 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
 
   void nameFocusLost() {
     if (!state.nameTouched) return;
-    final error = _validateName(state.fullName.trim());
-    emit(state.copyWith(nameError: error));
-  }
-
-  String _validateName(String value) {
-    if (value.isEmpty) return 'Full name is required';
-    if (value.length < 2) return 'Name must be at least 2 characters';
-    // Only letters (and spaces between words) are allowed.
-    if (!RegExp(r"^[a-zA-ZÀ-ÿ]+([ '-][a-zA-ZÀ-ÿ]+)*$").hasMatch(value)) {
-      return 'Name must contain letters only';
-    }
-    return '';
+    emit(state.copyWith(nameError: Validators.name(state.fullName.trim())));
   }
 
   // ── Gender ────────────────────────────────────────────────────────────────
@@ -56,7 +47,7 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
   // ── Email ─────────────────────────────────────────────────────────────────
 
   void emailChanged(String value) {
-    final error = value.isEmpty ? '' : _validateEmail(value.trim());
+    final error = Validators.email(value.trim());
     emit(state.copyWith(
       email: value,
       emailError: error,
@@ -68,15 +59,7 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
 
   void emailFocusLost() {
     if (!state.emailTouched || state.email.isEmpty) return;
-    final error = _validateEmail(state.email.trim());
-    emit(state.copyWith(emailError: error));
-  }
-
-  String _validateEmail(String value) {
-    final pattern =
-        RegExp(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$');
-    if (!pattern.hasMatch(value)) return 'Enter a valid email address';
-    return '';
+    emit(state.copyWith(emailError: Validators.email(state.email.trim())));
   }
 
   // ── Submit ────────────────────────────────────────────────────────────────

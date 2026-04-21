@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/constants/app_constants.dart';
 import '../../../data/repo/auth_repository.dart';
 import 'otp_state.dart';
 
@@ -57,13 +58,13 @@ final class OtpCubit extends Cubit<OtpState> {
     } catch (_) {
       final newAttempts = state.failedAttempts + 1;
 
-      if (newAttempts >= 3) {
+      if (newAttempts >= AppConstants.otpMaxFailedAttempts) {
         _startBlockTimer();
         emit(
           state.copyWith(
             status: OtpStatus.blocked,
             failedAttempts: newAttempts,
-            blockSecondsRemaining: 600,
+            blockSecondsRemaining: AppConstants.otpBlockDurationSecs,
             errorMessage: '',
           ),
         );
@@ -86,21 +87,25 @@ final class OtpCubit extends Cubit<OtpState> {
 
     _resendTimer?.cancel();
 
-    await _repository.sendOtp(state.phoneNumber);
-
-    emit(
-      state.copyWith(
-        resendCount: state.resendCount + 1,
-        secondsRemaining: 60,
-        // reset digits and error on resend
-        digits: const ['', '', '', '', '', ''],
-        failedAttempts: 0,
-        status: OtpStatus.idle,
-        errorMessage: '',
-      ),
-    );
-
-    _startResendTimer();
+    try {
+      await _repository.sendOtp(state.phoneNumber);
+      emit(
+        state.copyWith(
+          resendCount: state.resendCount + 1,
+          secondsRemaining: AppConstants.otpResendCooldownSecs,
+          digits: const ['', '', '', '', '', ''],
+          failedAttempts: 0,
+          status: OtpStatus.idle,
+          errorMessage: '',
+        ),
+      );
+      _startResendTimer();
+    } catch (e) {
+      emit(state.copyWith(
+        status: OtpStatus.wrongCode,
+        errorMessage: e is String ? e : 'Could not resend OTP. Please try again.',
+      ));
+    }
   }
 
   // ── Timers ───────────────────────────────────────────────────────────────

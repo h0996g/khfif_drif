@@ -16,7 +16,10 @@ abstract final class AppConstants {
 
   // OTP
   static const int otpLength = 6;
-  static const int otpExpirySeconds = 60;
+  static const int otpResendCooldownSecs = 60;
+  static const int otpBlockDurationSecs = 600;
+  static const int otpMaxResendCount = 3;
+  static const int otpMaxFailedAttempts = 3;
 
   // Design system — reference size (used by ScreenUtil)
   static const double designWidth = 375.0;

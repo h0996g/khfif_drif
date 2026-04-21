@@ -1,5 +1,9 @@
 // lib/features/auth/presentation/cubit/otp_state.dart
 
+import 'package:flutter/foundation.dart';
+
+import '../../../../../core/constants/app_constants.dart';
+
 /// Overall status of the OTP verification screen.
 enum OtpStatus {
   /// Waiting for user input — no error.
@@ -23,7 +27,7 @@ final class OtpState {
   const OtpState({
     this.status = OtpStatus.idle,
     this.digits = const ['', '', '', '', '', ''],
-    this.secondsRemaining = 60,
+    this.secondsRemaining = AppConstants.otpResendCooldownSecs,
     this.resendCount = 0,
     this.failedAttempts = 0,
     this.blockSecondsRemaining = 0,
@@ -63,7 +67,10 @@ final class OtpState {
   bool get isComplete => otpValue.length == 6 && !digits.contains('');
 
   /// True when the resend button should be tappable.
-  bool get canResend => secondsRemaining == 0 && resendCount < 3;
+  bool get canResend =>
+      secondsRemaining == 0 &&
+      resendCount < AppConstants.otpMaxResendCount &&
+      blockSecondsRemaining == 0;
 
   /// Last 4 digits of the raw phone number for the confirmation label.
   String get lastFourDigits => phoneNumber.length >= 4
@@ -98,7 +105,7 @@ final class OtpState {
       other is OtpState &&
           runtimeType == other.runtimeType &&
           status == other.status &&
-          digits == other.digits &&
+          listEquals(digits, other.digits) &&
           secondsRemaining == other.secondsRemaining &&
           resendCount == other.resendCount &&
           failedAttempts == other.failedAttempts &&
@@ -109,7 +116,7 @@ final class OtpState {
   @override
   int get hashCode =>
       status.hashCode ^
-      digits.hashCode ^
+      Object.hashAll(digits) ^
       secondsRemaining.hashCode ^
       resendCount.hashCode ^
       failedAttempts.hashCode ^

@@ -23,13 +23,7 @@ class PhoneEntryView extends StatefulWidget {
 }
 
 class _PhoneEntryViewState extends State<PhoneEntryView> {
-  late final TextEditingController _phoneController;
-
-  @override
-  void initState() {
-    super.initState();
-    _phoneController = TextEditingController();
-  }
+  final TextEditingController _phoneController = TextEditingController();
 
   @override
   void dispose() {

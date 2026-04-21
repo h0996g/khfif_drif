@@ -67,10 +67,9 @@ class _OtpVerificationViewState extends State<OtpVerificationView> {
     return BlocConsumer<OtpCubit, OtpState>(
       listener: (context, state) {
         if (state.status == OtpStatus.verified) {
-          // Design-only: always navigate to LocationPermission (Step 3).
-          // When the API is wired up, check user type and branch accordingly:
-          //   new user        → Step 3 (Location Permission)
-          //   existing user   → passenger home or Mode Selection (Step 7)
+          // TODO(Story-7): branch on user type returned by API —
+          //   new user      → location permission screen
+          //   existing user → passenger home or mode selection
           context.go(RouteNames.modeSelection);
         }
       },

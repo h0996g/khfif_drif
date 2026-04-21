@@ -2,8 +2,6 @@
 
 import '../../../data/models/gender.dart';
 
-export '../../../data/models/gender.dart' show Gender;
-
 enum ProfileStatus { idle, submitting, success, failure }
 
 /// Immutable state for the passenger profile form (Step 5).
@@ -64,11 +62,10 @@ final class PassengerProfileState {
     String? errorMessage,
     bool? nameTouched,
     bool? emailTouched,
-    bool clearGender = false,
   }) {
     return PassengerProfileState(
       fullName: fullName ?? this.fullName,
-      gender: clearGender ? null : (gender ?? this.gender),
+      gender: gender ?? this.gender,
       email: email ?? this.email,
       status: status ?? this.status,
       nameError: nameError ?? this.nameError,
