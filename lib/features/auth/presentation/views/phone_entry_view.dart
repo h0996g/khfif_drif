@@ -33,7 +33,7 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<PhoneCubit, PhoneState>(
+    return BlocListener<PhoneCubit, PhoneState>(
       listener: (BuildContext context, PhoneState state) {
         switch (state.status) {
           case PhoneStatus.success:
@@ -44,63 +44,58 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
             break;
         }
       },
-      builder: (BuildContext context, PhoneState state) {
-        final phoneCubit = context.read<PhoneCubit>();
-
-        final bool isLoading = state.status == PhoneStatus.loading;
-        final bool hasError = state.status == PhoneStatus.failure &&
-            state.errorMessage.isNotEmpty;
-
-        return AppScaffold(
-          body: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
-            behavior: HitTestBehavior.translucent,
-            child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              padding: EdgeInsets.symmetric(horizontal: 24.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(height: 80.h),
-                  const AppLogoWidget(),
-                  SizedBox(height: 48.h),
-                  Text(
-                    'Enter your phone number',
-                    style: AppTextStyles.displayMedium(context),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 8.h),
-                  Text(
-                    "We'll send you a verification code",
-                    style: AppTextStyles.bodyMedium(context),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 32.h),
-                  PhoneInputField(
-                    controller: _phoneController,
-                    onChanged: phoneCubit.phoneChanged,
-                    errorMessage: hasError ? state.errorMessage : null,
-                  ),
-                  SizedBox(height: 24.h),
-                  PrimaryButton(
-                    label: 'Continue',
-                    isEnabled: state.isValid,
-                    isLoading: isLoading,
-                    onPressed: phoneCubit.sendOtp,
-                  ),
-                  SizedBox(height: 24.h),
-                  Text(
-                    'By continuing you agree to our Terms & Privacy',
-                    style: AppTextStyles.labelSmall(context),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 24.h),
-                ],
-              ),
+      child: AppScaffold(
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          behavior: HitTestBehavior.translucent,
+          child: SingleChildScrollView(
+            physics: const ClampingScrollPhysics(),
+            padding: EdgeInsets.symmetric(horizontal: 24.w),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 80.h),
+                const AppLogoWidget(),
+                SizedBox(height: 48.h),
+                Text(
+                  'Enter your phone number',
+                  style: AppTextStyles.displayMedium(context),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 8.h),
+                Text(
+                  "We'll send you a verification code",
+                  style: AppTextStyles.bodyMedium(context),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 32.h),
+                PhoneInputField(
+                  controller: _phoneController,
+                  onChanged: context.read<PhoneCubit>().phoneChanged,
+                ),
+                SizedBox(height: 24.h),
+                BlocBuilder<PhoneCubit, PhoneState>(
+                  builder: (context, state) {
+                    return PrimaryButton(
+                      label: 'Continue',
+                      isEnabled: state.isValid,
+                      isLoading: state.status == PhoneStatus.loading,
+                      onPressed: context.read<PhoneCubit>().sendOtp,
+                    );
+                  },
+                ),
+                SizedBox(height: 24.h),
+                Text(
+                  'By continuing you agree to our Terms & Privacy',
+                  style: AppTextStyles.labelSmall(context),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 24.h),
+              ],
             ),
           ),
-        );
-      },
+        ),
+      ),
     );
   }
 }
