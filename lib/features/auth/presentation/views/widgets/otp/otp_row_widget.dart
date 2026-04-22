@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 
-import '../../../cubit/otp_cubit/otp_cubit.dart';
 import 'otp_digit_field.dart';
 
 /// 6-box OTP digit row.
@@ -11,14 +10,14 @@ class OtpRowWidget extends StatelessWidget {
     super.key,
     required this.controllers,
     required this.focusNodes,
-    required this.cubit,
+    required this.onDigitChanged,
     required this.hasError,
     required this.enabled,
   });
 
   final List<TextEditingController> controllers;
   final List<FocusNode> focusNodes;
-  final OtpCubit cubit;
+  final void Function(int index, String value) onDigitChanged;
   final bool hasError;
   final bool enabled;
 
@@ -36,7 +35,7 @@ class OtpRowWidget extends StatelessWidget {
           previousFocusNode: i > 0 ? focusNodes[i - 1] : null,
           hasError: hasError,
           enabled: enabled,
-          onChanged: (value) => cubit.digitChanged(i, value),
+          onChanged: (value) => onDigitChanged(i, value),
         ),
       ),
     );
