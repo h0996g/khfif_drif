@@ -15,34 +15,30 @@ class ModeSelectionView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // PopScope prevents skipping by intercepting back navigation.
-    return PopScope(
-      canPop: false,
-      child: AppScaffold(
-        body: SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                SizedBox(height: 60.h),
-                Text(
-                  'How would you like\nto use the app?',
-                  style: AppTextStyles.displayMedium(context),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 12.h),
-                Text(
-                  'Choose your path to get started',
-                  style: AppTextStyles.bodyMedium(context),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 48.h),
-                // const Spacer(),
-                const ModeSelectionOptionsSection(),
-                SizedBox(height: 24.h),
-              ],
-            ),
+    return AppScaffold(
+      body: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 60.h),
+              Text(
+                'How would you like\nto use the app?',
+                style: AppTextStyles.displayMedium(context),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 12.h),
+              Text(
+                'Choose your path to get started',
+                style: AppTextStyles.bodyMedium(context),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 48.h),
+              // const Spacer(),
+              const ModeSelectionOptionsSection(),
+              SizedBox(height: 24.h),
+            ],
           ),
         ),
       ),
