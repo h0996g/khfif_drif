@@ -10,35 +10,15 @@ import 'profile_field_label_widget.dart';
 import 'profile_gender_toggle_widget.dart';
 import 'profile_name_field_widget.dart';
 
-class PassengerProfileFormSection extends StatefulWidget {
-  const PassengerProfileFormSection({super.key});
+class PassengerProfileFormSection extends StatelessWidget {
+  const PassengerProfileFormSection({
+    super.key,
+    required this.nameController,
+    required this.emailController,
+  });
 
-  @override
-  State<PassengerProfileFormSection> createState() =>
-      _PassengerProfileFormSectionState();
-}
-
-class _PassengerProfileFormSectionState
-    extends State<PassengerProfileFormSection> {
-  late final TextEditingController _nameController;
-  late final TextEditingController _emailController;
-
-  @override
-  void initState() {
-    super.initState();
-    final state = context.read<PassengerProfileCubit>().state;
-
-    _nameController = TextEditingController(text: state.fullName);
-    _emailController = TextEditingController(text: state.email);
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-
-    super.dispose();
-  }
+  final TextEditingController nameController;
+  final TextEditingController emailController;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +32,7 @@ class _PassengerProfileFormSectionState
           previous.errorMessage != current.errorMessage ||
           previous.status != current.status,
       builder: (context, state) {
-        final isSubmitting = state.status == ProfileStatus.submitting;
+        final isSubmitting = state.status == ProfileStatus.loading;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -60,7 +40,7 @@ class _PassengerProfileFormSectionState
             const ProfileFieldLabelWidget(label: 'Full Name'),
             SizedBox(height: 8.h),
             ProfileNameFieldWidget(
-              controller: _nameController,
+              controller: nameController,
               onChanged: cubit.nameChanged,
               error: state.nameError,
               enabled: !isSubmitting,
@@ -80,7 +60,7 @@ class _PassengerProfileFormSectionState
             ),
             SizedBox(height: 8.h),
             ProfileEmailFieldWidget(
-              controller: _emailController,
+              controller: emailController,
               onChanged: cubit.emailChanged,
               error: state.emailError,
               enabled: !isSubmitting,

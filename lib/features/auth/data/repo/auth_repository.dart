@@ -48,7 +48,9 @@ final class AuthRepository {
     String? email,
   }) async {
     await Future<void>.delayed(const Duration(milliseconds: 1000));
-
+    if (fullName == "error") {
+      throw 'Failed to save profile. Please try again.';
+    }
     // ── Uncomment to test the error path ──────────────────────────────────
     // throw 'Failed to save profile. Please try again.';
     // ─────────────────────────────────────────────────────────────────────
