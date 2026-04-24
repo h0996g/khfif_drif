@@ -1,15 +1,16 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:pinput/pinput.dart';
 
+import '../../../../../../core/theme/app_colors.dart';
+import '../../../../../../core/theme/app_text_styles.dart';
 import '../../../../../../shared/widgets/primary_button.dart';
 import '../../../cubit/otp_cubit/otp_cubit.dart';
 import '../../../cubit/otp_cubit/otp_state.dart';
 import 'otp_blocked_banner_widget.dart';
 import 'otp_error_row_widget.dart';
 import 'otp_resend_row_widget.dart';
-import 'otp_row_widget.dart';
 
 class OtpVerificationFormSection extends StatefulWidget {
   const OtpVerificationFormSection({super.key});
@@ -23,89 +24,62 @@ class _OtpVerificationFormSectionState
     extends State<OtpVerificationFormSection> {
   static const int _digitCount = 6;
 
-  late final List<TextEditingController> _controllers;
-  late final List<FocusNode> _focusNodes;
+  late final TextEditingController _controller;
 
   bool _isComplete = false;
 
   @override
   void initState() {
     super.initState();
-    _controllers = List.generate(_digitCount, (_) => TextEditingController());
-    _focusNodes = List.generate(_digitCount, (_) => FocusNode());
+    _controller = TextEditingController();
   }
 
   @override
   void dispose() {
-    for (final controller in _controllers) {
-      controller.dispose();
-    }
-    for (final focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
+    _controller.dispose();
     super.dispose();
   }
 
-  void _updateCompletionState() {
-    final isComplete =
-        _controllers.every((controller) => controller.text.isNotEmpty);
-    if (isComplete != _isComplete) {
-      setState(() => _isComplete = isComplete);
-    }
-  }
-
-  void _syncDigits(List<String> digits, {required bool requestFocus}) {
-    final values = digits.length == _digitCount
-        ? digits
-        : List<String>.filled(_digitCount, '');
-
-    for (var i = 0; i < _digitCount; i++) {
-      if (_controllers[i].text == values[i]) continue;
-      _controllers[i].value = TextEditingValue(
-        text: values[i],
-        selection: TextSelection.collapsed(offset: values[i].length),
+  void _syncValue(List<String> digits) {
+    final value = digits.join();
+    if (_controller.text != value) {
+      _controller.value = TextEditingValue(
+        text: value,
+        selection: TextSelection.collapsed(offset: value.length),
       );
     }
-
-    final isComplete = values.every((digit) => digit.isNotEmpty);
+    final isComplete = value.length == _digitCount;
     if (isComplete != _isComplete) {
       setState(() => _isComplete = isComplete);
     }
-
-    if (requestFocus) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          _focusNodes.first.requestFocus();
-        }
-      });
-    }
-  }
-
-  void _clearDigits() {
-    for (final controller in _controllers) {
-      controller.clear();
-    }
-    if (_isComplete) {
-      setState(() => _isComplete = false);
-    }
-    _focusNodes.first.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<OtpCubit>();
 
+    final defaultTheme = PinTheme(
+      width: 46.w,
+      height: 56.h,
+      textStyle: AppTextStyles.displaySmall(context).copyWith(
+        fontWeight: FontWeight.w700,
+        height: 1.0,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.background(context),
+        borderRadius: BorderRadius.circular(12.r),
+        border: Border.all(
+          color: AppColors.borderDefault(context),
+          width: 1.5.w,
+        ),
+      ),
+    );
+
     return BlocListener<OtpCubit, OtpState>(
       listenWhen: (previous, current) =>
-          !listEquals(previous.digits, current.digits) ||
+          previous.digits != current.digits ||
           previous.status != current.status,
-      listener: (context, state) {
-        _syncDigits(
-          state.digits,
-          requestFocus: state.status != OtpStatus.blocked &&
-              state.digits.every((digit) => digit.isEmpty),
-        );
-      },
+      listener: (context, state) => _syncValue(state.digits),
       child: BlocBuilder<OtpCubit, OtpState>(
         buildWhen: (previous, current) =>
             previous.status != current.status ||
@@ -123,14 +97,52 @@ class _OtpVerificationFormSectionState
               if (isBlocked)
                 OtpBlockedBannerWidget(seconds: state.blockSecondsRemaining),
               if (!isBlocked)
-                OtpRowWidget(
-                  controllers: _controllers,
-                  focusNodes: _focusNodes,
-                  hasError: hasWrongCode,
+                Pinput(
+                  controller: _controller,
+                  length: _digitCount,
+                  autofocus: true,
                   enabled: !isVerifying,
-                  onDigitChanged: (index, value) {
-                    cubit.digitChanged(index, value);
-                    _updateCompletionState();
+                  forceErrorState: hasWrongCode,
+                  hapticFeedbackType: HapticFeedbackType.lightImpact,
+                  onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                  defaultPinTheme: defaultTheme,
+                  focusedPinTheme: defaultTheme.copyWith(
+                    decoration: defaultTheme.decoration!.copyWith(
+                      border: Border.all(
+                        color: AppColors.primary,
+                        width: 2.w,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.15),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                  ),
+                  submittedPinTheme: defaultTheme.copyWith(
+                    decoration: defaultTheme.decoration!.copyWith(
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.4),
+                        width: 1.5.w,
+                      ),
+                    ),
+                  ),
+                  errorPinTheme: defaultTheme.copyWith(
+                    decoration: defaultTheme.decoration!.copyWith(
+                      border: Border.all(
+                        color: AppColors.error,
+                        width: 1.5.w,
+                      ),
+                    ),
+                  ),
+                  onChanged: (value) {
+                    for (var i = 0; i < _digitCount; i++) {
+                      cubit.digitChanged(
+                          i, i < value.length ? value[i] : '');
+                    }
+                    setState(() => _isComplete = value.length == _digitCount);
                   },
                 ),
               if (!isBlocked)
@@ -157,7 +169,8 @@ class _OtpVerificationFormSectionState
                 OtpResendRowWidget(
                   state: state,
                   onResend: () {
-                    _clearDigits();
+                    _controller.clear();
+                    setState(() => _isComplete = false);
                     cubit.resendOtp();
                   },
                 ),

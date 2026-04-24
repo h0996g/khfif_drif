@@ -41,44 +41,40 @@ class OtpVerificationView extends StatelessWidget {
         showChangeNumberBar: true,
         appBarTitle: 'Verification',
         onLeadingTap: () => context.go(RouteNames.phone),
-        body: GestureDetector(
-          onTap: () => FocusScope.of(context).unfocus(),
-          behavior: HitTestBehavior.translucent,
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 40.h),
-                const AppLogoWidget(),
-                SizedBox(height: 32.h),
-                Text(
-                  'Verify your number',
-                  style: AppTextStyles.displayMedium(context),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 8.h),
-                RichText(
-                  textAlign: TextAlign.center,
-                  text: TextSpan(
-                    style: AppTextStyles.bodyMedium(context),
-                    children: [
-                      const TextSpan(text: 'Code sent to '),
-                      TextSpan(
-                        text: '••••$lastFourDigits',
-                        style: AppTextStyles.bodyMedium(context).copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.text(context),
-                        ),
+        body: SingleChildScrollView(
+          physics: const ClampingScrollPhysics(),
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 40.h),
+              const AppLogoWidget(),
+              SizedBox(height: 32.h),
+              Text(
+                'Verify your number',
+                style: AppTextStyles.displayMedium(context),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8.h),
+              RichText(
+                textAlign: TextAlign.center,
+                text: TextSpan(
+                  style: AppTextStyles.bodyMedium(context),
+                  children: [
+                    const TextSpan(text: 'Code sent to '),
+                    TextSpan(
+                      text: '••••$lastFourDigits',
+                      style: AppTextStyles.bodyMedium(context).copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.text(context),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 40.h),
-                const OtpVerificationFormSection(),
-              ],
-            ),
+              ),
+              SizedBox(height: 40.h),
+              const OtpVerificationFormSection(),
+            ],
           ),
         ),
       ),
