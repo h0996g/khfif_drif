@@ -2,31 +2,28 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../../core/constants/app_constants.dart';
 
-enum OtpStatus { idle, verifying, verified, wrongCode, blocked }
+enum OtpStatus { initial, loading, success, failure, blocked }
 
 final class OtpState extends Equatable {
   const OtpState({
     required this.phoneNumber,
-    this.status = OtpStatus.idle,
-    this.digits = const ['', '', '', '', '', ''],
+    this.status = OtpStatus.initial,
+    this.otpValue = '',
     this.secondsRemaining = AppConstants.otpResendCooldownSecs,
     this.resendCount = 0,
-    this.failedAttempts = 0,
     this.blockSecondsRemaining = 0,
     this.errorMessage = '',
   });
 
   final String phoneNumber;
   final OtpStatus status;
-  final List<String> digits;
+  final String otpValue;
   final int secondsRemaining;
   final int resendCount;
-  final int failedAttempts;
   final int blockSecondsRemaining;
   final String errorMessage;
 
-  String get otpValue => digits.join();
-  bool get isComplete => digits.length == 6 && !digits.contains('');
+  bool get isComplete => otpValue.length == 6;
   bool get canResend =>
       secondsRemaining == 0 &&
       resendCount < AppConstants.otpMaxResendCount &&
@@ -38,20 +35,18 @@ final class OtpState extends Equatable {
   OtpState copyWith({
     String? phoneNumber,
     OtpStatus? status,
-    List<String>? digits,
+    String? otpValue,
     int? secondsRemaining,
     int? resendCount,
-    int? failedAttempts,
     int? blockSecondsRemaining,
     String? errorMessage,
   }) =>
       OtpState(
         phoneNumber: phoneNumber ?? this.phoneNumber,
         status: status ?? this.status,
-        digits: digits ?? this.digits,
+        otpValue: otpValue ?? this.otpValue,
         secondsRemaining: secondsRemaining ?? this.secondsRemaining,
         resendCount: resendCount ?? this.resendCount,
-        failedAttempts: failedAttempts ?? this.failedAttempts,
         blockSecondsRemaining:
             blockSecondsRemaining ?? this.blockSecondsRemaining,
         errorMessage: errorMessage ?? this.errorMessage,
@@ -61,10 +56,9 @@ final class OtpState extends Equatable {
   List<Object?> get props => [
         phoneNumber,
         status,
-        digits,
+        otpValue,
         secondsRemaining,
         resendCount,
-        failedAttempts,
         blockSecondsRemaining,
         errorMessage,
       ];

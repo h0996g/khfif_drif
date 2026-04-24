@@ -28,9 +28,9 @@ class OtpVerificationView extends StatelessWidget {
     return BlocListener<OtpCubit, OtpState>(
       listenWhen: (previous, current) =>
           previous.status != current.status &&
-          current.status == OtpStatus.verified,
+          current.status == OtpStatus.success,
       listener: (context, state) {
-        if (state.status == OtpStatus.verified) {
+        if (state.status == OtpStatus.success) {
           // TODO(Story-7): branch on user type returned by API —
           //   new user      → location permission screen
           //   existing user → passenger home or mode selection

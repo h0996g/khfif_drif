@@ -40,8 +40,7 @@ class _OtpVerificationFormSectionState
     super.dispose();
   }
 
-  void _syncValue(List<String> digits) {
-    final value = digits.join();
+  void _syncValue(String value) {
     if (_controller.text != value) {
       _controller.value = TextEditingValue(
         text: value,
@@ -77,9 +76,9 @@ class _OtpVerificationFormSectionState
 
     return BlocListener<OtpCubit, OtpState>(
       listenWhen: (previous, current) =>
-          previous.digits != current.digits ||
+          previous.otpValue != current.otpValue ||
           previous.status != current.status,
-      listener: (context, state) => _syncValue(state.digits),
+      listener: (context, state) => _syncValue(state.otpValue),
       child: BlocBuilder<OtpCubit, OtpState>(
         buildWhen: (previous, current) =>
             previous.status != current.status ||
@@ -89,8 +88,8 @@ class _OtpVerificationFormSectionState
             previous.blockSecondsRemaining != current.blockSecondsRemaining,
         builder: (context, state) {
           final isBlocked = state.status == OtpStatus.blocked;
-          final isVerifying = state.status == OtpStatus.verifying;
-          final hasWrongCode = state.status == OtpStatus.wrongCode;
+          final isLoading = state.status == OtpStatus.loading;
+          final hasWrongCode = state.status == OtpStatus.failure;
 
           return Column(
             children: [
@@ -101,7 +100,7 @@ class _OtpVerificationFormSectionState
                   controller: _controller,
                   length: _digitCount,
                   autofocus: true,
-                  enabled: !isVerifying,
+                  enabled: !isLoading,
                   forceErrorState: hasWrongCode,
                   hapticFeedbackType: HapticFeedbackType.lightImpact,
                   onTapOutside: (_) => FocusScope.of(context).unfocus(),
@@ -138,10 +137,7 @@ class _OtpVerificationFormSectionState
                     ),
                   ),
                   onChanged: (value) {
-                    for (var i = 0; i < _digitCount; i++) {
-                      cubit.digitChanged(
-                          i, i < value.length ? value[i] : '');
-                    }
+                    cubit.otpChanged(value);
                     setState(() => _isComplete = value.length == _digitCount);
                   },
                 ),
@@ -160,8 +156,8 @@ class _OtpVerificationFormSectionState
               if (!isBlocked)
                 PrimaryButton(
                   label: 'Verify',
-                  isEnabled: _isComplete && !isVerifying,
-                  isLoading: isVerifying,
+                  isEnabled: _isComplete && !isLoading,
+                  isLoading: isLoading,
                   onPressed: cubit.verifyOtp,
                 ),
               SizedBox(height: 28.h),
