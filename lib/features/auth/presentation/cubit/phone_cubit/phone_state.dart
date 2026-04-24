@@ -1,5 +1,7 @@
 // lib/features/auth/presentation/cubit/phone_state.dart
 
+import 'package:equatable/equatable.dart';
+
 /// Status lifecycle for the phone-entry screen.
 enum PhoneStatus {
   initial,
@@ -9,10 +11,7 @@ enum PhoneStatus {
 }
 
 /// Immutable state for [PhoneCubit].
-///
-/// Uses the concrete class + status enum pattern — no sealed classes, no freezed.
-/// All fields have default values so the constructor is always const.
-final class PhoneState {
+final class PhoneState extends Equatable {
   const PhoneState({
     this.status = PhoneStatus.initial,
     this.phoneNumber = '',
@@ -45,26 +44,5 @@ final class PhoneState {
       );
 
   @override
-  String toString() => 'PhoneState('
-      'status: $status, '
-      'phoneNumber: $phoneNumber, '
-      'isValid: $isValid, '
-      'errorMessage: $errorMessage)';
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is PhoneState &&
-          runtimeType == other.runtimeType &&
-          status == other.status &&
-          phoneNumber == other.phoneNumber &&
-          isValid == other.isValid &&
-          errorMessage == other.errorMessage;
-
-  @override
-  int get hashCode =>
-      status.hashCode ^
-      phoneNumber.hashCode ^
-      isValid.hashCode ^
-      errorMessage.hashCode;
+  List<Object?> get props => [status, phoneNumber, isValid, errorMessage];
 }
