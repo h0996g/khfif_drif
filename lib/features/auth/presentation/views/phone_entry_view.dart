@@ -9,27 +9,12 @@ import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../shared/widgets/app_logo_widget.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
-import '../../../../shared/widgets/primary_button.dart';
 import '../cubit/phone_cubit/phone_cubit.dart';
 import '../cubit/phone_cubit/phone_state.dart';
-import 'widgets/entry/phone_input_field.dart';
+import 'widgets/entry/phone_form_section.dart';
 
-/// The first screen users see — they enter their Algerian mobile number here.
-class PhoneEntryView extends StatefulWidget {
+class PhoneEntryView extends StatelessWidget {
   const PhoneEntryView({super.key});
-
-  @override
-  State<PhoneEntryView> createState() => _PhoneEntryViewState();
-}
-
-class _PhoneEntryViewState extends State<PhoneEntryView> {
-  final TextEditingController _phoneController = TextEditingController();
-
-  @override
-  void dispose() {
-    _phoneController.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,21 +54,7 @@ class _PhoneEntryViewState extends State<PhoneEntryView> {
                   textAlign: TextAlign.center,
                 ),
                 SizedBox(height: 32.h),
-                PhoneInputField(
-                  controller: _phoneController,
-                  onChanged: context.read<PhoneCubit>().phoneChanged,
-                ),
-                SizedBox(height: 24.h),
-                BlocBuilder<PhoneCubit, PhoneState>(
-                  builder: (context, state) {
-                    return PrimaryButton(
-                      label: 'Continue',
-                      isEnabled: state.isValid,
-                      isLoading: state.status == PhoneStatus.loading,
-                      onPressed: context.read<PhoneCubit>().sendOtp,
-                    );
-                  },
-                ),
+                const PhoneFormSection(),
                 SizedBox(height: 24.h),
                 Text(
                   'By continuing you agree to our Terms & Privacy',
