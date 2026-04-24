@@ -15,7 +15,6 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
     emit(state.copyWith(
       fullName: value,
       nameError: Validators.name(value.trim()),
-      nameTouched: true,
       status: ProfileStatus.idle,
       errorMessage: '',
     ));
@@ -33,7 +32,6 @@ final class PassengerProfileCubit extends Cubit<PassengerProfileState> {
     emit(state.copyWith(
       email: value,
       emailError: Validators.email(value.trim()),
-      emailTouched: true,
       status: ProfileStatus.idle,
       errorMessage: '',
     ));

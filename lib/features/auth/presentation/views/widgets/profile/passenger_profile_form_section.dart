@@ -50,8 +50,6 @@ class _PassengerProfileFormSectionState
           previous.gender != current.gender ||
           previous.nameError != current.nameError ||
           previous.emailError != current.emailError ||
-          previous.nameTouched != current.nameTouched ||
-          previous.emailTouched != current.emailTouched ||
           previous.errorMessage != current.errorMessage ||
           previous.status != current.status,
       builder: (context, state) {
@@ -65,7 +63,7 @@ class _PassengerProfileFormSectionState
             ProfileNameFieldWidget(
               controller: _nameController,
               onChanged: cubit.nameChanged,
-              error: state.nameTouched ? state.nameError : '',
+              error: state.nameError,
               enabled: !isSubmitting,
             ),
             SizedBox(height: 24.h),
@@ -85,7 +83,7 @@ class _PassengerProfileFormSectionState
             ProfileEmailFieldWidget(
               controller: _emailController,
               onChanged: cubit.emailChanged,
-              error: state.emailTouched ? state.emailError : '',
+              error: state.emailError,
               enabled: !isSubmitting,
             ),
             AnimatedSize(

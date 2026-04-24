@@ -11,8 +11,6 @@ final class PassengerProfileState {
     this.nameError = '',
     this.emailError = '',
     this.errorMessage = '',
-    this.nameTouched = false,
-    this.emailTouched = false,
   });
 
   final String fullName;
@@ -22,8 +20,6 @@ final class PassengerProfileState {
   final String nameError;
   final String emailError;
   final String errorMessage;
-  final bool nameTouched;
-  final bool emailTouched;
 
   bool get isNameValid => nameError.isEmpty && fullName.trim().length >= 2;
   bool get isGenderSelected => gender != null;
@@ -43,8 +39,6 @@ final class PassengerProfileState {
     String? nameError,
     String? emailError,
     String? errorMessage,
-    bool? nameTouched,
-    bool? emailTouched,
   }) {
     return PassengerProfileState(
       fullName: fullName ?? this.fullName,
@@ -54,8 +48,6 @@ final class PassengerProfileState {
       nameError: nameError ?? this.nameError,
       emailError: emailError ?? this.emailError,
       errorMessage: errorMessage ?? this.errorMessage,
-      nameTouched: nameTouched ?? this.nameTouched,
-      emailTouched: emailTouched ?? this.emailTouched,
     );
   }
 }
