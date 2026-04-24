@@ -12,7 +12,6 @@ import '../../../../shared/widgets/app_logo_widget.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
 import '../cubit/otp_cubit/otp_cubit.dart';
 import '../cubit/otp_cubit/otp_state.dart';
-import 'widgets/otp/change_number_bar_widget.dart';
 import 'widgets/otp/otp_verification_form_section.dart';
 
 /// Step 2 — OTP Verification screen.
@@ -39,6 +38,9 @@ class OtpVerificationView extends StatelessWidget {
         }
       },
       child: AppScaffold(
+        showChangeNumberBar: true,
+        appBarTitle: 'Verification',
+        onLeadingTap: () => context.go(RouteNames.phone),
         body: GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.translucent,
@@ -48,10 +50,6 @@ class OtpVerificationView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                SizedBox(height: 56.h),
-                ChangeNumberBarWidget(
-                  onChangeTap: () => context.go(RouteNames.phone),
-                ),
                 SizedBox(height: 40.h),
                 const AppLogoWidget(),
                 SizedBox(height: 32.h),

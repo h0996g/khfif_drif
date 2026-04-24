@@ -1,30 +1,12 @@
-// lib/features/auth/presentation/cubit/otp_state.dart
-
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 
 import '../../../../../core/constants/app_constants.dart';
 
-/// Overall status of the OTP verification screen.
-enum OtpStatus {
-  /// Waiting for user input — no error.
-  idle,
+enum OtpStatus { idle, verifying, verified, wrongCode, blocked }
 
-  /// Verifying the code with the server (or mock).
-  verifying,
-
-  /// The submitted code was accepted.
-  verified,
-
-  /// The submitted code was wrong (< 3 consecutive failures).
-  wrongCode,
-
-  /// 3 consecutive wrong codes — user is blocked for 10 minutes.
-  blocked,
-}
-
-/// Immutable state for [OtpCubit].
-final class OtpState {
+final class OtpState extends Equatable {
   const OtpState({
+    required this.phoneNumber,
     this.status = OtpStatus.idle,
     this.digits = const ['', '', '', '', '', ''],
     this.secondsRemaining = AppConstants.otpResendCooldownSecs,
@@ -32,52 +14,29 @@ final class OtpState {
     this.failedAttempts = 0,
     this.blockSecondsRemaining = 0,
     this.errorMessage = '',
-    this.phoneNumber = '',
   });
 
+  final String phoneNumber;
   final OtpStatus status;
-
-  /// The 6 individual digit characters entered by the user.
   final List<String> digits;
-
-  /// Seconds left on the resend countdown (0 = resend allowed).
   final int secondsRemaining;
-
-  /// How many times the user has resent the OTP (max 3).
   final int resendCount;
-
-  /// Consecutive wrong-code attempts (resets on correct code / resend).
   final int failedAttempts;
-
-  /// Seconds remaining on the block countdown (> 0 when [status] == blocked).
   final int blockSecondsRemaining;
-
-  /// Non-empty only when [status] is [OtpStatus.wrongCode].
   final String errorMessage;
 
-  /// The phone number passed from the previous screen.
-  final String phoneNumber;
-
-  // ── Derived getters ──────────────────────────────────────────────────────
-
-  /// The full 6-digit OTP the user has entered so far.
   String get otpValue => digits.join();
-
-  /// True when all 6 boxes are filled.
-  bool get isComplete => otpValue.length == 6 && !digits.contains('');
-
-  /// True when the resend button should be tappable.
+  bool get isComplete => digits.length == 6 && !digits.contains('');
   bool get canResend =>
       secondsRemaining == 0 &&
       resendCount < AppConstants.otpMaxResendCount &&
       blockSecondsRemaining == 0;
-
-  /// Last 4 digits of the raw phone number for the confirmation label.
   String get lastFourDigits => phoneNumber.length >= 4
       ? phoneNumber.substring(phoneNumber.length - 4)
       : phoneNumber;
 
   OtpState copyWith({
+    String? phoneNumber,
     OtpStatus? status,
     List<String>? digits,
     int? secondsRemaining,
@@ -85,9 +44,9 @@ final class OtpState {
     int? failedAttempts,
     int? blockSecondsRemaining,
     String? errorMessage,
-    String? phoneNumber,
   }) =>
       OtpState(
+        phoneNumber: phoneNumber ?? this.phoneNumber,
         status: status ?? this.status,
         digits: digits ?? this.digits,
         secondsRemaining: secondsRemaining ?? this.secondsRemaining,
@@ -96,31 +55,17 @@ final class OtpState {
         blockSecondsRemaining:
             blockSecondsRemaining ?? this.blockSecondsRemaining,
         errorMessage: errorMessage ?? this.errorMessage,
-        phoneNumber: phoneNumber ?? this.phoneNumber,
       );
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is OtpState &&
-          runtimeType == other.runtimeType &&
-          status == other.status &&
-          listEquals(digits, other.digits) &&
-          secondsRemaining == other.secondsRemaining &&
-          resendCount == other.resendCount &&
-          failedAttempts == other.failedAttempts &&
-          blockSecondsRemaining == other.blockSecondsRemaining &&
-          errorMessage == other.errorMessage &&
-          phoneNumber == other.phoneNumber;
-
-  @override
-  int get hashCode =>
-      status.hashCode ^
-      Object.hashAll(digits) ^
-      secondsRemaining.hashCode ^
-      resendCount.hashCode ^
-      failedAttempts.hashCode ^
-      blockSecondsRemaining.hashCode ^
-      errorMessage.hashCode ^
-      phoneNumber.hashCode;
+  List<Object?> get props => [
+        phoneNumber,
+        status,
+        digits,
+        secondsRemaining,
+        resendCount,
+        failedAttempts,
+        blockSecondsRemaining,
+        errorMessage,
+      ];
 }
