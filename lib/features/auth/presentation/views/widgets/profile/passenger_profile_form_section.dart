@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../shared/widgets/primary_button.dart';
 import '../../../cubit/passenger_profile_cubit/passenger_profile_cubit.dart';
 import '../../../cubit/passenger_profile_cubit/passenger_profile_state.dart';
 import 'profile_email_field_widget.dart';
@@ -98,14 +97,6 @@ class _PassengerProfileFormSectionState
                     )
                   : const SizedBox.shrink(),
             ),
-            SizedBox(height: 40.h),
-            PrimaryButton(
-              label: 'Continue',
-              isEnabled: state.canSubmit,
-              isLoading: isSubmitting,
-              onPressed: cubit.submit,
-            ),
-            SizedBox(height: 32.h),
           ],
         );
       },

@@ -16,6 +16,7 @@ class AppScaffold extends StatelessWidget {
     super.key,
     required this.body,
     this.appBar,
+    this.bottomNavigationBar,
     this.backgroundColor,
     this.resizeToAvoidBottomInset = true,
     this.safeAreaBottom = true,
@@ -26,6 +27,7 @@ class AppScaffold extends StatelessWidget {
 
   final Widget body;
   final PreferredSizeWidget? appBar;
+  final Widget? bottomNavigationBar;
   final Color? backgroundColor;
   final bool resizeToAvoidBottomInset;
   final bool safeAreaBottom;
@@ -51,6 +53,7 @@ class AppScaffold extends StatelessWidget {
                 onLeadingTap: onLeadingTap,
               )
             : appBar,
+        bottomNavigationBar: bottomNavigationBar,
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
         body: SafeArea(
           bottom: safeAreaBottom,
