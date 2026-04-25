@@ -44,7 +44,7 @@ class DriverRegistrationView extends StatelessWidget {
                 SizedBox(height: 32.h),
                 _StepHeader(step: state.currentStep),
                 SizedBox(height: 40.h),
-                Expanded(child: _StepContent(cubit: cubit, state: state)),
+                const Expanded(child: _StepContent()),
                 _ErrorBanner(message: state.errorMessage),
               ],
             ),
@@ -92,18 +92,19 @@ class _StepHeader extends StatelessWidget {
 }
 
 class _StepContent extends StatelessWidget {
-  const _StepContent({required this.cubit, required this.state});
-  final DriverProfileCubit cubit;
-  final DriverProfileState state;
+  const _StepContent();
 
   @override
   Widget build(BuildContext context) {
+    final step = context.select<DriverProfileCubit, DriverStep>(
+      (c) => c.state.currentStep,
+    );
     return IndexedStack(
-      index: state.currentStep.index,
-      children: [
-        DriverStep1PersonalInfo(cubit: cubit, state: state),
-        DriverStep2VehicleInfo(cubit: cubit, state: state),
-        DriverStep3Documents(cubit: cubit, state: state),
+      index: step.index,
+      children: const [
+        DriverStep1PersonalInfo(),
+        DriverStep2VehicleInfo(),
+        DriverStep3Documents(),
       ],
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../../core/constants/app_strings.dart';
@@ -13,33 +14,17 @@ import '../fields/driver_text_field_widget.dart';
 import '../fields/driver_year_dropdown_widget.dart';
 
 class DriverStep2VehicleInfo extends StatefulWidget {
-  const DriverStep2VehicleInfo({
-    super.key,
-    required this.cubit,
-    required this.state,
-  });
-
-  final DriverProfileCubit cubit;
-  final DriverProfileState state;
+  const DriverStep2VehicleInfo({super.key});
 
   @override
   State<DriverStep2VehicleInfo> createState() => _DriverStep2VehicleInfoState();
 }
 
 class _DriverStep2VehicleInfoState extends State<DriverStep2VehicleInfo> {
-  late final TextEditingController _makeController;
-  late final TextEditingController _modelController;
-  late final TextEditingController _colorController;
-  late final TextEditingController _plateController;
-
-  @override
-  void initState() {
-    super.initState();
-    _makeController = TextEditingController();
-    _modelController = TextEditingController();
-    _colorController = TextEditingController();
-    _plateController = TextEditingController();
-  }
+  late final TextEditingController _makeController = TextEditingController();
+  late final TextEditingController _modelController = TextEditingController();
+  late final TextEditingController _colorController = TextEditingController();
+  late final TextEditingController _plateController = TextEditingController();
 
   @override
   void dispose() {
@@ -52,97 +37,104 @@ class _DriverStep2VehicleInfoState extends State<DriverStep2VehicleInfo> {
 
   @override
   Widget build(BuildContext context) {
-    final vehicle = widget.state.vehicleInfo;
-    final isSubmitting =
-        widget.state.status == DriverRegistrationStatus.loading;
+    return BlocBuilder<DriverProfileCubit, DriverProfileState>(
+      buildWhen: (prev, curr) => prev.vehicleInfo != curr.vehicleInfo,
+      builder: (context, state) {
+        final cubit = context.read<DriverProfileCubit>();
+        final vehicle = state.vehicleInfo;
+        final isSubmitting = state.status == DriverRegistrationStatus.loading;
 
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── Car Make ───────────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldCarMake),
-          SizedBox(height: 8.h),
-          DriverTextFieldWidget(
-            controller: _makeController,
-            hintText: 'e.g. Toyota',
-            icon: Icons.directions_car_outlined,
-            onChanged: widget.cubit.vehicleMakeChanged,
-            error: vehicle.vehicleMakeError,
-            enabled: !isSubmitting,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ '\-]")),
+        return SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Car Make ───────────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(label: AppStrings.fieldCarMake),
+              SizedBox(height: 8.h),
+              DriverTextFieldWidget(
+                controller: _makeController,
+                hintText: 'e.g. Toyota',
+                icon: Icons.directions_car_outlined,
+                onChanged: cubit.vehicleMakeChanged,
+                error: vehicle.vehicleMakeError,
+                enabled: !isSubmitting,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ '\-]")),
+                ],
+              ),
+
+              SizedBox(height: 24.h),
+
+              // ── Model ──────────────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(label: AppStrings.fieldCarModel),
+              SizedBox(height: 8.h),
+              DriverTextFieldWidget(
+                controller: _modelController,
+                hintText: 'e.g. Corolla',
+                icon: Icons.drive_eta_outlined,
+                onChanged: cubit.vehicleModelChanged,
+                error: vehicle.vehicleModelError,
+                enabled: !isSubmitting,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      RegExp(r"[a-zA-ZÀ-ÿ0-9 '\-]")),
+                ],
+              ),
+
+              SizedBox(height: 24.h),
+
+              // ── Year ───────────────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(label: AppStrings.fieldYear),
+              SizedBox(height: 8.h),
+              DriverYearDropdownWidget(
+                selectedYear: vehicle.vehicleYear,
+                onChanged: cubit.vehicleYearChanged,
+                enabled: !isSubmitting,
+              ),
+
+              SizedBox(height: 24.h),
+
+              // ── Color ──────────────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(label: AppStrings.fieldColor),
+              SizedBox(height: 8.h),
+              DriverTextFieldWidget(
+                controller: _colorController,
+                hintText: 'e.g. White',
+                icon: Icons.color_lens_outlined,
+                onChanged: cubit.vehicleColorChanged,
+                error: vehicle.vehicleColorError,
+                enabled: !isSubmitting,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ ]")),
+                ],
+              ),
+
+              SizedBox(height: 24.h),
+
+              // ── Plate Number ───────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(label: AppStrings.fieldPlateNumber),
+              SizedBox(height: 8.h),
+              DriverPlateFieldWidget(
+                controller: _plateController,
+                onChanged: cubit.plateNumberChanged,
+                error: vehicle.plateNumberError,
+                enabled: !isSubmitting,
+              ),
+
+              SizedBox(height: 24.h),
+
+              // ── Vehicle Photo ──────────────────────────────────────────────────
+              const ProfileFieldLabelWidget(
+                  label: AppStrings.fieldVehiclePhoto),
+              SizedBox(height: 8.h),
+              _VehiclePhotoButton(
+                photoPath: vehicle.vehiclePhotoPath,
+                onTap: isSubmitting ? null : cubit.pickVehiclePhoto,
+              ),
             ],
           ),
-
-          SizedBox(height: 24.h),
-
-          // ── Model ──────────────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldCarModel),
-          SizedBox(height: 8.h),
-          DriverTextFieldWidget(
-            controller: _modelController,
-            hintText: 'e.g. Corolla',
-            icon: Icons.drive_eta_outlined,
-            onChanged: widget.cubit.vehicleModelChanged,
-            error: vehicle.vehicleModelError,
-            enabled: !isSubmitting,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ0-9 '\-]")),
-            ],
-          ),
-
-          SizedBox(height: 24.h),
-
-          // ── Year ───────────────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldYear),
-          SizedBox(height: 8.h),
-          DriverYearDropdownWidget(
-            selectedYear: vehicle.vehicleYear,
-            onChanged: widget.cubit.vehicleYearChanged,
-            enabled: !isSubmitting,
-          ),
-
-          SizedBox(height: 24.h),
-
-          // ── Color ──────────────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldColor),
-          SizedBox(height: 8.h),
-          DriverTextFieldWidget(
-            controller: _colorController,
-            hintText: 'e.g. White',
-            icon: Icons.color_lens_outlined,
-            onChanged: widget.cubit.vehicleColorChanged,
-            error: vehicle.vehicleColorError,
-            enabled: !isSubmitting,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ ]")),
-            ],
-          ),
-
-          SizedBox(height: 24.h),
-
-          // ── Plate Number ───────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldPlateNumber),
-          SizedBox(height: 8.h),
-          DriverPlateFieldWidget(
-            controller: _plateController,
-            onChanged: widget.cubit.plateNumberChanged,
-            error: vehicle.plateNumberError,
-            enabled: !isSubmitting,
-          ),
-
-          SizedBox(height: 24.h),
-
-          // ── Vehicle Photo ──────────────────────────────────────────────────
-          const ProfileFieldLabelWidget(label: AppStrings.fieldVehiclePhoto),
-          SizedBox(height: 8.h),
-          _VehiclePhotoButton(
-            photoPath: vehicle.vehiclePhotoPath,
-            onTap: isSubmitting ? null : widget.cubit.pickVehiclePhoto,
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
