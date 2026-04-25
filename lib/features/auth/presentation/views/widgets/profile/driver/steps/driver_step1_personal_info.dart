@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../core/constants/app_strings.dart';
-import '../../../../../auth/data/models/gender.dart';
-import '../../../../../auth/presentation/views/widgets/profile/profile_field_label_widget.dart';
-import '../../../../../auth/presentation/views/widgets/profile/profile_gender_toggle_widget.dart';
-import '../../../../../auth/presentation/views/widgets/profile/profile_name_field_widget.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_cubit.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_state.dart';
+import '../../../../../../../../core/constants/app_strings.dart';
+import '../../../../../../data/models/gender.dart';
+import '../../profile_field_label_widget.dart';
+import '../../profile_gender_toggle_widget.dart';
+import '../../profile_name_field_widget.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 import '../fields/driver_date_picker_field_widget.dart';
 
 class DriverStep1PersonalInfo extends StatelessWidget {
@@ -24,8 +24,8 @@ class DriverStep1PersonalInfo extends StatelessWidget {
     required this.noopFocus,
   });
 
-  final DriverRegistrationCubit cubit;
-  final DriverRegistrationState state;
+  final DriverProfileCubit cubit;
+  final DriverProfileState state;
   final TextEditingController firstNameController;
   final TextEditingController lastNameController;
   final FocusNode firstNameFocus;

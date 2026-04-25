@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../core/constants/app_strings.dart';
-import '../../../../../../core/theme/app_colors.dart';
-import '../../../../../../core/theme/app_text_styles.dart';
-import '../../../../../auth/presentation/views/widgets/profile/profile_field_label_widget.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_cubit.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_state.dart';
+import '../../../../../../../../core/constants/app_strings.dart';
+import '../../../../../../../../core/theme/app_colors.dart';
+import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../profile_field_label_widget.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 import '../fields/driver_plate_field_widget.dart';
 import '../fields/driver_text_field_widget.dart';
 import '../fields/driver_year_dropdown_widget.dart';
@@ -29,8 +29,8 @@ class DriverStep2VehicleInfo extends StatelessWidget {
     required this.plateFocus,
   });
 
-  final DriverRegistrationCubit cubit;
-  final DriverRegistrationState state;
+  final DriverProfileCubit cubit;
+  final DriverProfileState state;
   final TextEditingController makeController;
   final TextEditingController modelController;
   final TextEditingController colorController;

@@ -1,14 +1,14 @@
 // lib/features/driver/presentation/cubit/driver_registration_cubit/driver_registration_state.dart
 
-import '../../../../auth/data/models/gender.dart';
+import '../../../data/models/gender.dart';
 import '../../../data/models/driver_document.dart';
 
 enum DriverRegistrationStatus { idle, submitting, success, failure }
 
 enum DriverStep { personalInfo, vehicleInfo, documents }
 
-final class DriverRegistrationState {
-  const DriverRegistrationState({
+final class DriverProfileState {
+  const DriverProfileState({
     // ── Step tracking ────────────────────────────────────────────────────────
     this.currentStep = DriverStep.personalInfo,
     this.status = DriverRegistrationStatus.idle,
@@ -132,12 +132,11 @@ final class DriverRegistrationState {
       vehicleRegistration.isUploaded;
 
   bool get canSubmitStep3 =>
-      allDocumentsUploaded &&
-      status != DriverRegistrationStatus.submitting;
+      allDocumentsUploaded && status != DriverRegistrationStatus.submitting;
 
   // ── copyWith ──────────────────────────────────────────────────────────────
 
-  DriverRegistrationState copyWith({
+  DriverProfileState copyWith({
     DriverStep? currentStep,
     DriverRegistrationStatus? status,
     String? errorMessage,
@@ -169,7 +168,7 @@ final class DriverRegistrationState {
     DriverDocument? licenseBack,
     DriverDocument? vehicleRegistration,
   }) {
-    return DriverRegistrationState(
+    return DriverProfileState(
       currentStep: currentStep ?? this.currentStep,
       status: status ?? this.status,
       errorMessage: errorMessage ?? this.errorMessage,

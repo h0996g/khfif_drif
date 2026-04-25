@@ -4,12 +4,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:khfif_drif/shared/widgets/primary_button.dart';
 
-import '../../../../core/router/route_names.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../shared/widgets/app_scaffold.dart';
-import '../cubit/passenger_profile_cubit/passenger_profile_cubit.dart';
-import '../cubit/passenger_profile_cubit/passenger_profile_state.dart';
-import 'widgets/profile/passenger/passenger_profile_form_section.dart';
+import '../../../../../core/router/route_names.dart';
+import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../shared/widgets/app_scaffold.dart';
+import '../../cubit/passenger_profile_cubit/passenger_profile_cubit.dart';
+import '../../cubit/passenger_profile_cubit/passenger_profile_state.dart';
+import '../widgets/profile/passenger/passenger_profile_form_section.dart';
 
 /// Step 5 — Passenger Profile Setup.
 ///

@@ -5,18 +5,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/router/route_names.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../shared/widgets/app_scaffold.dart';
-import '../../../../shared/widgets/primary_button.dart';
-import '../../../auth/presentation/views/widgets/profile/passenger/profile_error_banner_widget.dart';
-import '../../../auth/presentation/views/widgets/profile/driver/profile_step_progress_bar_widget.dart';
-import '../cubit/driver_registration_cubit/driver_registration_cubit.dart';
-import '../cubit/driver_registration_cubit/driver_registration_state.dart';
-import 'widgets/steps/driver_step1_personal_info.dart';
-import 'widgets/steps/driver_step2_vehicle_info.dart';
-import 'widgets/steps/driver_step3_documents.dart';
+import '../../../../../core/constants/app_strings.dart';
+import '../../../../../core/router/route_names.dart';
+import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../shared/widgets/app_scaffold.dart';
+import '../../../../../shared/widgets/primary_button.dart';
+import '../widgets/profile/passenger/profile_error_banner_widget.dart';
+import '../widgets/profile/driver/profile_step_progress_bar_widget.dart';
+import '../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
+import '../../cubit/driver_profile_cubit/driver_profile_state.dart';
+import '../widgets/profile/driver/steps/driver_step1_personal_info.dart';
+import '../widgets/profile/driver/steps/driver_step2_vehicle_info.dart';
+import '../widgets/profile/driver/steps/driver_step3_documents.dart';
 
 /// Multi-step driver registration shell.
 ///
@@ -59,32 +59,32 @@ class _DriverRegistrationViewState extends State<DriverRegistrationView> {
 
     _firstNameFocus.addListener(() {
       if (!_firstNameFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().firstNameFocusLost();
+        context.read<DriverProfileCubit>().firstNameFocusLost();
       }
     });
     _lastNameFocus.addListener(() {
       if (!_lastNameFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().lastNameFocusLost();
+        context.read<DriverProfileCubit>().lastNameFocusLost();
       }
     });
     _makeFocus.addListener(() {
       if (!_makeFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().vehicleMakeFocusLost();
+        context.read<DriverProfileCubit>().vehicleMakeFocusLost();
       }
     });
     _modelFocus.addListener(() {
       if (!_modelFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().vehicleModelFocusLost();
+        context.read<DriverProfileCubit>().vehicleModelFocusLost();
       }
     });
     _colorFocus.addListener(() {
       if (!_colorFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().vehicleColorFocusLost();
+        context.read<DriverProfileCubit>().vehicleColorFocusLost();
       }
     });
     _plateFocus.addListener(() {
       if (!_plateFocus.hasFocus) {
-        context.read<DriverRegistrationCubit>().plateNumberFocusLost();
+        context.read<DriverProfileCubit>().plateNumberFocusLost();
       }
     });
   }
@@ -150,7 +150,7 @@ class _DriverRegistrationViewState extends State<DriverRegistrationView> {
     }
   }
 
-  VoidCallback _buttonAction(DriverRegistrationCubit cubit, DriverStep step) {
+  VoidCallback _buttonAction(DriverProfileCubit cubit, DriverStep step) {
     switch (step) {
       case DriverStep.personalInfo:
         return cubit.submitStep1;
@@ -161,7 +161,7 @@ class _DriverRegistrationViewState extends State<DriverRegistrationView> {
     }
   }
 
-  bool _buttonEnabled(DriverRegistrationState state) {
+  bool _buttonEnabled(DriverProfileState state) {
     switch (state.currentStep) {
       case DriverStep.personalInfo:
         return state.canProceedStep1;
@@ -172,21 +172,21 @@ class _DriverRegistrationViewState extends State<DriverRegistrationView> {
     }
   }
 
-  bool _buttonLoading(DriverRegistrationState state) {
+  bool _buttonLoading(DriverProfileState state) {
     return state.status == DriverRegistrationStatus.submitting &&
         state.currentStep != DriverStep.vehicleInfo;
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<DriverRegistrationCubit, DriverRegistrationState>(
+    return BlocConsumer<DriverProfileCubit, DriverProfileState>(
       listener: (context, state) {
         if (state.status == DriverRegistrationStatus.success) {
           context.go(RouteNames.driverPendingReview);
         }
       },
       builder: (context, state) {
-        final cubit = context.read<DriverRegistrationCubit>();
+        final cubit = context.read<DriverProfileCubit>();
         final stepIndex = _stepIndex(state.currentStep);
 
         return PopScope(

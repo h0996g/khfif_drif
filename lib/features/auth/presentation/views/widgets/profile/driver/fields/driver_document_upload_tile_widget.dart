@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../core/theme/app_colors.dart';
-import '../../../../../../core/theme/app_text_styles.dart';
-import '../../../../data/models/driver_document.dart';
+import '../../../../../../../../core/theme/app_colors.dart';
+import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../data/models/driver_document.dart';
 
 /// A single document upload row showing idle / uploading / uploaded / error
 /// states with animated border transitions.
@@ -40,10 +40,7 @@ class DriverDocumentUploadTileWidget extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: enabled &&
-              status != UploadStatus.uploading
-          ? onTap
-          : null,
+      onTap: enabled && status != UploadStatus.uploading ? onTap : null,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         height: 64.h,

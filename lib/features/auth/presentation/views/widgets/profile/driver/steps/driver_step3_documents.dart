@@ -3,12 +3,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../core/constants/app_strings.dart';
-import '../../../../../../core/theme/app_colors.dart';
-import '../../../../../../core/theme/app_text_styles.dart';
-import '../../../../data/models/driver_document.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_cubit.dart';
-import '../../../../presentation/cubit/driver_registration_cubit/driver_registration_state.dart';
+import '../../../../../../../../core/constants/app_strings.dart';
+import '../../../../../../../../core/theme/app_colors.dart';
+import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../data/models/driver_document.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
+import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 import '../fields/driver_document_upload_tile_widget.dart';
 
 class DriverStep3Documents extends StatelessWidget {
@@ -18,8 +18,8 @@ class DriverStep3Documents extends StatelessWidget {
     required this.state,
   });
 
-  final DriverRegistrationCubit cubit;
-  final DriverRegistrationState state;
+  final DriverProfileCubit cubit;
+  final DriverProfileState state;
 
   @override
   Widget build(BuildContext context) {

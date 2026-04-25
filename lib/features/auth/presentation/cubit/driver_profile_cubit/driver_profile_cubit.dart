@@ -7,14 +7,13 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../../core/constants/app_constants.dart';
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/utils/validators.dart';
-import '../../../../auth/data/models/gender.dart';
-import '../../../../auth/data/repo/auth_repository.dart';
+import '../../../data/models/gender.dart';
+import '../../../data/repo/auth_repository.dart';
 import '../../../data/models/driver_document.dart';
-import 'driver_registration_state.dart';
+import 'driver_profile_state.dart';
 
-final class DriverRegistrationCubit extends Cubit<DriverRegistrationState> {
-  DriverRegistrationCubit(this._repository)
-      : super(const DriverRegistrationState());
+final class DriverProfileCubit extends Cubit<DriverProfileState> {
+  DriverProfileCubit(this._repository) : super(const DriverProfileState());
 
   final AuthRepository _repository;
   final _imagePicker = ImagePicker();
@@ -315,8 +314,7 @@ final class DriverRegistrationCubit extends Cubit<DriverRegistrationState> {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  DriverRegistrationState _setDocument(
-      DriverDocumentType type, DriverDocument doc) {
+  DriverProfileState _setDocument(DriverDocumentType type, DriverDocument doc) {
     return state.copyWith(
       nationalIdFront: type == DriverDocumentType.nationalIdFront ? doc : null,
       nationalIdBack: type == DriverDocumentType.nationalIdBack ? doc : null,
