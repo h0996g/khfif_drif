@@ -10,30 +10,44 @@ import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 import '../fields/driver_date_picker_field_widget.dart';
 
-class DriverStep1PersonalInfo extends StatelessWidget {
+class DriverStep1PersonalInfo extends StatefulWidget {
   const DriverStep1PersonalInfo({
     super.key,
     required this.cubit,
     required this.state,
-    required this.firstNameController,
-    required this.lastNameController,
-    required this.firstNameFocus,
-    required this.lastNameFocus,
-    required this.noopFocus,
   });
 
   final DriverProfileCubit cubit;
   final DriverProfileState state;
-  final TextEditingController firstNameController;
-  final TextEditingController lastNameController;
-  final FocusNode firstNameFocus;
-  final FocusNode lastNameFocus;
-  final FocusNode noopFocus;
+
+  @override
+  State<DriverStep1PersonalInfo> createState() =>
+      _DriverStep1PersonalInfoState();
+}
+
+class _DriverStep1PersonalInfoState extends State<DriverStep1PersonalInfo> {
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameController = TextEditingController();
+    _lastNameController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final info = state.personalInfo;
-    final isSubmitting = state.status == DriverRegistrationStatus.loading;
+    final info = widget.state.personalInfo;
+    final isSubmitting =
+        widget.state.status == DriverRegistrationStatus.loading;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,8 +56,8 @@ class DriverStep1PersonalInfo extends StatelessWidget {
         const ProfileFieldLabelWidget(label: AppStrings.fieldFirstName),
         SizedBox(height: 8.h),
         ProfileNameFieldWidget(
-          controller: firstNameController,
-          onChanged: cubit.firstNameChanged,
+          controller: _firstNameController,
+          onChanged: widget.cubit.firstNameChanged,
           error: info.firstNameError,
           enabled: !isSubmitting,
         ),
@@ -54,8 +68,8 @@ class DriverStep1PersonalInfo extends StatelessWidget {
         const ProfileFieldLabelWidget(label: AppStrings.fieldLastName),
         SizedBox(height: 8.h),
         ProfileNameFieldWidget(
-          controller: lastNameController,
-          onChanged: cubit.lastNameChanged,
+          controller: _lastNameController,
+          onChanged: widget.cubit.lastNameChanged,
           error: info.lastNameError,
           enabled: !isSubmitting,
         ),
@@ -67,7 +81,7 @@ class DriverStep1PersonalInfo extends StatelessWidget {
         SizedBox(height: 8.h),
         DriverDatePickerFieldWidget(
           selectedDate: info.dateOfBirth,
-          onDateSelected: cubit.dateOfBirthSelected,
+          onDateSelected: widget.cubit.dateOfBirthSelected,
           enabled: !isSubmitting,
         ),
 
@@ -78,7 +92,7 @@ class DriverStep1PersonalInfo extends StatelessWidget {
         SizedBox(height: 8.h),
         ProfileGenderToggleWidget(
           selected: info.gender,
-          onChanged: (Gender g) => cubit.genderChanged(g),
+          onChanged: (Gender g) => widget.cubit.genderChanged(g),
           enabled: !isSubmitting,
         ),
       ],

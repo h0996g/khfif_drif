@@ -24,99 +24,101 @@ class DriverStep3Documents extends StatelessWidget {
     final docs = state.documents;
     final isSubmitting = state.status == DriverRegistrationStatus.loading;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // ── Info banner ────────────────────────────────────────────────────
-        Container(
-          padding: EdgeInsets.all(12.w),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10.r),
-            border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.2),
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Info banner ────────────────────────────────────────────────────
+          Container(
+            padding: EdgeInsets.all(12.w),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(10.r),
+              border: Border.all(
+                color: AppColors.primary.withValues(alpha: 0.2),
+              ),
             ),
-          ),
-          child: Row(
-            children: [
-              Icon(Icons.info_outline_rounded,
-                  color: AppColors.primary, size: 16.w),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  'JPG, PNG or PDF • Max 5 MB per file',
-                  style: AppTextStyles.bodySmall(context).copyWith(
-                    color: AppColors.primary,
+            child: Row(
+              children: [
+                Icon(Icons.info_outline_rounded,
+                    color: AppColors.primary, size: 16.w),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    'JPG, PNG or PDF • Max 5 MB per file',
+                    style: AppTextStyles.bodySmall(context).copyWith(
+                      color: AppColors.primary,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
 
-        SizedBox(height: 24.h),
+          SizedBox(height: 24.h),
 
-        // ── National ID ────────────────────────────────────────────────────
-        Text(
-          'National ID',
-          style: AppTextStyles.labelMedium(context)
-              .copyWith(fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 8.h),
-        DriverDocumentUploadTileWidget(
-          label: AppStrings.docNationalIdFront,
-          document: docs.nationalIdFront,
-          onTap: () => cubit.pickDocument(DriverDocumentType.nationalIdFront),
-          enabled: !isSubmitting,
-        ),
-        SizedBox(height: 8.h),
-        DriverDocumentUploadTileWidget(
-          label: AppStrings.docNationalIdBack,
-          document: docs.nationalIdBack,
-          onTap: () => cubit.pickDocument(DriverDocumentType.nationalIdBack),
-          enabled: !isSubmitting,
-        ),
+          // ── National ID ────────────────────────────────────────────────────
+          Text(
+            'National ID',
+            style: AppTextStyles.labelMedium(context)
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8.h),
+          DriverDocumentUploadTileWidget(
+            label: AppStrings.docNationalIdFront,
+            document: docs.nationalIdFront,
+            onTap: () => cubit.pickDocument(DriverDocumentType.nationalIdFront),
+            enabled: !isSubmitting,
+          ),
+          SizedBox(height: 8.h),
+          DriverDocumentUploadTileWidget(
+            label: AppStrings.docNationalIdBack,
+            document: docs.nationalIdBack,
+            onTap: () => cubit.pickDocument(DriverDocumentType.nationalIdBack),
+            enabled: !isSubmitting,
+          ),
 
-        SizedBox(height: 20.h),
+          SizedBox(height: 20.h),
 
-        // ── Driver's License ───────────────────────────────────────────────
-        Text(
-          "Driver's License",
-          style: AppTextStyles.labelMedium(context)
-              .copyWith(fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 8.h),
-        DriverDocumentUploadTileWidget(
-          label: AppStrings.docLicenseFront,
-          document: docs.licenseFront,
-          onTap: () => cubit.pickDocument(DriverDocumentType.licenseFront),
-          enabled: !isSubmitting,
-        ),
-        SizedBox(height: 8.h),
-        DriverDocumentUploadTileWidget(
-          label: AppStrings.docLicenseBack,
-          document: docs.licenseBack,
-          onTap: () => cubit.pickDocument(DriverDocumentType.licenseBack),
-          enabled: !isSubmitting,
-        ),
+          // ── Driver's License ───────────────────────────────────────────────
+          Text(
+            "Driver's License",
+            style: AppTextStyles.labelMedium(context)
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8.h),
+          DriverDocumentUploadTileWidget(
+            label: AppStrings.docLicenseFront,
+            document: docs.licenseFront,
+            onTap: () => cubit.pickDocument(DriverDocumentType.licenseFront),
+            enabled: !isSubmitting,
+          ),
+          SizedBox(height: 8.h),
+          DriverDocumentUploadTileWidget(
+            label: AppStrings.docLicenseBack,
+            document: docs.licenseBack,
+            onTap: () => cubit.pickDocument(DriverDocumentType.licenseBack),
+            enabled: !isSubmitting,
+          ),
 
-        SizedBox(height: 20.h),
+          SizedBox(height: 20.h),
 
-        // ── Vehicle Registration ───────────────────────────────────────────
-        Text(
-          'Vehicle Registration',
-          style: AppTextStyles.labelMedium(context)
-              .copyWith(fontWeight: FontWeight.w600),
-        ),
-        SizedBox(height: 8.h),
-        DriverDocumentUploadTileWidget(
-          label: AppStrings.docVehicleRegistration,
-          document: docs.vehicleRegistration,
-          onTap: () =>
-              cubit.pickDocument(DriverDocumentType.vehicleRegistration),
-          enabled: !isSubmitting,
-        ),
-      ],
+          // ── Vehicle Registration ───────────────────────────────────────────
+          Text(
+            'Vehicle Registration',
+            style: AppTextStyles.labelMedium(context)
+                .copyWith(fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 8.h),
+          DriverDocumentUploadTileWidget(
+            label: AppStrings.docVehicleRegistration,
+            document: docs.vehicleRegistration,
+            onTap: () =>
+                cubit.pickDocument(DriverDocumentType.vehicleRegistration),
+            enabled: !isSubmitting,
+          ),
+        ],
+      ),
     );
   }
 }

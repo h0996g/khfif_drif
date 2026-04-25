@@ -31,14 +31,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
     ));
   }
 
-  void firstNameFocusLost() {
-    emit(state.copyWith(
-      personalInfo: state.personalInfo.copyWith(
-        firstNameError: Validators.name(state.personalInfo.firstName.trim()),
-      ),
-    ));
-  }
-
   void lastNameChanged(String value) {
     emit(state.copyWith(
       status: DriverRegistrationStatus.initial,
@@ -46,14 +38,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
       personalInfo: state.personalInfo.copyWith(
         lastName: value,
         lastNameError: Validators.name(value.trim()),
-      ),
-    ));
-  }
-
-  void lastNameFocusLost() {
-    emit(state.copyWith(
-      personalInfo: state.personalInfo.copyWith(
-        lastNameError: Validators.name(state.personalInfo.lastName.trim()),
       ),
     ));
   }
@@ -112,15 +96,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
     ));
   }
 
-  void vehicleMakeFocusLost() {
-    emit(state.copyWith(
-      vehicleInfo: state.vehicleInfo.copyWith(
-        vehicleMakeError: Validators.vehicleText(
-            state.vehicleInfo.vehicleMake, AppStrings.fieldCarMake),
-      ),
-    ));
-  }
-
   void vehicleModelChanged(String value) {
     emit(state.copyWith(
       status: DriverRegistrationStatus.initial,
@@ -129,15 +104,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
         vehicleModel: value,
         vehicleModelError:
             Validators.vehicleText(value, AppStrings.fieldCarModel),
-      ),
-    ));
-  }
-
-  void vehicleModelFocusLost() {
-    emit(state.copyWith(
-      vehicleInfo: state.vehicleInfo.copyWith(
-        vehicleModelError: Validators.vehicleText(
-            state.vehicleInfo.vehicleModel, AppStrings.fieldCarModel),
       ),
     ));
   }
@@ -159,15 +125,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
     ));
   }
 
-  void vehicleColorFocusLost() {
-    emit(state.copyWith(
-      vehicleInfo: state.vehicleInfo.copyWith(
-        vehicleColorError: Validators.vehicleText(
-            state.vehicleInfo.vehicleColor, AppStrings.fieldColor),
-      ),
-    ));
-  }
-
   void plateNumberChanged(String value) {
     emit(state.copyWith(
       status: DriverRegistrationStatus.initial,
@@ -175,14 +132,6 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
       vehicleInfo: state.vehicleInfo.copyWith(
         plateNumber: value,
         plateNumberError: Validators.plate(value),
-      ),
-    ));
-  }
-
-  void plateNumberFocusLost() {
-    emit(state.copyWith(
-      vehicleInfo: state.vehicleInfo.copyWith(
-        plateNumberError: Validators.plate(state.vehicleInfo.plateNumber),
       ),
     ));
   }
@@ -305,7 +254,17 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
     }
   }
 
-  // ── Back navigation ───────────────────────────────────────────────────────
+  // ── Step navigation ───────────────────────────────────────────────────────
+
+  void goToStep(int oneBased) {
+    final target = DriverStep.values[oneBased - 1];
+    if (target == state.currentStep) return;
+    emit(state.copyWith(
+      currentStep: target,
+      status: DriverRegistrationStatus.initial,
+      errorMessage: '',
+    ));
+  }
 
   void goBackStep() {
     switch (state.currentStep) {
