@@ -46,7 +46,7 @@ class ProfileStepProgressBarWidget extends StatelessWidget {
               ? () => onStepTap(stepIndex)
               : isFutureBlocked
                   ? () => AppToast.warning(
-                        'Please complete the current step first.',
+                        'Please complete step ${stepIndex - 1} first.',
                       )
                   : null,
         );
