@@ -14,10 +14,10 @@ final class DriverDocumentPickerService {
 
   final ImagePicker _imagePicker;
 
-  Future<String?> pickVehiclePhoto() async {
+  Future<String?> pickVehiclePhoto(ImageSource source) async {
     try {
       final file = await _imagePicker.pickImage(
-        source: ImageSource.gallery,
+        source: source,
         imageQuality: 85,
       );
       return file?.path;
@@ -26,30 +26,27 @@ final class DriverDocumentPickerService {
     }
   }
 
-  Future<DocumentPickResult> pickDocument(DriverDocumentType type) async {
+  Future<DocumentPickResult> pickDocument(
+      DriverDocumentType type, ImageSource source) async {
     try {
-      final (path, name) = await _selectFile(type);
+      final file = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 85,
+      );
 
-      if (path == null) return const DocumentPickCancelled();
+      if (file == null) return const DocumentPickCancelled();
 
-      final fileSize = await File(path).length();
+      final fileSize = await File(file.path).length();
       if (fileSize > AppConstants.maxDocumentSizeBytes) {
         return const DocumentPickFailure(errorMessage: AppStrings.fileTooLarge);
       }
 
       await Future<void>.delayed(const Duration(milliseconds: 800));
 
-      return DocumentPickSuccess(path: path, name: name ?? path.split('/').last);
+      return DocumentPickSuccess(path: file.path, name: file.name);
     } catch (_) {
-      return const DocumentPickFailure(errorMessage: 'Upload failed. Tap to retry.');
+      return const DocumentPickFailure(
+          errorMessage: 'Upload failed. Tap to retry.');
     }
-  }
-
-  Future<(String?, String?)> _selectFile(DriverDocumentType type) async {
-    final file = await _imagePicker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    return (file?.path, file?.name);
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../../core/constants/app_strings.dart';
+import '../../../../../../../../core/widgets/image_source_bottom_sheet.dart';
 
 import '../../../../../../data/models/driver_document.dart';
 import '../../profile_field_label_widget.dart';
@@ -139,7 +140,10 @@ class _DriverStep2VehicleInfoState extends State<DriverStep2VehicleInfo> {
                       : UploadStatus.idle,
                   filePath: vehicle.vehiclePhotoPath,
                 ),
-                onTap: () => cubit.pickVehiclePhoto(),
+                onTap: () async {
+                  final source = await showImageSourceSheet(context);
+                  if (source != null) cubit.pickVehiclePhoto(source);
+                },
                 enabled: !isSubmitting,
               ),
 

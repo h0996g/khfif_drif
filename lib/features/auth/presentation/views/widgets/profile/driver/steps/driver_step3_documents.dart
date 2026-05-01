@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../../core/widgets/image_source_bottom_sheet.dart';
 import '../../../../../../data/models/driver_document.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
@@ -25,6 +26,11 @@ class DriverStep3Documents extends StatelessWidget {
         final docs = state.documents;
         final isSubmitting = state.status == DriverRegistrationStatus.loading;
 
+        Future<void> pick(DriverDocumentType type) async {
+          final source = await showImageSourceSheet(context);
+          if (source != null) cubit.pickDocument(type, source);
+        }
+
         return GestureDetector(
           onTap: () => FocusScope.of(context).unfocus(),
           behavior: HitTestBehavior.translucent,
@@ -40,10 +46,8 @@ class DriverStep3Documents extends StatelessWidget {
                 label: 'National ID',
                 frontDocument: docs.nationalIdFront,
                 backDocument: docs.nationalIdBack,
-                onFrontTap: () =>
-                    cubit.pickDocument(DriverDocumentType.nationalIdFront),
-                onBackTap: () =>
-                    cubit.pickDocument(DriverDocumentType.nationalIdBack),
+                onFrontTap: () => pick(DriverDocumentType.nationalIdFront),
+                onBackTap: () => pick(DriverDocumentType.nationalIdBack),
                 icon: Icons.badge_outlined,
                 enabled: !isSubmitting,
               ),
@@ -55,10 +59,8 @@ class DriverStep3Documents extends StatelessWidget {
                 label: "Driver's License",
                 frontDocument: docs.licenseFront,
                 backDocument: docs.licenseBack,
-                onFrontTap: () =>
-                    cubit.pickDocument(DriverDocumentType.licenseFront),
-                onBackTap: () =>
-                    cubit.pickDocument(DriverDocumentType.licenseBack),
+                onFrontTap: () => pick(DriverDocumentType.licenseFront),
+                onBackTap: () => pick(DriverDocumentType.licenseBack),
                 icon: Icons.credit_card_outlined,
                 enabled: !isSubmitting,
               ),
@@ -72,8 +74,7 @@ class DriverStep3Documents extends StatelessWidget {
                 label: 'Vehicle Registration',
                 badgeLabel: 'REG',
                 document: docs.vehicleRegistration,
-                onTap: () =>
-                    cubit.pickDocument(DriverDocumentType.vehicleRegistration),
+                onTap: () => pick(DriverDocumentType.vehicleRegistration),
                 enabled: !isSubmitting,
               ),
             ],

@@ -37,6 +37,10 @@ class DriverRegistrationView extends StatelessWidget {
                   currentStep: state.currentStep.index + 1,
                   totalSteps: 3,
                   stepLabels: const ['Personal', 'Vehicle', 'Documents'],
+                  completedSteps: {
+                    if (state.canProceedStep1) 2,
+                    if (state.canProceedStep2) 3,
+                  },
                   onStepTap: cubit.goToStep,
                 ),
                 SizedBox(height: 20.h),

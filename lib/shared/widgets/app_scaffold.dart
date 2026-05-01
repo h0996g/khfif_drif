@@ -84,7 +84,7 @@ class AppScaffold extends StatelessWidget {
                 ),
               ),
         resizeToAvoidBottomInset: resizeToAvoidBottomInset,
-        body: showAppBar ? SafeArea(child: body) : body,
+        body: showAppBar ? body : SafeArea(child: body),
       ),
     );
   }

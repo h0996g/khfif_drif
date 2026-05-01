@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../../core/constants/app_strings.dart';
 import '../../../../../core/utils/validators.dart';
@@ -67,8 +68,8 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
   void vehicleYearChanged(int year) =>
       _emitVehicle(state.vehicleInfo.copyWith(vehicleYear: year));
 
-  Future<void> pickVehiclePhoto() async {
-    final path = await _picker.pickVehiclePhoto();
+  Future<void> pickVehiclePhoto(ImageSource source) async {
+    final path = await _picker.pickVehiclePhoto(source);
     if (path != null) {
       emit(state.copyWith(
         vehicleInfo: state.vehicleInfo.copyWith(vehiclePhotoPath: path),
@@ -87,11 +88,11 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
 
   // ── Step 3: Documents ─────────────────────────────────────────────────────
 
-  Future<void> pickDocument(DriverDocumentType type) async {
+  Future<void> pickDocument(DriverDocumentType type, ImageSource source) async {
     emit(_setDocument(
         type, const DriverDocument(status: UploadStatus.uploading)));
 
-    final result = await _picker.pickDocument(type);
+    final result = await _picker.pickDocument(type, source);
 
     switch (result) {
       case DocumentPickCancelled():
@@ -147,6 +148,15 @@ final class DriverProfileCubit extends Cubit<DriverProfileState> {
   void goToStep(int oneBased) {
     final target = DriverStep.values[oneBased - 1];
     if (target == state.currentStep) return;
+    if (target.index > state.currentStep.index) {
+      if (target == DriverStep.vehicleInfo && !state.canProceedStep1) {
+        return;
+      }
+      if (target == DriverStep.documents &&
+          (!state.canProceedStep1 || !state.canProceedStep2)) {
+        return;
+      }
+    }
     emit(state.copyWith(
       currentStep: target,
       status: DriverRegistrationStatus.initial,

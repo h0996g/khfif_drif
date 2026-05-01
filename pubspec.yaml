@@ -38,6 +38,7 @@ dependencies:
   # File picking (supports PDF for vehicle registration)
   file_picker: ^8.1.2
   pinput: ^6.0.2
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:

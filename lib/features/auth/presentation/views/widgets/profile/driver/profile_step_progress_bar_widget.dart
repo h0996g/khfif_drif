@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../core/widgets/app_toast.dart';
 
 class ProfileStepProgressBarWidget extends StatelessWidget {
   const ProfileStepProgressBarWidget({
@@ -10,6 +11,7 @@ class ProfileStepProgressBarWidget extends StatelessWidget {
     required this.currentStep,
     required this.totalSteps,
     required this.stepLabels,
+    required this.completedSteps,
     required this.onStepTap,
   });
 
@@ -17,7 +19,10 @@ class ProfileStepProgressBarWidget extends StatelessWidget {
   final int totalSteps;
   final List<String> stepLabels;
 
-  /// Called with 1-based step index when user taps a completed or current step.
+  /// 1-based indices of future steps the user is allowed to jump to.
+  final Set<int> completedSteps;
+
+  /// Called with 1-based step index when user taps a reachable step.
   final ValueChanged<int> onStepTap;
 
   @override
@@ -29,14 +34,21 @@ class ProfileStepProgressBarWidget extends StatelessWidget {
         final stepIndex = i ~/ 2 + 1;
         final isCompleted = stepIndex < currentStep;
         final isCurrent = stepIndex == currentStep;
+        final isTappable =
+            isCompleted || isCurrent || completedSteps.contains(stepIndex);
+        final isFutureBlocked = stepIndex > currentStep && !isTappable;
         return _StepDot(
           stepIndex: stepIndex,
           label: stepLabels[i ~/ 2],
           isCompleted: isCompleted,
           isCurrent: isCurrent,
-          onTap: (isCompleted || isCurrent)
+          onTap: isTappable
               ? () => onStepTap(stepIndex)
-              : null,
+              : isFutureBlocked
+                  ? () => AppToast.warning(
+                        'Please complete the current step first.',
+                      )
+                  : null,
         );
       }),
     );
@@ -86,9 +98,7 @@ class _StepDot extends StatelessWidget {
               child: isCompleted
                   ? Icon(Icons.check_rounded,
                       size: 16.sp,
-                      color: isCurrent
-                          ? Colors.white
-                          : AppColors.primary)
+                      color: isCurrent ? Colors.white : AppColors.primary)
                   : Text(
                       '$stepIndex',
                       style: AppTextStyles.bodySmall(context).copyWith(
@@ -109,8 +119,7 @@ class _StepDot extends StatelessWidget {
               color: (isCompleted || isCurrent)
                   ? AppColors.primary
                   : AppColors.borderDefault(context),
-              fontWeight:
-                  isCurrent ? FontWeight.w600 : FontWeight.w400,
+              fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400,
               fontSize: 10.sp,
             ),
           ),
@@ -135,9 +144,8 @@ class _Connector extends StatelessWidget {
             duration: const Duration(milliseconds: 300),
             height: 2.h,
             decoration: BoxDecoration(
-              color: filled
-                  ? AppColors.primary
-                  : AppColors.borderDefault(context),
+              color:
+                  filled ? AppColors.primary : AppColors.borderDefault(context),
               borderRadius: BorderRadius.circular(1.r),
             ),
           ),
