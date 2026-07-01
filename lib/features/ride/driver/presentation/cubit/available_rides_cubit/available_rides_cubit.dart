@@ -70,8 +70,17 @@ final class AvailableRidesCubit extends Cubit<AvailableRidesState> {
         _upsertRide(request);
       case RideBroadcastCancelled(:final rideRequestId):
         _removeRide(rideRequestId);
-      case OfferAccepted():
-        emit(state.copyWith(status: AvailableRidesStatus.offerAccepted));
+      case OfferAccepted(:final rideRequestId):
+        // The driver's bid was accepted — drop this card so it can't resurface
+        // (e.g. after the ride is later cancelled and the driver returns home).
+        // The cubit is shell-scoped, so the list otherwise persists in memory.
+        final rides = state.rides
+            .where((r) => r.rideRequestId != rideRequestId)
+            .toList();
+        emit(state.copyWith(
+          status: AvailableRidesStatus.offerAccepted,
+          rides: rides,
+        ));
       default:
         break;
     }
