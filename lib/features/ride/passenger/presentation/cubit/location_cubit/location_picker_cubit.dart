@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../../../../saved_places/data/address_model.dart';
 import 'location_picker_state.dart';
 
 class LocationPickerCubit extends Cubit<LocationPickerState> {
@@ -149,6 +150,18 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
 
   void clearSearch() {
     emit(state.copyWith(searchResults: [], isSearching: false));
+  }
+
+  void selectSavedAddress(AddressModel address) {
+    final position = LatLng(address.latitude, address.longitude);
+    // Move camera AND drop pin at the saved address, using its stored address text directly.
+    emit(state.copyWith(
+      mapCenter: position,
+      selectedPosition: position,
+      pickedAddress: address.address,
+      searchResults: [],
+      isSearching: false,
+    ));
   }
 
   @override

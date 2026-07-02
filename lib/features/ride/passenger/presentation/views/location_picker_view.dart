@@ -8,7 +8,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/app_toast.dart';
+import '../../../../../shared/widgets/bottomsheets/app_option_sheet.dart';
 import '../../../../../shared/widgets/primary_button.dart';
+import '../../../../saved_places/data/address_model.dart';
+import '../../../../saved_places/data/address_repository.dart';
 import '../../data/models/passenger_ride_models.dart';
 import '../cubit/location_cubit/location_picker_cubit.dart';
 import '../cubit/location_cubit/location_picker_state.dart';
@@ -29,7 +33,9 @@ class _LocationPickerViewState extends State<LocationPickerView> {
   final _mapController = MapController();
   final _searchCtrl = TextEditingController();
   final _searchFocus = FocusNode();
+  final _addressRepository = const AddressRepository();
   Timer? _searchDebounce;
+  bool _isLoadingFavorites = false;
 
   @override
   void initState() {
@@ -61,6 +67,42 @@ class _LocationPickerViewState extends State<LocationPickerView> {
   void _zoomOut() {
     final camera = _mapController.camera;
     _mapController.move(camera.center, (camera.zoom - 1).clamp(0, 19));
+  }
+
+  Future<void> _pickFromFavorites() async {
+    setState(() => _isLoadingFavorites = true);
+    try {
+      final addresses = await _addressRepository.getAddresses();
+      if (!mounted) return;
+      if (addresses.isEmpty) {
+        AppToast.warning('No saved addresses yet.');
+        return;
+      }
+      final selected = await showAppOptionSheet<AddressModel>(
+        context: context,
+        title: 'Saved Addresses',
+        options: [
+          for (final address in addresses)
+            AppSheetOption(
+              icon: switch (address.type) {
+                AddressType.home => Icons.home_outlined,
+                AddressType.work => Icons.work_outline_rounded,
+                AddressType.other => Icons.location_on_outlined,
+              },
+              label: address.label,
+              subtitle: address.address,
+              value: address,
+            ),
+        ],
+      );
+      if (selected != null && mounted) {
+        context.read<LocationPickerCubit>().selectSavedAddress(selected);
+      }
+    } catch (e) {
+      if (mounted) AppToast.error(e.toString());
+    } finally {
+      if (mounted) setState(() => _isLoadingFavorites = false);
+    }
   }
 
   void _confirm(LocationPickerState state) {
@@ -145,6 +187,12 @@ class _LocationPickerViewState extends State<LocationPickerView> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      MapButton(
+                        icon: Icons.star_rounded,
+                        isLoading: _isLoadingFavorites,
+                        onTap: _pickFromFavorites,
+                      ),
+                      SizedBox(height: 12.h),
                       MapButton(
                         icon: Icons.my_location_rounded,
                         isLoading: state.isLocating,
