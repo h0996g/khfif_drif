@@ -3,14 +3,18 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/app_toast.dart';
 import '../../../../shared/widgets/app_scaffold.dart';
+import '../../../ride/shared/models/shared_ride_models.dart';
+import '../../../ride/passenger/presentation/cubit/location_cubit/location_picker_state.dart';
 import '../../data/address_model.dart';
 import '../cubit/saved_places_cubit.dart';
 import '../cubit/saved_places_state.dart';
 import 'widgets/address_form_field_widget.dart';
 import 'widgets/address_type_selector_widget.dart';
+import 'widgets/map_picker_button.dart';
 
 class AddressCreateView extends StatefulWidget {
   const AddressCreateView({super.key});
@@ -28,6 +32,7 @@ class _AddressCreateViewState extends State<AddressCreateView> {
   late final _doorCtl = TextEditingController();
   late final _descCtl = TextEditingController();
   late AddressType _selectedType = AddressType.home;
+  CoordinatePoint? _pickedLocation;
 
   @override
   void dispose() {
@@ -108,10 +113,26 @@ class _AddressCreateViewState extends State<AddressCreateView> {
                 AddressFormFieldWidget(
                     controller: _labelCtl, label: 'Label', isRequired: true),
                 SizedBox(height: 12.h),
-                AddressFormFieldWidget(
-                    controller: _addressCtl,
-                    label: 'Address',
-                    isRequired: true),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      child: AddressFormFieldWidget(
+                        controller: _addressCtl,
+                        label: 'Address',
+                        isRequired: true,
+                      ),
+                    ),
+                    SizedBox(width: 12.w),
+                    SizedBox(
+                      height: 56.h,
+                      child: MapPickerButton(
+                        hasLocation: _pickedLocation != null,
+                        onTap: _pickFromMap,
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(height: 12.h),
                 AddressFormFieldWidget(
                     controller: _buildingCtl, label: 'Building'),
@@ -145,11 +166,26 @@ class _AddressCreateViewState extends State<AddressCreateView> {
       type: _selectedType,
       label: _labelCtl.text.trim(),
       address: _addressCtl.text.trim(),
+      latitude: _pickedLocation?.lat ?? 0.0,
+      longitude: _pickedLocation?.lng ?? 0.0,
       building: _buildingCtl.text.trim().nullIfEmpty,
       floor: _floorCtl.text.trim().nullIfEmpty,
       door: _doorCtl.text.trim().nullIfEmpty,
       description: _descCtl.text.trim().nullIfEmpty,
     ));
+  }
+
+  Future<void> _pickFromMap() async {
+    final result = await context.push<CoordinatePoint>(
+      RouteNames.locationPicker,
+      extra: const LocationPickerArgs(label: 'Address Location'),
+    );
+    if (result != null) {
+      setState(() {
+        _pickedLocation = result;
+        _addressCtl.text = result.address;
+      });
+    }
   }
 }
 

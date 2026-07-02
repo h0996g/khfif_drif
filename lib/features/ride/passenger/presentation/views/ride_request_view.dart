@@ -11,6 +11,7 @@ import '../../../../../shared/widgets/app_slim_app_bar.dart';
 import '../../../../../shared/widgets/app_text_field.dart';
 import '../../../../../shared/widgets/primary_button.dart';
 import '../../data/models/passenger_ride_models.dart';
+import '../cubit/location_cubit/location_picker_state.dart';
 import '../cubit/ride_request_cubit/ride_request_cubit.dart';
 import '../cubit/ride_request_cubit/ride_request_state.dart';
 import 'widgets/ride/dashed_connector_widget.dart';
@@ -44,7 +45,7 @@ class _RideRequestViewState extends State<RideRequestView> {
     final label = isPickup ? 'Pickup Location' : 'Drop-off Location';
     final result = await context.push<CoordinatePoint>(
       RouteNames.locationPicker,
-      extra: label,
+      extra: LocationPickerArgs(label: label),
     );
     if (result != null) {
       setState(() {

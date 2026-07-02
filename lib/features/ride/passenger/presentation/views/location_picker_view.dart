@@ -17,9 +17,9 @@ import 'widgets/location/map_button.dart';
 import 'widgets/location/search_results_list.dart';
 
 class LocationPickerView extends StatefulWidget {
-  const LocationPickerView({super.key, this.label = 'Location'});
+  const LocationPickerView({super.key, this.args = const LocationPickerArgs()});
 
-  final String label;
+  final LocationPickerArgs args;
 
   @override
   State<LocationPickerView> createState() => _LocationPickerViewState();
@@ -34,7 +34,7 @@ class _LocationPickerViewState extends State<LocationPickerView> {
   @override
   void initState() {
     super.initState();
-    context.read<LocationPickerCubit>().init();
+    context.read<LocationPickerCubit>().init(initial: widget.args.initial);
   }
 
   @override
@@ -51,6 +51,16 @@ class _LocationPickerViewState extends State<LocationPickerView> {
     _searchDebounce = Timer(const Duration(milliseconds: 500), () {
       context.read<LocationPickerCubit>().search(query);
     });
+  }
+
+  void _zoomIn() {
+    final camera = _mapController.camera;
+    _mapController.move(camera.center, (camera.zoom + 1).clamp(0, 19));
+  }
+
+  void _zoomOut() {
+    final camera = _mapController.camera;
+    _mapController.move(camera.center, (camera.zoom - 1).clamp(0, 19));
   }
 
   void _confirm(LocationPickerState state) {
@@ -128,6 +138,33 @@ class _LocationPickerViewState extends State<LocationPickerView> {
                     ),
                   ),
 
+                // ── Right-side controls: my location + zoom ───────────────────
+                Positioned(
+                  right: 16.w,
+                  bottom: MediaQuery.of(context).padding.bottom + 180.h,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      MapButton(
+                        icon: Icons.my_location_rounded,
+                        isLoading: state.isLocating,
+                        onTap: () =>
+                            context.read<LocationPickerCubit>().goToMyLocation(),
+                      ),
+                      SizedBox(height: 12.h),
+                      MapButton(
+                        icon: Icons.add_rounded,
+                        onTap: _zoomIn,
+                      ),
+                      SizedBox(height: 12.h),
+                      MapButton(
+                        icon: Icons.remove_rounded,
+                        onTap: _zoomOut,
+                      ),
+                    ],
+                  ),
+                ),
+
                 // ── Top overlay (back + search) ───────────────────────────────
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 12.h,
@@ -203,7 +240,7 @@ class _LocationPickerViewState extends State<LocationPickerView> {
                             ),
                             SizedBox(width: 6.w),
                             Text(
-                              widget.label,
+                              widget.args.label,
                               style:
                                   AppTextStyles.labelSmall(context).copyWith(
                                 color: AppColors.primary,

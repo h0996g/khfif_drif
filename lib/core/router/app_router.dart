@@ -41,6 +41,7 @@ import '../../features/ride/passenger/data/models/passenger_ride_models.dart';
 import '../presentation/cubit/web_socket_connection_cubit/web_socket_connection_cubit.dart';
 import '../../features/ride/passenger/data/passenger_ride_repository.dart';
 import '../../features/ride/passenger/presentation/cubit/location_cubit/location_picker_cubit.dart';
+import '../../features/ride/passenger/presentation/cubit/location_cubit/location_picker_state.dart';
 import '../../features/ride/passenger/presentation/cubit/passenger_active_ride_cubit/passenger_active_ride_cubit.dart';
 import '../../features/ride/passenger/presentation/cubit/ride_request_cubit/ride_request_cubit.dart';
 import '../../features/ride/passenger/presentation/cubit/waiting_offers_cubit/waiting_offers_cubit.dart';
@@ -186,10 +187,14 @@ final class AppRouter {
             GoRoute(
               path: RouteNames.locationPicker,
               builder: (context, state) {
-                final label = state.extra as String? ?? 'Location';
+                final extra = state.extra;
+                final args = extra is LocationPickerArgs
+                    ? extra
+                    : LocationPickerArgs(label: (extra as String?) ?? 'Location');
                 return BlocProvider<LocationPickerCubit>(
-                  create: (_) => LocationPickerCubit(),
-                  child: LocationPickerView(label: label),
+                  create: (_) =>
+                      LocationPickerCubit()..init(initial: args.initial),
+                  child: LocationPickerView(args: args),
                 );
               },
             ),

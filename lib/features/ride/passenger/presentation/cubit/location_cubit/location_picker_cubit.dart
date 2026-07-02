@@ -17,10 +17,46 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
     ),
   );
 
-  Future<void> init() async {
+  Future<void> init({LatLng? initial}) async {
+    // When an initial position is provided (e.g. editing a saved place),
+    // open centered on it with the pin already dropped and address resolved.
+    if (initial != null) {
+      emit(state.copyWith(
+        mapCenter: initial,
+        selectedPosition: initial,
+        isGeocoding: true,
+        clearError: true,
+      ));
+      await _reverseGeocode(initial);
+      return;
+    }
+
+    final position = await _fetchPosition();
+    // Only center the camera — no pin, no geocoding until user taps.
+    if (position != null) {
+      emit(state.copyWith(mapCenter: position));
+    }
+    // If position is null, silently fall back to the default Algeria center.
+  }
+
+  /// Recenters the camera on the device's current GPS position.
+  /// Keeps any existing pin/selection intact.
+  Future<void> goToMyLocation() async {
+    emit(state.copyWith(isLocating: true, clearError: true));
+    final position = await _fetchPosition();
+    if (position != null) {
+      emit(state.copyWith(mapCenter: position, isLocating: false));
+    } else {
+      emit(state.copyWith(isLocating: false));
+    }
+  }
+
+  /// Resolves GPS permissions and returns the current position, or null on any
+  /// failure (service disabled, permission denied, timeout, …).
+  Future<LatLng?> _fetchPosition() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
+      if (!serviceEnabled) return null;
 
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
@@ -28,7 +64,7 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
       }
       if (permission == LocationPermission.deniedForever ||
           permission == LocationPermission.denied) {
-        return;
+        return null;
       }
 
       final position = await Geolocator.getCurrentPosition(
@@ -37,11 +73,9 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
           timeLimit: Duration(seconds: 5),
         ),
       );
-
-      // Only center the camera — no pin, no geocoding until user taps.
-      emit(state.copyWith(mapCenter: LatLng(position.latitude, position.longitude)));
+      return LatLng(position.latitude, position.longitude);
     } catch (_) {
-      // Silently fall back to the default Algeria center.
+      return null;
     }
   }
 
