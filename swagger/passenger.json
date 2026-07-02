@@ -770,7 +770,13 @@
           "rideRequestId": { "type": "string", "format": "uuid" },
           "state": {
             "type": "string",
-            "enum": ["REQUESTED", "NEGOTIATING", "ACCEPTED", "CANCELLED"]
+            "enum": [
+              "REQUESTED",
+              "NEGOTIATING",
+              "ACCEPTED",
+              "FULFILLED",
+              "CANCELLED"
+            ]
           },
           "proposedFare": { "type": "integer", "format": "int64" },
           "expiresAt": { "type": "string", "format": "date-time" },
@@ -835,7 +841,13 @@
         "properties": {
           "state": {
             "type": "string",
-            "enum": ["REQUESTED", "NEGOTIATING", "ACCEPTED", "CANCELLED"]
+            "enum": [
+              "REQUESTED",
+              "NEGOTIATING",
+              "ACCEPTED",
+              "FULFILLED",
+              "CANCELLED"
+            ]
           },
           "cancelledAt": { "type": "string", "format": "date-time" }
         }
@@ -956,7 +968,13 @@
           "rideRequestId": { "type": "string", "format": "uuid" },
           "state": {
             "type": "string",
-            "enum": ["REQUESTED", "NEGOTIATING", "ACCEPTED", "CANCELLED"]
+            "enum": [
+              "REQUESTED",
+              "NEGOTIATING",
+              "ACCEPTED",
+              "FULFILLED",
+              "CANCELLED"
+            ]
           },
           "proposedFare": { "type": "integer", "format": "int64" },
           "expiresAt": { "type": "string", "format": "date-time" },

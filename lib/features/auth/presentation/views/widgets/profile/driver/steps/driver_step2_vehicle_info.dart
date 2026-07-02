@@ -11,6 +11,7 @@ import '../../profile_field_label_widget.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_cubit.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 import '../fields/driver_category_dropdown_widget.dart';
+import '../fields/driver_color_picker_field_widget.dart';
 import '../fields/driver_document_single_card_widget.dart';
 import '../fields/driver_date_picker_field_widget.dart';
 import '../fields/driver_plate_field_widget.dart';
@@ -27,14 +28,12 @@ class DriverStep2VehicleInfo extends StatefulWidget {
 class _DriverStep2VehicleInfoState extends State<DriverStep2VehicleInfo> {
   late final TextEditingController _makeController = TextEditingController();
   late final TextEditingController _modelController = TextEditingController();
-  late final TextEditingController _colorController = TextEditingController();
   late final TextEditingController _plateController = TextEditingController();
 
   @override
   void dispose() {
     _makeController.dispose();
     _modelController.dispose();
-    _colorController.dispose();
     _plateController.dispose();
     super.dispose();
   }
@@ -114,16 +113,12 @@ class _DriverStep2VehicleInfoState extends State<DriverStep2VehicleInfo> {
               // ── Color ──────────────────────────────────────────────────────────
               const ProfileFieldLabelWidget(label: AppStrings.fieldColor),
               SizedBox(height: 8.h),
-              DriverTextFieldWidget(
-                controller: _colorController,
-                hintText: 'e.g. White',
-                icon: Icons.color_lens_outlined,
+              DriverColorPickerFieldWidget(
+                selectedColor: vehicle.vehicleColor.isEmpty
+                    ? null
+                    : vehicle.vehicleColor,
                 onChanged: cubit.vehicleColorChanged,
-                error: vehicle.vehicleColorError,
                 enabled: !isSubmitting,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r"[a-zA-ZÀ-ÿ ]")),
-                ],
               ),
 
               SizedBox(height: 24.h),
