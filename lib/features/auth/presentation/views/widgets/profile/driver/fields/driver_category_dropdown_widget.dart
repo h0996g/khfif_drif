@@ -1,10 +1,8 @@
 // lib/features/auth/presentation/views/widgets/profile/driver/fields/driver_category_dropdown_widget.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../../../core/theme/app_colors.dart';
-import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../../shared/widgets/bottomsheets/app_option_sheet.dart';
 import '../../../../../../../../shared/widgets/app_text_field.dart';
 import '../../../../../cubit/driver_profile_cubit/driver_profile_state.dart';
 
@@ -67,120 +65,20 @@ class _DriverCategoryDropdownWidgetState
     return _labels[widget.selectedCategory!] ?? '';
   }
 
-  void _openSheet() {
-    showModalBottomSheet<void>(
+  void _openSheet() async {
+    final selected = await showAppOptionSheet<VehicleCategory>(
       context: context,
-      backgroundColor: AppColors.surface(context),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(32.r)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              // crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // SizedBox(height: 8.h),
-
-                SizedBox(height: 16.h),
-                ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [
-                      AppColors.text(ctx),
-                      AppColors.textSecondary(ctx).withValues(alpha: 0.4),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    'Select Vehicle Type',
-                    style: AppTextStyles.headingSmall(ctx).copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(height: 16.h),
-                Row(
-                  children: _options.map((cat) {
-                    final isSelected = cat == widget.selectedCategory;
-                    return Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 6.w),
-                        child: GestureDetector(
-                          onTap: () {
-                            Navigator.of(ctx).pop();
-                            widget.onChanged(cat);
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            curve: Curves.easeOutCubic,
-                            padding: EdgeInsets.symmetric(vertical: 24.h),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.text(ctx).withValues(alpha: 0.04)
-                                  : AppColors.surface(ctx),
-                              borderRadius: BorderRadius.circular(20.r),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.text(ctx)
-                                    : AppColors.borderDefault(ctx),
-                                width: isSelected ? 2.w : 1.w,
-                              ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColors.text(ctx)
-                                            .withValues(alpha: 0.08),
-                                        blurRadius: 16,
-                                        offset: const Offset(0, 8),
-                                      )
-                                    ]
-                                  : null,
-                            ),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  _icons[cat],
-                                  size: 32.w,
-                                  color: isSelected
-                                      ? AppColors.text(ctx)
-                                      : AppColors.textSecondary(ctx),
-                                ),
-                                SizedBox(height: 12.h),
-                                Text(
-                                  _labels[cat]!,
-                                  style: AppTextStyles.bodyMedium(ctx).copyWith(
-                                    color: isSelected
-                                        ? AppColors.text(ctx)
-                                        : AppColors.textSecondary(ctx),
-                                    fontWeight: isSelected
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 24.h),
-              ],
-            ),
+      title: 'Select Vehicle Type',
+      options: [
+        for (final cat in _options)
+          AppSheetOption(
+            icon: _icons[cat]!,
+            label: _labels[cat]!,
+            value: cat,
           ),
-        );
-      },
+      ],
     );
+    if (selected != null) widget.onChanged(selected);
   }
 
   @override

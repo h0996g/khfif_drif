@@ -6,6 +6,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../../../core/constants/app_constants.dart';
 import '../../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../../shared/widgets/bottomsheets/app_bottom_sheet.dart';
 import '../../../../../../../../shared/widgets/app_text_field.dart';
 
 /// Tappable field that opens a beautiful bottom sheet with a scrollable year list
@@ -62,88 +63,53 @@ class _DriverYearDropdownWidgetState extends State<DriverYearDropdownWidget> {
       (i) => currentYear - i,
     );
 
-    showModalBottomSheet<void>(
+    showAppBottomSheet<void>(
       context: context,
-      backgroundColor: AppColors.surface(context),
-      builder: (ctx) {
-        return SafeArea(
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: 20.w,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(height: 16.h),
-                ShaderMask(
-                  blendMode: BlendMode.srcIn,
-                  shaderCallback: (bounds) => LinearGradient(
-                    colors: [
-                      AppColors.text(ctx),
-                      AppColors.textSecondary(ctx).withValues(alpha: 0.4),
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ).createShader(bounds),
-                  child: Text(
-                    'Select Year',
-                    style: AppTextStyles.headingSmall(ctx).copyWith(
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.5,
+      title: 'Select Year',
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height / 3,
+        child: ListView.builder(
+          padding: EdgeInsets.symmetric(vertical: 4.h),
+          itemCount: years.length,
+          itemBuilder: (_, index) {
+            final year = years[index];
+            final isSelected = year == widget.selectedYear;
+            return Padding(
+              padding: EdgeInsets.symmetric(vertical: 4.h),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(16.r),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  widget.onChanged(year);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: EdgeInsets.symmetric(vertical: 16.h),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? AppColors.text(context).withValues(alpha: 0.05)
+                        : Colors.transparent,
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: Center(
+                    child: Text(
+                      year.toString(),
+                      style: AppTextStyles.bodyLarge(context).copyWith(
+                        color: isSelected
+                            ? AppColors.text(context)
+                            : AppColors.textSecondary(context),
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.w400,
+                        letterSpacing: 1.0,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
-                SizedBox(height: 16.h),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / 3,
-                  child: ListView.builder(
-                    itemCount: years.length,
-                    itemBuilder: (_, index) {
-                      final year = years[index];
-                      final isSelected = year == widget.selectedYear;
-                      return Padding(
-                        padding: EdgeInsets.symmetric(vertical: 4.h),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16.r),
-                          onTap: () {
-                            Navigator.of(ctx).pop();
-                            widget.onChanged(year);
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            padding: EdgeInsets.symmetric(vertical: 16.h),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.text(ctx).withValues(alpha: 0.05)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16.r),
-                            ),
-                            child: Center(
-                              child: Text(
-                                year.toString(),
-                                style: AppTextStyles.bodyLarge(ctx).copyWith(
-                                  color: isSelected
-                                      ? AppColors.text(ctx)
-                                      : AppColors.textSecondary(ctx),
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                  letterSpacing: 1.0,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 

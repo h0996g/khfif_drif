@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../shared/widgets/app_option_sheet.dart';
+import '../../shared/widgets/bottomsheets/app_option_sheet.dart';
 
 /// Shows a styled bottom sheet to pick between [ImageSource.camera]
 /// and [ImageSource.gallery]. All texts are optional and fall back to

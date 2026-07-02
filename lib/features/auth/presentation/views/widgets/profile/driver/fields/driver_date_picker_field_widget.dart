@@ -1,11 +1,9 @@
 // lib/features/auth/presentation/views/widgets/profile/driver/fields/driver_date_picker_field_widget.dart
 
 import 'package:flutter/material.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../../../../core/constants/app_constants.dart';
-import '../../../../../../../../core/theme/app_colors.dart';
-import '../../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../../../../shared/widgets/bottomsheets/app_date_picker_sheet.dart';
 import '../../../../../../../../shared/widgets/app_text_field.dart';
 
 /// A tappable field that opens a beautifully themed date picker,
@@ -70,7 +68,7 @@ class _DriverDatePickerFieldWidgetState
 
   Future<void> _openPicker() async {
     final now = DateTime.now();
-    
+
     final DateTime initialDate;
     final DateTime firstDate;
     final DateTime lastDate;
@@ -89,49 +87,11 @@ class _DriverDatePickerFieldWidgetState
       initialDate = widget.selectedDate ?? lastDate;
     }
 
-    final picked = await showDatePicker(
+    final picked = await showAppDatePickerSheet(
       context: context,
       initialDate: initialDate,
       firstDate: firstDate,
       lastDate: lastDate,
-      builder: (context, child) {
-        final isDark = AppColors.isDark(context);
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: isDark
-                ? ColorScheme.dark(
-                    primary: AppColors.text(context), // Minimal primary
-                    onPrimary: AppColors.background(context),
-                    surface: AppColors.surface(context),
-                    onSurface: AppColors.text(context),
-                  )
-                : ColorScheme.light(
-                    primary: AppColors.text(context), // Minimal primary
-                    onPrimary: AppColors.background(context),
-                    surface: AppColors.surface(context),
-                    onSurface: AppColors.text(context),
-                  ),
-            datePickerTheme: DatePickerThemeData(
-              backgroundColor: AppColors.surface(context),
-              surfaceTintColor: Colors.transparent,
-              headerBackgroundColor: AppColors.surface(context),
-              headerForegroundColor: AppColors.text(context),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24.r),
-              ),
-              dayStyle: AppTextStyles.bodyMedium(context)
-                  .copyWith(fontWeight: FontWeight.w500),
-            ),
-            textButtonTheme: TextButtonThemeData(
-              style: TextButton.styleFrom(
-                foregroundColor: AppColors.text(context),
-                textStyle: const TextStyle(fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-          child: child!,
-        );
-      },
     );
     if (picked != null) widget.onDateSelected(picked);
   }

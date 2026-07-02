@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../core/theme/app_colors.dart';
-import '../../core/theme/app_text_styles.dart';
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_text_styles.dart';
+import 'app_bottom_sheet.dart';
 
 /// A single selectable option rendered inside [showAppOptionSheet].
 class AppSheetOption<T> {
@@ -26,80 +27,23 @@ Future<T?> showAppOptionSheet<T>({
   required String title,
   required List<AppSheetOption<T>> options,
 }) {
-  return showModalBottomSheet<T>(
+  return showAppBottomSheet<T>(
     context: context,
-    backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withValues(alpha: 0.5),
-    isScrollControlled: true,
-    builder: (_) => _AppOptionSheet<T>(title: title, options: options),
+    title: title,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final option in options) _OptionRow<T>(option: option),
+      ],
+    ),
   );
 }
 
-class _AppOptionSheet<T> extends StatelessWidget {
-  const _AppOptionSheet({required this.title, required this.options});
-
-  final String title;
-  final List<AppSheetOption<T>> options;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        16.w,
-        0,
-        16.w,
-        16.h + MediaQuery.of(context).padding.bottom,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.background(context),
-          borderRadius: BorderRadius.circular(28.r),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 8.w),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40.w,
-                height: 4.h,
-                decoration: BoxDecoration(
-                  color: AppColors.borderDefault(context),
-                  borderRadius: BorderRadius.circular(2.r),
-                ),
-              ),
-            ),
-            SizedBox(height: 16.h),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
-              child: Text(
-                title,
-                style: AppTextStyles.labelMedium(context).copyWith(
-                  fontWeight: FontWeight.w700,
-                  fontSize: 16.sp,
-                  letterSpacing: -0.2,
-                ),
-              ),
-            ),
-            SizedBox(height: 12.h),
-            for (final option in options)
-              _OptionRow<T>(
-                option: option,
-                onTap: () => Navigator.pop(context, option.value),
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _OptionRow<T> extends StatelessWidget {
-  const _OptionRow({required this.option, required this.onTap});
+  const _OptionRow({required this.option});
 
   final AppSheetOption<T> option;
-  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +52,7 @@ class _OptionRow<T> extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: onTap,
+          onTap: () => Navigator.pop(context, option.value),
           borderRadius: BorderRadius.circular(16.r),
           splashColor: AppColors.primary.withValues(alpha: 0.08),
           highlightColor: AppColors.primary.withValues(alpha: 0.05),
@@ -120,7 +64,7 @@ class _OptionRow<T> extends StatelessWidget {
                   width: 40.w,
                   height: 40.w,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withValues(alpha: 0.09),
                     borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
@@ -153,12 +97,6 @@ class _OptionRow<T> extends StatelessWidget {
                       ],
                     ],
                   ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 13.w,
-                  color:
-                      AppColors.textSecondary(context).withValues(alpha: 0.5),
                 ),
               ],
             ),
