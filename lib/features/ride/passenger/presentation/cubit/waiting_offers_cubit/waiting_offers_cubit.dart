@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../core/models/token_payload.dart';
 import '../../../../../../core/network/ride_socket_service.dart';
 import '../../../data/models/passenger_ride_models.dart';
 import '../../../data/passenger_ride_repository.dart';
@@ -16,8 +17,13 @@ final class WaitingOffersCubit extends Cubit<WaitingOffersState> {
   final PassengerRideRepository _repository;
   final String _rideRequestId;
   StreamSubscription<String>? _wsSub;
+  StreamSubscription<RideSocketStatus>? _statusSub;
 
   void startPolling() {
+    // On cold start (app reopened on this screen) the socket is not connected,
+    // so no offer.created frames arrive. Connect here — idempotent, so it is a
+    // no-op when the fresh-request flow already opened the socket.
+    RideSocketService.connect(ActiveRole.passenger);
     _poll();
     _wsSub = RideSocketService.frameStream.listen((frame) {
       final event = RideSocketEvent.tryParse(frame);
@@ -25,6 +31,11 @@ final class WaitingOffersCubit extends Cubit<WaitingOffersState> {
         if (kDebugMode) debugPrint('[Passenger] offer.created → offerId=${event.offerId} fare=${event.fare} DZD');
         _poll();
       }
+    });
+    // REST is truth on (re)connect: reconcile offers once each time the socket
+    // comes up, catching any bid that landed while it was down.
+    _statusSub = RideSocketService.statusStream.listen((status) {
+      if (status == RideSocketStatus.connected) _poll();
     });
   }
 
@@ -57,6 +68,7 @@ final class WaitingOffersCubit extends Cubit<WaitingOffersState> {
     try {
       await _repository.acceptOffer(_rideRequestId, offerId);
       _wsSub?.cancel();
+      _statusSub?.cancel();
       emit(state.copyWith(
         acceptStatus: AcceptStatus.success,
         rideRequestPhase: RideRequestPhase.accepted,
@@ -97,6 +109,7 @@ final class WaitingOffersCubit extends Cubit<WaitingOffersState> {
         CancelRideRequest(reason: reason.apiValue, note: note),
       );
       _wsSub?.cancel();
+      _statusSub?.cancel();
       emit(state.copyWith(
         cancelStatus: CancelStatus.success,
         rideRequestPhase: RideRequestPhase.cancelled,
@@ -112,6 +125,7 @@ final class WaitingOffersCubit extends Cubit<WaitingOffersState> {
   @override
   Future<void> close() {
     _wsSub?.cancel();
+    _statusSub?.cancel();
     return super.close();
   }
 }

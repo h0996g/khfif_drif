@@ -190,6 +190,9 @@ final class ActiveRequestSummary {
     required this.proposedFare,
     required this.expiresAt,
     required this.offerCount,
+    required this.broadcastDriverCount,
+    this.pickup,
+    this.dropoff,
   });
 
   final String rideRequestId;
@@ -197,6 +200,9 @@ final class ActiveRequestSummary {
   final int proposedFare;
   final String expiresAt;
   final int offerCount;
+  final int broadcastDriverCount;
+  final CoordinatePoint? pickup;
+  final CoordinatePoint? dropoff;
 
   factory ActiveRequestSummary.fromJson(Map<String, dynamic> json) =>
       ActiveRequestSummary(
@@ -205,6 +211,13 @@ final class ActiveRequestSummary {
         proposedFare: json['proposedFare'] as int,
         expiresAt: json['expiresAt'] as String,
         offerCount: json['offerCount'] as int,
+        broadcastDriverCount: json['broadcastDriverCount'] as int? ?? 0,
+        pickup: json['pickup'] != null
+            ? CoordinatePoint.fromJson(json['pickup'] as Map<String, dynamic>)
+            : null,
+        dropoff: json['dropoff'] != null
+            ? CoordinatePoint.fromJson(json['dropoff'] as Map<String, dynamic>)
+            : null,
       );
 }
 

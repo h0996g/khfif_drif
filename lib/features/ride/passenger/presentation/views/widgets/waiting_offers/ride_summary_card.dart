@@ -21,37 +21,6 @@ class RideSummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (args.serviceType != null || args.vehicleCategory != null) ...[
-            Row(
-              children: [
-                if (args.serviceType != null) ...[
-                  Icon(args.serviceType!.icon,
-                      size: 18.w, color: AppColors.primary),
-                  SizedBox(width: 6.w),
-                  Text(
-                    args.serviceType!.label,
-                    style: AppTextStyles.labelMedium(context).copyWith(
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(width: 12.w),
-                ],
-                if (args.vehicleCategory != null) ...[
-                  Icon(args.vehicleCategory!.icon,
-                      size: 18.w, color: AppColors.textSecondary(context)),
-                  SizedBox(width: 4.w),
-                  Text(
-                    args.vehicleCategory!.label,
-                    style: AppTextStyles.labelMedium(context).copyWith(
-                      color: AppColors.textSecondary(context),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-            SizedBox(height: 14.h),
-          ],
           if (args.pickup != null)
             _LocationRow(
               icon: Icons.trip_origin_rounded,

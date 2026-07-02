@@ -60,13 +60,15 @@ class PassengerHomeView extends StatelessWidget {
           context.go(
             RouteNames.waitingOffers,
             extra: WaitingOffersArgs(
+              pickup: request.pickup,
+              dropoff: request.dropoff,
               proposedFare: request.proposedFare,
               response: CreateRideResponse(
                 rideRequestId: request.rideRequestId,
                 state: request.state,
                 proposedFare: request.proposedFare,
                 expiresAt: request.expiresAt,
-                broadcastDriverCount: request.offerCount,
+                broadcastDriverCount: request.broadcastDriverCount,
               ),
             ),
           );
