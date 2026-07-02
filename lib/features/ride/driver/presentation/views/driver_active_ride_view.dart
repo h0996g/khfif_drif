@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/router/route_names.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/app_toast.dart';
 import '../../../../../shared/widgets/primary_button.dart';
 import '../../data/models/driver_ride_models.dart';
 import '../../../shared/widgets/ride_route_card.dart';
@@ -64,12 +65,26 @@ class _DriverActiveRideViewState extends State<DriverActiveRideView> {
       backgroundColor: AppColors.background(context),
       body: BlocConsumer<DriverActiveRideCubit, DriverActiveRideState>(
         listenWhen: (prev, curr) =>
-            curr.status == DriverActiveRideStatus.cancelled,
+            curr.status == DriverActiveRideStatus.cancelled ||
+            curr.status == DriverActiveRideStatus.completed ||
+            curr.status == DriverActiveRideStatus.actionFailure,
         listener: (context, state) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Ride was cancelled')),
-          );
-          context.go(RouteNames.driverHome);
+          switch (state.status) {
+            case DriverActiveRideStatus.cancelled:
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Ride was cancelled')),
+              );
+              context.go(RouteNames.driverHome);
+            case DriverActiveRideStatus.completed:
+              AppToast.success(
+                'Ride completed — ${state.completedFare ?? 0} DZD',
+              );
+              context.go(RouteNames.driverHome);
+            case DriverActiveRideStatus.actionFailure:
+              AppToast.error(state.errorMessage);
+            default:
+              break;
+          }
         },
         builder: (context, state) {
           if (state.status == DriverActiveRideStatus.loading) {

@@ -56,7 +56,7 @@ final class DriverActiveRideCubit extends Cubit<DriverActiveRideState> {
       await loadActiveRide();
     } catch (e) {
       emit(state.copyWith(
-        status: DriverActiveRideStatus.failure,
+        status: DriverActiveRideStatus.actionFailure,
         errorMessage: e.toString(),
       ));
     }
@@ -71,7 +71,7 @@ final class DriverActiveRideCubit extends Cubit<DriverActiveRideState> {
       await loadActiveRide();
     } catch (e) {
       emit(state.copyWith(
-        status: DriverActiveRideStatus.failure,
+        status: DriverActiveRideStatus.actionFailure,
         errorMessage: e.toString(),
       ));
     }
@@ -82,11 +82,14 @@ final class DriverActiveRideCubit extends Cubit<DriverActiveRideState> {
     if (rideId == null) return;
     emit(state.copyWith(status: DriverActiveRideStatus.transitioning));
     try {
-      await _repository.completeRide(rideId);
-      await loadActiveRide();
+      final response = await _repository.completeRide(rideId);
+      emit(state.copyWith(
+        status: DriverActiveRideStatus.completed,
+        completedFare: response.finalFare,
+      ));
     } catch (e) {
       emit(state.copyWith(
-        status: DriverActiveRideStatus.failure,
+        status: DriverActiveRideStatus.actionFailure,
         errorMessage: e.toString(),
       ));
     }
@@ -104,7 +107,7 @@ final class DriverActiveRideCubit extends Cubit<DriverActiveRideState> {
       await loadActiveRide();
     } catch (e) {
       emit(state.copyWith(
-        status: DriverActiveRideStatus.failure,
+        status: DriverActiveRideStatus.actionFailure,
         errorMessage: e.toString(),
       ));
     }

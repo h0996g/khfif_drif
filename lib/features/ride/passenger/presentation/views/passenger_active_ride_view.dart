@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../core/router/route_names.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/app_toast.dart';
 import '../../../../ride/driver/data/models/ride_socket_event.dart';
 import '../../../passenger/data/models/passenger_ride_models.dart';
 import '../cubit/passenger_active_ride_cubit/passenger_active_ride_cubit.dart';
@@ -61,15 +62,24 @@ class _PassengerActiveRideViewState extends State<PassengerActiveRideView> {
     return BlocConsumer<PassengerActiveRideCubit, PassengerActiveRideState>(
       listenWhen: (prev, curr) =>
           curr.status == PassengerActiveRideStatus.completed ||
-          curr.status == PassengerActiveRideStatus.cancelled,
+          curr.status == PassengerActiveRideStatus.cancelled ||
+          curr.status == PassengerActiveRideStatus.actionFailure,
       listener: (context, state) {
-        final message = state.status == PassengerActiveRideStatus.completed
-            ? 'Ride completed!'
-            : 'Ride was cancelled';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-        context.go(RouteNames.passengerHome);
+        switch (state.status) {
+          case PassengerActiveRideStatus.actionFailure:
+            AppToast.error(state.errorMessage);
+          case PassengerActiveRideStatus.completed:
+          case PassengerActiveRideStatus.cancelled:
+            final message = state.status == PassengerActiveRideStatus.completed
+                ? 'Ride completed!'
+                : 'Ride was cancelled';
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(message)),
+            );
+            context.go(RouteNames.passengerHome);
+          default:
+            break;
+        }
       },
       builder: (context, state) {
         return Scaffold(

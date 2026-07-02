@@ -3,7 +3,14 @@ import 'package:equatable/equatable.dart';
 import '../../../../../../features/ride/driver/data/models/ride_socket_event.dart';
 import '../../../data/models/passenger_ride_models.dart';
 
-enum PassengerActiveRideStatus { loading, loaded, cancelled, completed, failure }
+enum PassengerActiveRideStatus {
+  loading,
+  loaded,
+  cancelled,
+  completed,
+  actionFailure,
+  failure,
+}
 
 final class PassengerActiveRideState extends Equatable {
   const PassengerActiveRideState({

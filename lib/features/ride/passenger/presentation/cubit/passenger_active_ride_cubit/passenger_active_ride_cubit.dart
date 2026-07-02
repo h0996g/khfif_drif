@@ -58,7 +58,7 @@ final class PassengerActiveRideCubit extends Cubit<PassengerActiveRideState> {
       emit(state.copyWith(status: PassengerActiveRideStatus.cancelled));
     } catch (e) {
       emit(state.copyWith(
-        status: PassengerActiveRideStatus.failure,
+        status: PassengerActiveRideStatus.actionFailure,
         errorMessage: e.toString(),
       ));
     }
