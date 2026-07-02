@@ -59,8 +59,8 @@ class WaitingOffersView extends StatelessWidget {
             title: state.rideRequestPhase == RideRequestPhase.negotiating
                 ? 'Review Offers'
                 : 'Waiting for Drivers',
-            onLeadingTap:
-                isAccepted ? null : () => context.go(RouteNames.passengerHome),
+            // onLeadingTap:
+            //     isAccepted ? null : () => context.go(RouteNames.passengerHome),
           ),
           body: Column(
             children: [

@@ -66,8 +66,22 @@ final class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onError: (error, handler) async {
+          final isRefreshCall =
+              error.requestOptions.path.startsWith(AuthApiConstants.base);
+
           if (error.response?.statusCode != 401 ||
               AuthSession.refreshToken == null) {
+            return handler.next(error);
+          }
+
+          // A 401 on the refresh call itself (expired/invalid refresh token)
+          // must not be fed back into _refreshAccessToken(): that call is the
+          // very one populating _refreshCompleter, so recursing here would
+          // await a completer that can only be completed by this call —
+          // deadlocking every request waiting on the shared refresh.
+          if (isRefreshCall) {
+            await AuthSession.clearSession();
+            AppRouter.router.go(RouteNames.phone);
             return handler.next(error);
           }
 

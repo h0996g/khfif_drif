@@ -69,6 +69,26 @@ class _LocationPickerViewState extends State<LocationPickerView> {
     _mapController.move(camera.center, (camera.zoom - 1).clamp(0, 19));
   }
 
+  /// Moves the camera to the device's current GPS position.
+  ///
+  /// Drives the camera move directly from the tap (rather than relying on the
+  /// state-driven `BlocListener`) so it fires even when the freshly-fetched
+  /// position equals the already-stored [LocationPickerState.mapCenter] — which
+  /// happens whenever the user has panned the map without the pin following.
+  /// On failure, shows a toast instead of moving the camera.
+  Future<void> _goToMyLocation() async {
+    final cubit = context.read<LocationPickerCubit>();
+    final ok = await cubit.goToMyLocation();
+    if (!mounted) return;
+    if (ok) {
+      _mapController.move(
+          cubit.state.mapCenter, _mapController.camera.zoom);
+    } else {
+      AppToast.error(
+          cubit.state.errorMessage ?? 'Could not get your location.');
+    }
+  }
+
   Future<void> _pickFromFavorites() async {
     setState(() => _isLoadingFavorites = true);
     try {
@@ -180,24 +200,23 @@ class _LocationPickerViewState extends State<LocationPickerView> {
                     ),
                   ),
 
-                // ── Right-side controls: my location + zoom ───────────────────
+                // ── Top-right controls: my location + favorites + zoom ────────
                 Positioned(
+                  top: MediaQuery.of(context).padding.top + 70.h,
                   right: 16.w,
-                  bottom: MediaQuery.of(context).padding.bottom + 180.h,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       MapButton(
-                        icon: Icons.star_rounded,
-                        isLoading: _isLoadingFavorites,
-                        onTap: _pickFromFavorites,
+                        icon: Icons.my_location_rounded,
+                        isLoading: state.isLocating,
+                        onTap: _goToMyLocation,
                       ),
                       SizedBox(height: 12.h),
                       MapButton(
-                        icon: Icons.my_location_rounded,
-                        isLoading: state.isLocating,
-                        onTap: () =>
-                            context.read<LocationPickerCubit>().goToMyLocation(),
+                        icon: Icons.star_rounded,
+                        isLoading: _isLoadingFavorites,
+                        onTap: _pickFromFavorites,
                       ),
                       SizedBox(height: 12.h),
                       MapButton(

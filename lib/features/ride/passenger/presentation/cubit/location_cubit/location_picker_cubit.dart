@@ -42,14 +42,22 @@ class LocationPickerCubit extends Cubit<LocationPickerState> {
 
   /// Recenters the camera on the device's current GPS position.
   /// Keeps any existing pin/selection intact.
-  Future<void> goToMyLocation() async {
+  ///
+  /// Returns `true` on success, `false` (with an [errorMessage] emitted) when
+  /// the position can't be resolved. The view uses the return value to decide
+  /// whether to move the camera or show an error toast.
+  Future<bool> goToMyLocation() async {
     emit(state.copyWith(isLocating: true, clearError: true));
     final position = await _fetchPosition();
     if (position != null) {
       emit(state.copyWith(mapCenter: position, isLocating: false));
-    } else {
-      emit(state.copyWith(isLocating: false));
+      return true;
     }
+    emit(state.copyWith(
+      isLocating: false,
+      errorMessage: 'Could not get your location. Check GPS/permissions.',
+    ));
+    return false;
   }
 
   /// Resolves GPS permissions and returns the current position, or null on any

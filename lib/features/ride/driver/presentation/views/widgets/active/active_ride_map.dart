@@ -5,7 +5,9 @@ import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../../../../../../core/theme/app_colors.dart';
+import '../../../../../../../core/widgets/app_toast.dart';
 import '../../../../data/models/driver_ride_models.dart';
+import '../../../../../passenger/presentation/views/widgets/location/map_button.dart';
 
 /// Full-screen live map for the driver's active ride. Shows pickup and dropoff
 /// markers plus the driver's own GPS position (when available), with built-in
@@ -31,6 +33,30 @@ class _ActiveRideMapState extends State<ActiveRideMap> {
   void dispose() {
     _mapController.dispose();
     super.dispose();
+  }
+
+  /// Recenters the camera on the driver's own live GPS position (already
+  /// streamed by the parent view). Keeps the current zoom level.
+  void _goToDriverLocation() {
+    final position = widget.driverPosition;
+    if (position == null) {
+      AppToast.error('Locating your position, please wait.');
+      return;
+    }
+    _mapController.move(
+      LatLng(position.latitude, position.longitude),
+      _mapController.camera.zoom,
+    );
+  }
+
+  void _zoomIn() {
+    final camera = _mapController.camera;
+    _mapController.move(camera.center, (camera.zoom + 1).clamp(0, 19));
+  }
+
+  void _zoomOut() {
+    final camera = _mapController.camera;
+    _mapController.move(camera.center, (camera.zoom - 1).clamp(0, 19));
   }
 
   @override
@@ -121,74 +147,31 @@ class _ActiveRideMapState extends State<ActiveRideMap> {
           ],
         ),
 
-        // Zoom controls
+        // Map controls: current location + zoom in/out (top-right)
         Positioned(
-          right: 12.w,
-          bottom: 150.h,
-          child: _MapZoomButtons(controller: _mapController),
+          top: MediaQuery.of(context).padding.top + 8.h,
+          right: 16.w,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              MapButton(
+                icon: Icons.my_location_rounded,
+                onTap: _goToDriverLocation,
+              ),
+              SizedBox(height: 12.h),
+              MapButton(
+                icon: Icons.add_rounded,
+                onTap: _zoomIn,
+              ),
+              SizedBox(height: 12.h),
+              MapButton(
+                icon: Icons.remove_rounded,
+                onTap: _zoomOut,
+              ),
+            ],
+          ),
         ),
       ],
-    );
-  }
-}
-
-class _MapZoomButtons extends StatelessWidget {
-  const _MapZoomButtons({required this.controller});
-
-  final MapController controller;
-
-  void _zoom(double delta) {
-    controller.move(
-      controller.camera.center,
-      controller.camera.zoom + delta,
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.background(context),
-        borderRadius: BorderRadius.circular(8.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _ZoomBtn(icon: Icons.add_rounded, onTap: () => _zoom(1)),
-          Divider(
-            height: 1,
-            thickness: 1,
-            color: AppColors.borderDefault(context),
-          ),
-          _ZoomBtn(icon: Icons.remove_rounded, onTap: () => _zoom(-1)),
-        ],
-      ),
-    );
-  }
-}
-
-class _ZoomBtn extends StatelessWidget {
-  const _ZoomBtn({required this.icon, required this.onTap});
-
-  final IconData icon;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 40.w,
-        height: 40.w,
-        child: Icon(icon, size: 20.w, color: AppColors.text(context)),
-      ),
     );
   }
 }
