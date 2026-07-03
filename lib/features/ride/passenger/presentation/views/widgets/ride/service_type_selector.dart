@@ -19,139 +19,78 @@ class ServiceTypeSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     const types = ServiceType.values;
-    return Row(
-      children: types.map((type) {
-        final isLast = type == types.last;
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: isLast ? 0 : 8.w),
-            child: _ServiceTypeTile(
-              type: type,
-              isSelected: selected == type,
-              onTap: () {
-                HapticFeedback.selectionClick();
-                onChanged(type);
-              },
-            ),
-          ),
-        );
-      }).toList(),
-    );
-  }
-}
+    final selectedIndex = types.indexOf(selected);
 
-class _ServiceTypeTile extends StatefulWidget {
-  const _ServiceTypeTile({
-    required this.type,
-    required this.isSelected,
-    required this.onTap,
-  });
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final segmentWidth = constraints.maxWidth / types.length;
 
-  final ServiceType type;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  @override
-  State<_ServiceTypeTile> createState() => _ServiceTypeTileState();
-}
-
-class _ServiceTypeTileState extends State<_ServiceTypeTile>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _press;
-  late final Animation<double> _pressScale;
-
-  @override
-  void initState() {
-    super.initState();
-    _press = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 100),
-      reverseDuration: const Duration(milliseconds: 180),
-    );
-    _pressScale = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _press, curve: Curves.easeOut),
-    );
-  }
-
-  @override
-  void dispose() {
-    _press.dispose();
-    super.dispose();
-  }
-
-  void _onTapDown(TapDownDetails _) => _press.forward();
-  void _onTapUp(TapUpDetails _) {
-    _press.reverse();
-    widget.onTap();
-  }
-
-  void _onTapCancel() => _press.reverse();
-
-  @override
-  Widget build(BuildContext context) {
-    final isSelected = widget.isSelected;
-
-    return GestureDetector(
-      onTapDown: _onTapDown,
-      onTapUp: _onTapUp,
-      onTapCancel: _onTapCancel,
-      child: ScaleTransition(
-        scale: _pressScale,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 230),
-          curve: Curves.easeOutCubic,
-          padding: EdgeInsets.symmetric(vertical: 10.h),
+        return Container(
+          height: 52.h,
+          padding: EdgeInsets.all(4.r),
           decoration: BoxDecoration(
-            color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.1)
-                : AppColors.surface(context),
-            borderRadius: BorderRadius.circular(14.r),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.primary
-                  : AppColors.borderDefault(context),
-              width: isSelected ? 1.5.w : 1.w,
-            ),
-            boxShadow: isSelected
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.22),
-                      blurRadius: 14,
-                      offset: const Offset(0, 5),
-                    ),
-                  ]
-                : null,
+            color: AppColors.surface(context),
+            borderRadius: BorderRadius.circular(18.r),
+            border: Border.all(color: AppColors.borderDefault(context)),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+          child: Stack(
             children: [
-              AnimatedScale(
-                scale: isSelected ? 1.22 : 1.0,
+              AnimatedAlign(
                 duration: const Duration(milliseconds: 260),
-                curve: Curves.easeOutBack,
-                child: Icon(
-                  widget.type.icon,
-                  size: 22.w,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary(context),
+                curve: Curves.easeOutCubic,
+                alignment: Alignment(
+                  types.length == 1
+                      ? 0
+                      : -1 + (2 * selectedIndex) / (types.length - 1),
+                  0,
+                ),
+                child: Container(
+                  width: segmentWidth - 4.w,
+                  height: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(14.r),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.32),
+                        blurRadius: 14,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              SizedBox(height: 6.h),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: AppTextStyles.labelSmall(context).copyWith(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary(context),
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                ),
-                child: Text(widget.type.label),
+              Row(
+                children: types.map((type) {
+                  final isSelected = type == selected;
+                  return Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () {
+                        HapticFeedback.selectionClick();
+                        onChanged(type);
+                      },
+                      child: Center(
+                        child: AnimatedDefaultTextStyle(
+                          duration: const Duration(milliseconds: 200),
+                          style: AppTextStyles.labelMedium(context).copyWith(
+                            color: isSelected
+                                ? AppColors.white
+                                : AppColors.textSecondary(context),
+                            fontWeight:
+                                isSelected ? FontWeight.w700 : FontWeight.w500,
+                          ),
+                          child: Text(type.label),
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

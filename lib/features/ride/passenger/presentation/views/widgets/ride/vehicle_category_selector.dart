@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../../../../../core/constants/app_images.dart';
 import '../../../../../../../core/theme/app_colors.dart';
-import '../../../../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/passenger_ride_models.dart';
+
+extension _VehicleCategoryAsset on VehicleCategory {
+  String get iconAsset => switch (this) {
+        VehicleCategory.car => AppImages.rideCar,
+        VehicleCategory.motorcycle => AppImages.rideMoto,
+        VehicleCategory.van => AppImages.rideVan,
+      };
+}
 
 class VehicleCategorySelector extends StatelessWidget {
   const VehicleCategorySelector({
@@ -102,12 +110,12 @@ class _CategoryTileState extends State<_CategoryTile>
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 230),
           curve: Curves.easeOutCubic,
-          padding: EdgeInsets.symmetric(vertical: 14.h),
+          padding: EdgeInsets.symmetric(vertical: 18.h),
           decoration: BoxDecoration(
             color: isSelected
                 ? AppColors.primary.withValues(alpha: 0.1)
                 : AppColors.surface(context),
-            borderRadius: BorderRadius.circular(14.r),
+            borderRadius: BorderRadius.circular(16.r),
             border: Border.all(
               color: isSelected
                   ? AppColors.primary
@@ -124,33 +132,18 @@ class _CategoryTileState extends State<_CategoryTile>
                   ]
                 : null,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              AnimatedScale(
-                scale: isSelected ? 1.22 : 1.0,
-                duration: const Duration(milliseconds: 260),
-                curve: Curves.easeOutBack,
-                child: Icon(
-                  widget.category.icon,
-                  size: 22.w,
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary(context),
-                ),
+          child: Center(
+            child: AnimatedScale(
+              scale: isSelected ? 1.15 : 1.0,
+              duration: const Duration(milliseconds: 260),
+              curve: Curves.easeOutBack,
+              child: Image.asset(
+                widget.category.iconAsset,
+                height: 40.w,
+                width: 40.w,
+                fit: BoxFit.contain,
               ),
-              SizedBox(height: 6.h),
-              AnimatedDefaultTextStyle(
-                duration: const Duration(milliseconds: 200),
-                style: AppTextStyles.labelSmall(context).copyWith(
-                  color: isSelected
-                      ? AppColors.primary
-                      : AppColors.textSecondary(context),
-                  fontWeight: isSelected ? FontWeight.w700 : FontWeight.w400,
-                ),
-                child: Text(widget.category.label),
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -59,8 +59,8 @@ class AvailableRideCard extends StatelessWidget {
             ),
 
             Padding(
-              padding: EdgeInsets.fromLTRB(
-                  m.contentPadding.w, m.contentTop.h, m.contentPadding.w, m.contentPadding.h),
+              padding: EdgeInsets.fromLTRB(m.contentPadding.w, m.contentTop.h,
+                  m.contentPadding.w, m.contentPadding.h),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -68,27 +68,6 @@ class AvailableRideCard extends StatelessWidget {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(ride.serviceType.icon,
-                          size: m.serviceIconSize.w, color: AppColors.primary),
-                      SizedBox(width: 4.w),
-                      Text(
-                        ride.serviceType.label,
-                        style: AppTextStyles.labelSmall(context).copyWith(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      SizedBox(width: 8.w),
-                      Icon(ride.vehicleCategory.icon,
-                          size: m.serviceIconSize.w,
-                          color: AppColors.textSecondary(context)),
-                      SizedBox(width: 3.w),
-                      Text(
-                        ride.vehicleCategory.label,
-                        style: AppTextStyles.labelSmall(context).copyWith(
-                          color: AppColors.textSecondary(context),
-                        ),
-                      ),
                       if (ride.femaleOnly) ...[
                         SizedBox(width: 6.w),
                         const _FemaleOnlyBadge(),
@@ -117,6 +96,7 @@ class AvailableRideCard extends StatelessWidget {
                       ),
                     ],
                   ),
+
                   SizedBox(height: m.gapHeaderRoute.h),
 
                   // --- Route: pickup → dropoff ---

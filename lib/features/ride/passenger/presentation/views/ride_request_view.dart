@@ -130,8 +130,6 @@ class _RideRequestViewState extends State<RideRequestView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // ── Service Type ─────────────────────────────────
-                          const SectionLabelWidget(label: 'Service Type'),
-                          SizedBox(height: 10.h),
                           ServiceTypeSelector(
                             selected: state.serviceType,
                             onChanged: cubit.setServiceType,
