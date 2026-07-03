@@ -64,18 +64,16 @@ class _ActiveRideMapState extends State<ActiveRideMap> {
     final pickupPoint = LatLng(widget.ride.pickup.lat, widget.ride.pickup.lng);
     final dropoffPoint =
         LatLng(widget.ride.dropoff.lat, widget.ride.dropoff.lng);
-    final centerLat =
-        (widget.ride.pickup.lat + widget.ride.dropoff.lat) / 2;
-    final centerLng =
-        (widget.ride.pickup.lng + widget.ride.dropoff.lng) / 2;
 
     return Stack(
       children: [
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
-            initialCenter: LatLng(centerLat, centerLng),
-            initialZoom: 13,
+            // Center on the passenger (pickup) when the active ride opens, so
+            // the driver immediately sees where to pick them up.
+            initialCenter: pickupPoint,
+            initialZoom: 15,
           ),
           children: [
             TileLayer(

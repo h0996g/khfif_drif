@@ -12,12 +12,26 @@ import '../widgets/app_toast.dart';
 import '../router/route_names.dart';
 import '../session/auth_session.dart';
 import '../../features/auth/data/models/auth_tokens_model.dart';
+import 'driver_location_streamer.dart';
+import 'ride_socket_service.dart';
 
 final class DioClient {
   DioClient._();
 
   static late Dio _dio;
   static Completer<String>? _refreshCompleter;
+
+  /// Full teardown for auth revocation detected over REST (401/403 with no
+  /// valid refresh, or refresh itself failing): stop location streaming and
+  /// the ride socket before clearing the session, mirroring
+  /// [AuthRepository.logout] — otherwise the socket keeps running with a
+  /// cleared session and auto-reconnects on its own backoff schedule.
+  static Future<void> _forceLogout() async {
+    DriverLocationStreamer.stop();
+    await RideSocketService.disconnect();
+    await AuthSession.clearSession();
+    AppRouter.router.go(RouteNames.phone);
+  }
 
   static void init() {
     _dio = Dio(
@@ -80,8 +94,7 @@ final class DioClient {
           // await a completer that can only be completed by this call —
           // deadlocking every request waiting on the shared refresh.
           if (isRefreshCall) {
-            await AuthSession.clearSession();
-            AppRouter.router.go(RouteNames.phone);
+            await _forceLogout();
             return handler.next(error);
           }
 
@@ -97,8 +110,7 @@ final class DioClient {
             final retried = await _dio.fetch(retryOptions);
             handler.resolve(retried);
           } catch (_) {
-            await AuthSession.clearSession();
-            AppRouter.router.go(RouteNames.phone);
+            await _forceLogout();
             handler.next(error);
           }
         },
@@ -312,8 +324,7 @@ final class DioClient {
       final statusCode = e.response?.statusCode;
       if (statusCode != null && (statusCode == 401 || statusCode == 403)) {
         AppToast.error(apiError.message);
-        await AuthSession.clearSession();
-        AppRouter.router.go(RouteNames.phone);
+        await _forceLogout();
       }
       return apiError.message;
     }

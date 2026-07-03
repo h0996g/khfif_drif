@@ -9,16 +9,18 @@ import '../../../../data/models/passenger_ride_models.dart';
 class VehicleCategorySelector extends StatelessWidget {
   const VehicleCategorySelector({
     super.key,
+    required this.serviceType,
     required this.selected,
     required this.onChanged,
   });
 
+  final ServiceType serviceType;
   final VehicleCategory selected;
   final void Function(VehicleCategory) onChanged;
 
   @override
   Widget build(BuildContext context) {
-    const categories = VehicleCategory.values;
+    final categories = serviceType.availableCategories;
     return Row(
       children: categories.map((category) {
         final isLast = category == categories.last;

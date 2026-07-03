@@ -39,6 +39,17 @@ enum ServiceType {
         ServiceType.delivery => Icons.local_shipping_rounded,
       };
 
+  /// Vehicle categories the passenger may pick for this service type.
+  List<VehicleCategory> get availableCategories => switch (this) {
+        ServiceType.ride =>
+          [VehicleCategory.car, VehicleCategory.motorcycle],
+        ServiceType.delivery => [
+          VehicleCategory.car,
+          VehicleCategory.motorcycle,
+          VehicleCategory.van,
+        ],
+      };
+
   String toJson() => name.toUpperCase();
 
   static ServiceType fromJson(String value) =>

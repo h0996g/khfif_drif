@@ -143,6 +143,7 @@ class _RideRequestViewState extends State<RideRequestView> {
                           const SectionLabelWidget(label: 'Vehicle'),
                           SizedBox(height: 10.h),
                           VehicleCategorySelector(
+                            serviceType: state.serviceType,
                             selected: state.vehicleCategory,
                             onChanged: cubit.setVehicleCategory,
                           ),

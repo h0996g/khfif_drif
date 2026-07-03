@@ -12,8 +12,15 @@ final class RideRequestCubit extends Cubit<RideRequestState> {
 
   final PassengerRideRepository _repository;
 
-  void setServiceType(ServiceType value) =>
-      emit(state.copyWith(serviceType: value));
+  void setServiceType(ServiceType value) {
+    // If the current vehicle category isn't available for the new service
+    // type (e.g. motorcycle under Delivery, van under Ride), fall back to car.
+    final validCategories = value.availableCategories;
+    final newCategory = validCategories.contains(state.vehicleCategory)
+        ? state.vehicleCategory
+        : VehicleCategory.car;
+    emit(state.copyWith(serviceType: value, vehicleCategory: newCategory));
+  }
 
   void setVehicleCategory(VehicleCategory value) =>
       emit(state.copyWith(vehicleCategory: value));

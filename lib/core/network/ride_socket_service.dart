@@ -11,6 +11,7 @@ import '../router/app_router.dart';
 import '../router/route_names.dart';
 import '../session/auth_session.dart';
 import 'dio_client.dart';
+import 'driver_location_streamer.dart';
 import 'ws_url.dart';
 
 /// Coarse connection state for the ride socket. Mirrored to UI via
@@ -325,6 +326,8 @@ final class RideSocketService {
 
   static Future<void> _forceRelogin() async {
     _log('auth revoked — clearing session and forcing re-login');
+    DriverLocationStreamer.stop();
+    await disconnect();
     await AuthSession.clearSession();
     AppRouter.router.go(RouteNames.phone);
   }
