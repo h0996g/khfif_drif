@@ -26,7 +26,7 @@ final class AvailableRequestCard {
     required this.dropoff,
     required this.proposedFare,
     required this.serviceType,
-    required this.vehicleCategory,
+    this.vehicleCategory,
     required this.femaleOnly,
     required this.distanceMeters,
     required this.expiresAt,
@@ -37,7 +37,7 @@ final class AvailableRequestCard {
   final CoordinatePoint dropoff;
   final int proposedFare;
   final ServiceType serviceType;
-  final VehicleCategory vehicleCategory;
+  final VehicleCategory? vehicleCategory;
   final bool femaleOnly;
   final int? distanceMeters;
   final String expiresAt;
@@ -49,8 +49,9 @@ final class AvailableRequestCard {
         dropoff: _coordinateFromJson(json['dropoff'] as Map<String, dynamic>),
         proposedFare: json['proposedFare'] as int,
         serviceType: ServiceType.fromJson(json['serviceType'] as String),
-        vehicleCategory:
-            VehicleCategory.fromJson(json['vehicleCategory'] as String),
+        vehicleCategory: json['vehicleCategory'] != null
+            ? VehicleCategory.fromJson(json['vehicleCategory'] as String)
+            : null,
         femaleOnly: json['femaleOnly'] as bool,
         distanceMeters: json['distanceMeters'] as int?,
         expiresAt: json['expiresAt'] as String,
@@ -72,8 +73,15 @@ final class AvailableRequestsResponse {
   factory AvailableRequestsResponse.fromJson(Map<String, dynamic> json) =>
       AvailableRequestsResponse(
         requests: (json['requests'] as List<dynamic>)
-            .map((e) =>
-                AvailableRequestCard.fromJson(e as Map<String, dynamic>))
+            .map((e) {
+              try {
+                return AvailableRequestCard.fromJson(
+                    e as Map<String, dynamic>);
+              } catch (_) {
+                return null;
+              }
+            })
+            .whereType<AvailableRequestCard>()
             .toList(),
       );
 }

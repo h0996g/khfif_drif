@@ -7,6 +7,18 @@ import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/driver_ride_models.dart';
 
+/// Local warning tier for the 30s..10s urgency window — no app-wide token
+/// exists for amber, so it's kept as a single shared constant here.
+const Color _warningAmber = Color(0xFFF59E0B);
+
+/// Shared green→amber→red urgency ladder used by both the top progress bar
+/// and the footer countdown pill, so they can't drift out of sync.
+Color _urgencyColor(num remainingSeconds) {
+  if (remainingSeconds <= 10) return AppColors.error;
+  if (remainingSeconds <= 30) return _warningAmber;
+  return AppColors.primary;
+}
+
 /// A single incoming ride request shown to the driver. Service & vehicle chips
 /// and an optional female-only badge on top, the pickup→dropoff route, a meta
 /// row with a live expiry countdown and distance, then the proposed fare and a
@@ -33,8 +45,6 @@ class AvailableRideCard extends StatelessWidget {
   /// Shrinks every dimension for the floating [BroadcastOverlay].
   final bool compact;
 
-  static const Color _dropoffColor = Color(0xFFEF4444);
-
   @override
   Widget build(BuildContext context) {
     final m = compact ? _CardMetrics.compact : _CardMetrics.normal;
@@ -44,7 +54,14 @@ class AvailableRideCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(m.cardRadius.r),
-        border: Border.all(color: AppColors.borderDefault(context)),
+        border: Border.all(color: AppColors.borderDefault(context), width: 1.w),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.black.withValues(alpha: m.shadowAlpha),
+            blurRadius: m.shadowBlur.r,
+            offset: Offset(0, m.shadowOffsetY.h),
+          ),
+        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(m.cardRadius.r),
@@ -64,35 +81,38 @@ class AvailableRideCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // --- Header: service / vehicle / female-only · fare ---
+                  // --- Header: service / vehicle chips / female-only · fare ---
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (ride.femaleOnly) ...[
-                        SizedBox(width: 6.w),
-                        const _FemaleOnlyBadge(),
-                      ],
-                      const Spacer(),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '${_formatFare(ride.proposedFare)} DZD',
-                            style: AppTextStyles.bodyMedium(context).copyWith(
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
-                              height: 1.1,
+                      Expanded(
+                        child: Wrap(
+                          spacing: 6.w,
+                          runSpacing: 4.h,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            _ServiceTypeChip(
+                              serviceType: ride.serviceType,
+                              iconSize: m.serviceIconSize,
+                              hPad: m.chipHPad,
+                              vPad: m.chipVPad,
                             ),
-                          ),
-                          Text(
-                            'proposed fare',
-                            style: AppTextStyles.labelSmall(context).copyWith(
-                              color: AppColors.textSecondary(context),
-                              fontSize: 9.sp,
-                            ),
-                          ),
-                        ],
+                            if (ride.vehicleCategory != null)
+                              _ServiceVehicleChip(
+                                category: ride.vehicleCategory!,
+                                iconSize: m.serviceIconSize,
+                                hPad: m.chipHPad,
+                                vPad: m.chipVPad,
+                              ),
+                            if (ride.femaleOnly) const _FemaleOnlyBadge(),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: 6.w),
+                      _FareBlock(
+                        amount: ride.proposedFare,
+                        fareFontSize: m.fareFontSize,
+                        captionFontSize: m.fareCaptionSize,
                       ),
                     ],
                   ),
@@ -109,18 +129,16 @@ class AvailableRideCard extends StatelessWidget {
                   ),
                   Padding(
                     padding: EdgeInsets.only(left: m.connectorInset.w),
-                    child: SizedBox(
+                    child: Container(
+                      width: 1.5.w,
                       height: m.connectorHeight.h,
-                      child: VerticalDivider(
-                        color: AppColors.borderDefault(context),
-                        thickness: 1.5,
-                        width: 1,
-                      ),
+                      color: AppColors.textSecondary(context)
+                          .withValues(alpha: 0.3),
                     ),
                   ),
                   _LocationRow(
                     icon: Icons.location_on_rounded,
-                    iconColor: _dropoffColor,
+                    iconColor: AppColors.error,
                     address: ride.dropoff.address,
                     iconSize: m.locationIconSize,
                     spacing: m.locationSpacing,
@@ -245,6 +263,13 @@ class _CardMetrics {
     required this.progressHeight,
     required this.locationIconSize,
     required this.locationSpacing,
+    required this.shadowAlpha,
+    required this.shadowBlur,
+    required this.shadowOffsetY,
+    required this.chipHPad,
+    required this.chipVPad,
+    required this.fareFontSize,
+    required this.fareCaptionSize,
   });
 
   final double cardBottomMargin; // .h
@@ -266,6 +291,13 @@ class _CardMetrics {
   final double progressHeight; // .h
   final double locationIconSize; // .w
   final double locationSpacing; // .w
+  final double shadowAlpha;
+  final double shadowBlur; // .r
+  final double shadowOffsetY; // .h
+  final double chipHPad; // .w
+  final double chipVPad; // .h
+  final double fareFontSize; // .sp
+  final double fareCaptionSize; // .sp
 
   /// Tightened base size used in the available-rides list.
   static const normal = _CardMetrics(
@@ -275,7 +307,7 @@ class _CardMetrics {
     contentTop: 8,
     serviceIconSize: 14,
     gapHeaderRoute: 6,
-    connectorHeight: 8,
+    connectorHeight: 10,
     connectorInset: 6.5,
     gapRouteFooter: 8,
     metaIconSize: 12,
@@ -284,10 +316,17 @@ class _CardMetrics {
     buttonRadius: 8,
     buttonGap: 6,
     ignoreButtonHPad: 10,
-    bidButtonHPad: 18,
-    progressHeight: 2.5,
-    locationIconSize: 13,
+    bidButtonHPad: 20,
+    progressHeight: 3,
+    locationIconSize: 14,
     locationSpacing: 6,
+    shadowAlpha: 0.06,
+    shadowBlur: 12,
+    shadowOffsetY: 3,
+    chipHPad: 8,
+    chipVPad: 4,
+    fareFontSize: 17,
+    fareCaptionSize: 10,
   );
 
   /// One step tighter — used by the floating [BroadcastOverlay].
@@ -298,7 +337,7 @@ class _CardMetrics {
     contentTop: 6,
     serviceIconSize: 13,
     gapHeaderRoute: 4,
-    connectorHeight: 6,
+    connectorHeight: 8,
     connectorInset: 6,
     gapRouteFooter: 6,
     metaIconSize: 11,
@@ -309,8 +348,15 @@ class _CardMetrics {
     ignoreButtonHPad: 8,
     bidButtonHPad: 14,
     progressHeight: 2.5,
-    locationIconSize: 12,
+    locationIconSize: 13,
     locationSpacing: 5,
+    shadowAlpha: 0.05,
+    shadowBlur: 8,
+    shadowOffsetY: 2,
+    chipHPad: 6,
+    chipVPad: 3,
+    fareFontSize: 14,
+    fareCaptionSize: 9,
   );
 }
 
@@ -370,15 +416,7 @@ class _ExpiryProgressBarState extends State<_ExpiryProgressBar> {
     final remainingSeconds =
         remaining.isNegative ? 0.0 : remaining.inSeconds.toDouble();
     final progress = (remainingSeconds / _totalSeconds).clamp(0.0, 1.0);
-
-    final Color color;
-    if (remainingSeconds <= 10) {
-      color = const Color(0xFFEF4444);
-    } else if (remainingSeconds <= 30) {
-      color = const Color(0xFFF59E0B);
-    } else {
-      color = AppColors.primary;
-    }
+    final color = _urgencyColor(remainingSeconds);
 
     return LinearProgressIndicator(
       value: progress,
@@ -430,20 +468,29 @@ class _ExpiryCountdownState extends State<_ExpiryCountdown> {
         ? Duration.zero
         : _deadline!.difference(DateTime.now());
     final clamped = remaining.isNegative ? Duration.zero : remaining;
-    final isUrgent = clamped.inSeconds <= 10;
-    final color =
-        isUrgent ? const Color(0xFFEF4444) : AppColors.textSecondary(context);
+    final color = _urgencyColor(clamped.inSeconds);
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(Icons.timer_outlined, size: widget.iconSize.w, color: color),
-        SizedBox(width: 4.w),
-        Text(
-          _formatRemaining(clamped),
-          style: AppTextStyles.labelSmall(context).copyWith(color: color),
-        ),
-      ],
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.timer_outlined, size: widget.iconSize.w, color: color),
+          SizedBox(width: 4.w),
+          Text(
+            _formatRemaining(clamped),
+            style: AppTextStyles.labelSmall(context).copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -481,6 +528,132 @@ class _FemaleOnlyBadge extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Colored pill surfacing whether the request is a Ride or a Delivery, so
+/// drivers can tell the two apart at a glance without reading the addresses.
+class _ServiceTypeChip extends StatelessWidget {
+  const _ServiceTypeChip({
+    required this.serviceType,
+    required this.iconSize,
+    required this.hPad,
+    required this.vPad,
+  });
+
+  static const Color _deliveryColor = Color(0xFF3B82F6);
+
+  final ServiceType serviceType;
+  final double iconSize;
+  final double hPad;
+  final double vPad;
+
+  @override
+  Widget build(BuildContext context) {
+    final color =
+        serviceType == ServiceType.delivery ? _deliveryColor : AppColors.primary;
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: hPad.w, vertical: vPad.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(serviceType.icon, size: iconSize.w, color: color),
+          SizedBox(width: 3.w),
+          Text(
+            serviceType.label,
+            style: AppTextStyles.labelSmall(context).copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Quiet neutral pill surfacing the ride's vehicle category (icon + label),
+/// data that previously existed on the model but was never rendered.
+class _ServiceVehicleChip extends StatelessWidget {
+  const _ServiceVehicleChip({
+    required this.category,
+    required this.iconSize,
+    required this.hPad,
+    required this.vPad,
+  });
+
+  final VehicleCategory category;
+  final double iconSize;
+  final double hPad;
+  final double vPad;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = AppColors.textSecondary(context);
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: hPad.w, vertical: vPad.h),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8.r),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(category.icon, size: iconSize.w, color: color),
+          SizedBox(width: 3.w),
+          Text(
+            category.label,
+            style: AppTextStyles.labelSmall(context).copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Right-aligned proposed-fare block, the card's primary visual hook.
+class _FareBlock extends StatelessWidget {
+  const _FareBlock({
+    required this.amount,
+    required this.fareFontSize,
+    required this.captionFontSize,
+  });
+
+  final int amount;
+  final double fareFontSize;
+  final double captionFontSize;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          '${_formatFare(amount)} DZD',
+          style: AppTextStyles.headingSmall(context).copyWith(
+            fontSize: fareFontSize.sp,
+            fontWeight: FontWeight.w700,
+            color: AppColors.primary,
+            height: 1.1,
+          ),
+        ),
+        Text(
+          'proposed fare',
+          style: AppTextStyles.labelSmall(context).copyWith(
+            color: AppColors.textSecondary(context),
+            fontSize: captionFontSize.sp,
+          ),
+        ),
+      ],
     );
   }
 }

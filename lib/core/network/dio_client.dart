@@ -103,7 +103,7 @@ final class DioClient {
             // each racing/failing independently — otherwise only the first
             // request to 401 benefits and the rest get force-logged-out even
             // though the refresh succeeds moments later.
-            final newAccessToken = await _refreshAccessToken();
+            final newAccessToken = await refreshAccessToken();
 
             final retryOptions = error.requestOptions;
             retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
@@ -133,8 +133,12 @@ final class DioClient {
 
   /// Refreshes the access token, sharing a single in-flight request across
   /// any 401s that arrive concurrently rather than firing one refresh call
-  /// per request.
-  static Future<String> _refreshAccessToken() {
+  /// per request. Public so [RideSocketService] can join the same in-flight
+  /// refresh instead of racing it with its own `/api/auth/refresh` call —
+  /// the backend rotates refresh tokens on use, so two concurrent refreshes
+  /// with the same (now-stale) token would leave the loser force-logged-out
+  /// even though the winner already renewed the session.
+  static Future<String> refreshAccessToken() {
     final inFlight = _refreshCompleter;
     if (inFlight != null) return inFlight.future;
 

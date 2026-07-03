@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:web_socket_channel/io.dart';
 
-import '../constants/auth_api_constants.dart';
 import '../constants/web_socket_constants.dart';
 import '../models/token_payload.dart';
 import '../router/app_router.dart';
@@ -295,28 +294,20 @@ final class RideSocketService {
     }
   }
 
-  /// Calls `POST /api/auth/refresh`, saves the new tokens to [AuthSession],
-  /// and returns the new access token. Returns `null` and forces re-login on
-  /// any failure (expired refresh token, network error, etc.).
+  /// Refreshes via [DioClient.refreshAccessToken], which shares a single
+  /// in-flight refresh with any REST-401-triggered refresh — calling our own
+  /// separate `/api/auth/refresh` here would race it, and since the backend
+  /// rotates refresh tokens on use, the loser of that race would fail with a
+  /// 401 on the refresh endpoint itself and force a logout even though the
+  /// other call already renewed the session. Returns `null` and forces
+  /// re-login on any failure (expired refresh token, network error, etc.).
   static Future<String?> _doRestRefresh() async {
-    final refreshToken = AuthSession.refreshToken;
-    if (refreshToken == null) {
+    if (AuthSession.refreshToken == null) {
       _forceRelogin();
       return null;
     }
     try {
-      final response = await DioClient.post(
-        path: AuthApiConstants.refresh,
-        data: {'refreshToken': refreshToken},
-      );
-      final data = response.data as Map<String, dynamic>;
-      final newAccess = data['accessToken'] as String;
-      final newRefresh = data['refreshToken'] as String;
-      await AuthSession.setTokens(
-        accessToken: newAccess,
-        refreshToken: newRefresh,
-      );
-      return newAccess;
+      return await DioClient.refreshAccessToken();
     } catch (e) {
       _log('token refresh failed: $e — forcing re-login');
       _forceRelogin();

@@ -52,8 +52,10 @@ enum ServiceType {
 
   String toJson() => name.toUpperCase();
 
-  static ServiceType fromJson(String value) =>
-      ServiceType.values.firstWhere((e) => e.toJson() == value.toUpperCase());
+  static ServiceType fromJson(String value) => ServiceType.values.firstWhere(
+        (e) => e.toJson() == value.toUpperCase(),
+        orElse: () => ServiceType.ride,
+      );
 }
 
 enum VehicleCategory {
@@ -75,8 +77,11 @@ enum VehicleCategory {
 
   String toJson() => name.toUpperCase();
 
-  static VehicleCategory fromJson(String value) => VehicleCategory.values
-      .firstWhere((e) => e.toJson() == value.toUpperCase());
+  static VehicleCategory fromJson(String value) =>
+      VehicleCategory.values.firstWhere(
+        (e) => e.toJson() == value.toUpperCase(),
+        orElse: () => VehicleCategory.car,
+      );
 }
 
 enum CancelReason {
