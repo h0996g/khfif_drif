@@ -28,6 +28,9 @@ final class CreateRideRequest {
     required this.vehicleCategory,
     required this.femaleOnly,
     required this.proposedFare,
+    this.recipientName,
+    this.recipientPhone,
+    this.packageNote,
   });
 
   final CoordinatePoint pickup;
@@ -36,6 +39,9 @@ final class CreateRideRequest {
   final VehicleCategory vehicleCategory;
   final bool femaleOnly;
   final int proposedFare;
+  final String? recipientName;
+  final String? recipientPhone;
+  final String? packageNote;
 
   Map<String, dynamic> toJson() => {
         'pickup': pickup.toJson(),
@@ -44,6 +50,9 @@ final class CreateRideRequest {
         'vehicleCategory': vehicleCategory.toJson(),
         'femaleOnly': femaleOnly,
         'proposedFare': proposedFare,
+        if (recipientName != null) 'recipientName': recipientName,
+        if (recipientPhone != null) 'recipientPhone': recipientPhone,
+        if (packageNote != null) 'packageNote': packageNote,
       };
 }
 

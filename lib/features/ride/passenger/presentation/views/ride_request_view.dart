@@ -31,6 +31,9 @@ class RideRequestView extends StatefulWidget {
 class _RideRequestViewState extends State<RideRequestView> {
   final _formKey = GlobalKey<FormState>();
   final _fareCtrl = TextEditingController();
+  final _recipientNameCtrl = TextEditingController();
+  final _recipientPhoneCtrl = TextEditingController();
+  final _packageNoteCtrl = TextEditingController();
 
   CoordinatePoint? _pickup;
   CoordinatePoint? _dropoff;
@@ -38,6 +41,9 @@ class _RideRequestViewState extends State<RideRequestView> {
   @override
   void dispose() {
     _fareCtrl.dispose();
+    _recipientNameCtrl.dispose();
+    _recipientPhoneCtrl.dispose();
+    _packageNoteCtrl.dispose();
     super.dispose();
   }
 
@@ -69,6 +75,8 @@ class _RideRequestViewState extends State<RideRequestView> {
     }
     if (!_formKey.currentState!.validate()) return;
 
+    final isDelivery = state.serviceType == ServiceType.delivery;
+
     cubit.submitRide(
       CreateRideRequest(
         pickup: _pickup!,
@@ -77,6 +85,11 @@ class _RideRequestViewState extends State<RideRequestView> {
         vehicleCategory: state.vehicleCategory,
         femaleOnly: state.femaleOnly,
         proposedFare: int.parse(_fareCtrl.text),
+        recipientName: isDelivery ? _recipientNameCtrl.text.trim() : null,
+        recipientPhone: isDelivery ? _recipientPhoneCtrl.text.trim() : null,
+        packageNote: isDelivery && _packageNoteCtrl.text.trim().isNotEmpty
+            ? _packageNoteCtrl.text.trim()
+            : null,
       ),
     );
   }
@@ -173,6 +186,40 @@ class _RideRequestViewState extends State<RideRequestView> {
                           ),
 
                           SizedBox(height: 20.h),
+
+                          // ── Delivery details ──────────────────────────────
+                          if (state.serviceType == ServiceType.delivery) ...[
+                            const SectionLabelWidget(
+                                label: 'Delivery Details'),
+                            SizedBox(height: 10.h),
+                            AppTextField(
+                              controller: _recipientNameCtrl,
+                              hintText: 'Recipient name',
+                              prefixIcon:
+                                  const Icon(Icons.person_outline_rounded),
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Recipient name is required'
+                                  : null,
+                            ),
+                            SizedBox(height: 10.h),
+                            AppTextField(
+                              controller: _recipientPhoneCtrl,
+                              hintText: 'Recipient phone',
+                              keyboardType: TextInputType.phone,
+                              prefixIcon: const Icon(Icons.phone_outlined),
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Recipient phone is required'
+                                  : null,
+                            ),
+                            SizedBox(height: 10.h),
+                            AppTextField(
+                              controller: _packageNoteCtrl,
+                              hintText: 'Package note (optional)',
+                              prefixIcon:
+                                  const Icon(Icons.inventory_2_outlined),
+                            ),
+                            SizedBox(height: 20.h),
+                          ],
 
                           // ── Female only ───────────────────────────────────
                           FemaleOnlyWidget(
