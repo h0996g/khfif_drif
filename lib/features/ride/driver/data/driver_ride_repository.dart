@@ -55,7 +55,7 @@ final class DriverRideRepository {
   Future<ActiveDriverRideResponse?> getActiveRide() async {
     final response = await DioClient.get(path: DriverRideApiConstants.active);
     final data = response.data;
-    if (data == null) return null;
-    return ActiveDriverRideResponse.fromJson(data as Map<String, dynamic>);
+    if (data is! Map<String, dynamic>) return null;
+    return ActiveDriverRideResponse.fromJson(data);
   }
 }

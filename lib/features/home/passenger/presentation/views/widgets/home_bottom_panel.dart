@@ -26,35 +26,12 @@ class HomeBottomPanel extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           // Search bar
           _SearchBar(),
 
           SizedBox(height: 16.h),
-
-          // Quick destinations row
-          Row(
-            children: [
-              _QuickDestination(
-                icon: Icons.home_rounded,
-                label: 'Home',
-                onTap: () {},
-              ),
-              SizedBox(width: 10.w),
-              _QuickDestination(
-                icon: Icons.work_rounded,
-                label: 'Work',
-                onTap: () {},
-              ),
-              SizedBox(width: 10.w),
-              _QuickDestination(
-                icon: Icons.star_rounded,
-                label: 'Saved',
-                onTap: () {},
-              ),
-            ],
-          ),
-          SizedBox(height: 8.h),
         ],
       ),
     );
@@ -102,45 +79,6 @@ class _SearchBar extends StatelessWidget {
                   size: 16.w, color: AppColors.white),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class _QuickDestination extends StatelessWidget {
-  const _QuickDestination({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12.r),
-        child: Container(
-          padding: EdgeInsets.symmetric(vertical: 12.h),
-          decoration: BoxDecoration(
-            color: AppColors.surface(context),
-            borderRadius: BorderRadius.circular(12.r),
-            border:
-                Border.all(color: AppColors.borderDefault(context), width: 1.w),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 20.w, color: AppColors.primary),
-              SizedBox(height: 6.h),
-              Text(label, style: AppTextStyles.labelSmall(context)),
-            ],
-          ),
         ),
       ),
     );
