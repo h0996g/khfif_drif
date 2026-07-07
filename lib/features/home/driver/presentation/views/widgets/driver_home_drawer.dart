@@ -21,8 +21,9 @@ import '../../../../../ride/driver/presentation/views/widgets/driver_availabilit
 
 const int _profileIndex = 1;
 const int _ridesIndex = 2;
-const int _switchRoleIndex = 7;
-const int _logoutIndex = 8;
+const int _rideHistoryIndex = 3;
+const int _switchRoleIndex = 8;
+const int _logoutIndex = 9;
 
 class DriverHomeDrawer extends StatelessWidget {
   const DriverHomeDrawer({super.key});
@@ -33,7 +34,9 @@ class DriverHomeDrawer extends StatelessWidget {
       const DrawerMenuItemData(Icons.home_outlined, 'Home'),
       const DrawerMenuItemData(Icons.person_outline_rounded, 'Profile'),
       const DrawerMenuItemData(Icons.directions_car_rounded, 'Rides'),
-      const DrawerMenuItemData(Icons.account_balance_wallet_outlined, 'Earnings'),
+      const DrawerMenuItemData(Icons.history_rounded, 'Ride History'),
+      const DrawerMenuItemData(
+          Icons.account_balance_wallet_outlined, 'Earnings'),
       const DrawerMenuItemData(Icons.motorcycle_outlined, 'Vehicle Info'),
     ];
 
@@ -123,13 +126,18 @@ class DriverHomeDrawer extends StatelessWidget {
       return;
     }
 
-    final route = index == _profileIndex
-        ? RouteNames.driverProfileEdit
-        : index == _ridesIndex
-            ? RouteNames.availableRides
-            : RouteNames.driverHome;
-    final selectedIndex =
-        index == _profileIndex || index == _ridesIndex ? index : 0;
+    // Index → destination route. Items not in the map fall back to Home.
+    final route = switch (index) {
+      _profileIndex => RouteNames.driverProfileEdit,
+      _ridesIndex => RouteNames.availableRides,
+      _rideHistoryIndex => RouteNames.driverRideHistory,
+      _ => RouteNames.driverHome,
+    };
+    // Highlight the active item only for routes with a dedicated screen.
+    final selectedIndex = switch (index) {
+      _profileIndex || _ridesIndex || _rideHistoryIndex => index,
+      _ => 0,
+    };
 
     context.read<DriverHomeCubit>().updateSelectedIndex(selectedIndex);
     ZoomDrawer.of(context)?.close();

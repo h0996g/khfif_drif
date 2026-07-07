@@ -7,6 +7,7 @@ import '../../../../core/constants/auth_api_constants.dart';
 import '../../../../core/constants/driver_api_constants.dart';
 import '../../../../core/constants/me_api_constants.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/network/driver_location_streamer.dart';
 import '../../../../core/utils/image_compressor.dart';
 import '../models/driver_profile_model.dart';
 import '../models/kyc_status.dart';
@@ -73,6 +74,7 @@ final class DriverRepository {
       data: {'targetRole': targetRole},
     );
     final data = response.data as Map<String, dynamic>;
+    await DriverLocationStreamer.stopAndDisconnect();
     await AuthSession.setAccessToken(data['accessToken'] as String);
   }
 

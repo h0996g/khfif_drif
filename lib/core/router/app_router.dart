@@ -43,10 +43,12 @@ import '../../features/ride/passenger/data/passenger_ride_repository.dart';
 import '../../features/ride/passenger/presentation/cubit/location_cubit/location_picker_cubit.dart';
 import '../../features/ride/passenger/presentation/cubit/location_cubit/location_picker_state.dart';
 import '../../features/ride/passenger/presentation/cubit/passenger_active_ride_cubit/passenger_active_ride_cubit.dart';
+import '../../features/ride/passenger/presentation/cubit/passenger_ride_history_cubit/passenger_ride_history_cubit.dart';
 import '../../features/ride/passenger/presentation/cubit/ride_request_cubit/ride_request_cubit.dart';
 import '../../features/ride/passenger/presentation/cubit/waiting_offers_cubit/waiting_offers_cubit.dart';
 import '../../features/ride/passenger/presentation/views/location_picker_view.dart';
 import '../../features/ride/passenger/presentation/views/passenger_active_ride_view.dart';
+import '../../features/ride/passenger/presentation/views/passenger_ride_history_view.dart';
 import '../../features/ride/passenger/presentation/views/ride_request_view.dart';
 import '../../features/ride/passenger/presentation/views/waiting_offers_view.dart';
 import '../../features/ride/driver/data/driver_availability_repository.dart';
@@ -54,8 +56,10 @@ import '../../features/ride/driver/data/driver_ride_repository.dart';
 import '../../features/ride/driver/presentation/cubit/available_rides_cubit/available_rides_cubit.dart';
 import '../../features/ride/driver/presentation/cubit/driver_active_ride_cubit/driver_active_ride_cubit.dart';
 import '../../features/ride/driver/presentation/cubit/driver_availability_cubit/driver_availability_cubit.dart';
+import '../../features/ride/driver/presentation/cubit/driver_ride_history_cubit/driver_ride_history_cubit.dart';
 import '../../features/ride/driver/presentation/views/available_rides_view.dart';
 import '../../features/ride/driver/presentation/views/driver_active_ride_view.dart';
+import '../../features/ride/driver/presentation/views/driver_ride_history_view.dart';
 import '../session/auth_session.dart';
 import 'route_names.dart';
 
@@ -179,7 +183,8 @@ final class AppRouter {
               path: RouteNames.rideRequest,
               builder: (context, state) {
                 return BlocProvider<RideRequestCubit>(
-                  create: (_) => RideRequestCubit(const PassengerRideRepository()),
+                  create: (_) =>
+                      RideRequestCubit(const PassengerRideRepository()),
                   child: const RideRequestView(),
                 );
               },
@@ -190,7 +195,8 @@ final class AppRouter {
                 final extra = state.extra;
                 final args = extra is LocationPickerArgs
                     ? extra
-                    : LocationPickerArgs(label: (extra as String?) ?? 'Location');
+                    : LocationPickerArgs(
+                        label: (extra as String?) ?? 'Location');
                 return BlocProvider<LocationPickerCubit>(
                   create: (_) =>
                       LocationPickerCubit()..init(initial: args.initial),
@@ -219,6 +225,17 @@ final class AppRouter {
                     const PassengerRideRepository(),
                   )..loadActiveRide(),
                   child: const PassengerActiveRideView(),
+                );
+              },
+            ),
+            GoRoute(
+              path: RouteNames.passengerRideHistory,
+              builder: (context, state) {
+                return BlocProvider<PassengerRideHistoryCubit>(
+                  create: (_) => PassengerRideHistoryCubit(
+                    const PassengerRideRepository(),
+                  )..loadHistory(),
+                  child: const PassengerRideHistoryView(),
                 );
               },
             ),
@@ -264,10 +281,9 @@ final class AppRouter {
         builder: (context, state, child) => MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (_) =>
-                  DriverHomeCubit(_driverRepository)
-                    ..getProfile()
-                    ..checkActiveRide(),
+              create: (_) => DriverHomeCubit(_driverRepository)
+                ..getProfile()
+                ..checkActiveRide(),
             ),
             BlocProvider(
               create: (_) =>
@@ -337,6 +353,17 @@ final class AppRouter {
             path: RouteNames.availableRides,
             builder: (context, state) {
               return const AvailableRidesView();
+            },
+          ),
+          GoRoute(
+            path: RouteNames.driverRideHistory,
+            builder: (context, state) {
+              return BlocProvider<DriverRideHistoryCubit>(
+                create: (_) => DriverRideHistoryCubit(
+                  const DriverRideRepository(),
+                )..loadHistory(),
+                child: const DriverRideHistoryView(),
+              );
             },
           ),
           GoRoute(

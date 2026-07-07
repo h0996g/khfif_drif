@@ -7,6 +7,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/passenger_ride_models.dart';
+import '../../../../../shared/utils/fare_formatter.dart';
+import '../../../../../shared/utils/name_initials.dart';
 
 class OfferCard extends StatefulWidget {
   const OfferCard({
@@ -114,7 +116,7 @@ class _OfferCardState extends State<OfferCard> {
                 const _VerticalDashedLine(),
                 Expanded(
                   child: _DriverSide(
-                    initials: _initials(offer.driverFullName),
+                    initials: initialsOf(offer.driverFullName),
                     name: offer.driverFullName,
                     ratingAvg: offer.driverRatingAvg,
                     vehicleModel: offer.vehicleModel,
@@ -133,14 +135,6 @@ class _OfferCardState extends State<OfferCard> {
         ],
       ),
     );
-  }
-
-  String _initials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-    String initial(String part) => part.isNotEmpty ? part[0] : '';
-    if (parts.isEmpty || parts.first.isEmpty) return '·';
-    if (parts.length == 1) return initial(parts.first).toUpperCase();
-    return '${initial(parts.first)}${initial(parts[1])}'.toUpperCase();
   }
 }
 
@@ -185,7 +179,7 @@ class _FareStub extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                _formatThousands(fare),
+                formatFare(fare),
                 style: AppTextStyles.headingSmall(context).copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w800,
@@ -393,9 +387,7 @@ class _DriverSide extends StatelessWidget {
                           '$etaMin min',
                           style: AppTextStyles.labelSmall(context).copyWith(
                             color: AppColors.textSecondary(context),
-                            fontFeatures: const [
-                              FontFeature.tabularFigures()
-                            ],
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
                       ],
@@ -535,7 +527,9 @@ class _MetaLine extends StatelessWidget {
         SizedBox(width: 5.w),
         Flexible(
           child: Text(
-            vehiclePlate != null ? '$vehicleModel · $vehiclePlate' : vehicleModel,
+            vehiclePlate != null
+                ? '$vehicleModel · $vehiclePlate'
+                : vehicleModel,
             style: AppTextStyles.labelSmall(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -547,13 +541,3 @@ class _MetaLine extends StatelessWidget {
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-String _formatThousands(int n) {
-  final digits = n.abs().toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) buffer.write(' ');
-    buffer.write(digits[i]);
-  }
-  return n.isNegative ? '-$buffer' : buffer.toString();
-}

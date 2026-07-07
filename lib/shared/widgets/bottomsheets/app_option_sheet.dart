@@ -8,13 +8,16 @@ import 'app_bottom_sheet.dart';
 /// A single selectable option rendered inside [showAppOptionSheet].
 class AppSheetOption<T> {
   const AppSheetOption({
-    required this.icon,
+    this.icon,
+    this.leading,
     required this.label,
     required this.value,
     this.subtitle,
-  });
+  }) : assert(icon != null || leading != null,
+            'Provide either an icon or a leading widget');
 
-  final IconData icon;
+  final IconData? icon;
+  final Widget? leading;
   final String label;
   final String? subtitle;
   final T value;
@@ -60,19 +63,20 @@ class _OptionRow<T> extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 12.w),
             child: Row(
               children: [
-                Container(
-                  width: 40.w,
-                  height: 40.w,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.09),
-                    borderRadius: BorderRadius.circular(12.r),
-                  ),
-                  child: Icon(
-                    option.icon,
-                    size: 20.w,
-                    color: AppColors.primary,
-                  ),
-                ),
+                option.leading ??
+                    Container(
+                      width: 40.w,
+                      height: 40.w,
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.09),
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      child: Icon(
+                        option.icon,
+                        size: 20.w,
+                        color: AppColors.primary,
+                      ),
+                    ),
                 SizedBox(width: 14.w),
                 Expanded(
                   child: Column(

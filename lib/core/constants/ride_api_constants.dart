@@ -4,6 +4,9 @@ abstract final class PassengerRideApiConstants {
   static const String _base = '/api/passenger/rides';
 
   static const String create = _base;
+
+  /// Paginated ride history (completed + cancelled rides, newest first).
+  static const String history = _base;
   static String offers(String rideRequestId) => '$_base/$rideRequestId/offers';
   static String acceptOffer(String rideRequestId, String offerId) =>
       '$_base/$rideRequestId/offers/$offerId/accept';

@@ -45,6 +45,13 @@ final class DriverLocationStreamer {
     _stopTimer();
   }
 
+  /// Disarms the streamer and disconnects the driver socket together.
+  /// Idempotent — safe to call even if neither was running.
+  static Future<void> stopAndDisconnect() async {
+    stop();
+    await RideSocketService.disconnect();
+  }
+
   static void _onStatus(RideSocketStatus status) {
     if (_armed) _sync(status);
   }

@@ -6,6 +6,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
 import '../../../../data/models/driver_ride_models.dart';
+import '../../../../../shared/utils/fare_formatter.dart';
+import '../../../../../shared/widgets/ride_route_preview.dart';
+import '../../../../../shared/widgets/service_type_chip.dart';
 
 /// Local warning tier for the 30s..10s urgency window — no app-wide token
 /// exists for amber, so it's kept as a single shared constant here.
@@ -91,7 +94,7 @@ class AvailableRideCard extends StatelessWidget {
                           runSpacing: 4.h,
                           crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            _ServiceTypeChip(
+                            ServiceTypeChip(
                               serviceType: ride.serviceType,
                               iconSize: m.serviceIconSize,
                               hPad: m.chipHPad,
@@ -120,28 +123,15 @@ class AvailableRideCard extends StatelessWidget {
                   SizedBox(height: m.gapHeaderRoute.h),
 
                   // --- Route: pickup → dropoff ---
-                  _LocationRow(
-                    icon: Icons.trip_origin_rounded,
-                    iconColor: AppColors.primary,
-                    address: ride.pickup.address,
+                  RideRoutePreview(
+                    pickup: ride.pickup.address,
+                    dropoff: ride.dropoff.address,
                     iconSize: m.locationIconSize,
                     spacing: m.locationSpacing,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: m.connectorInset.w),
-                    child: Container(
-                      width: 1.5.w,
-                      height: m.connectorHeight.h,
-                      color: AppColors.textSecondary(context)
-                          .withValues(alpha: 0.3),
-                    ),
-                  ),
-                  _LocationRow(
-                    icon: Icons.location_on_rounded,
-                    iconColor: AppColors.error,
-                    address: ride.dropoff.address,
-                    iconSize: m.locationIconSize,
-                    spacing: m.locationSpacing,
+                    connectorHeight: m.connectorHeight,
+                    connectorInset: m.connectorInset,
+                    iconTopPadding: 0,
+                    addressStyle: AppTextStyles.bodySmall(context),
                   ),
                   SizedBox(height: m.gapRouteFooter.h),
 
@@ -227,17 +217,6 @@ class AvailableRideCard extends StatelessWidget {
 
 String _formatDistance(int meters) =>
     meters >= 1000 ? '${(meters / 1000).toStringAsFixed(1)} km' : '$meters m';
-
-/// Space-groups thousands for readability: 1200 → "1 200".
-String _formatFare(int amount) {
-  final digits = amount.toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) buffer.write(' ');
-    buffer.write(digits[i]);
-  }
-  return buffer.toString();
-}
 
 /// All tunable dimensions for [AvailableRideCard], stored as raw values so the
 /// `.w/.h/.r` ScreenUtil scaling is applied at each use site. Two presets:
@@ -532,51 +511,6 @@ class _FemaleOnlyBadge extends StatelessWidget {
   }
 }
 
-/// Colored pill surfacing whether the request is a Ride or a Delivery, so
-/// drivers can tell the two apart at a glance without reading the addresses.
-class _ServiceTypeChip extends StatelessWidget {
-  const _ServiceTypeChip({
-    required this.serviceType,
-    required this.iconSize,
-    required this.hPad,
-    required this.vPad,
-  });
-
-  static const Color _deliveryColor = Color(0xFF3B82F6);
-
-  final ServiceType serviceType;
-  final double iconSize;
-  final double hPad;
-  final double vPad;
-
-  @override
-  Widget build(BuildContext context) {
-    final color =
-        serviceType == ServiceType.delivery ? _deliveryColor : AppColors.primary;
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: hPad.w, vertical: vPad.h),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(8.r),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(serviceType.icon, size: iconSize.w, color: color),
-          SizedBox(width: 3.w),
-          Text(
-            serviceType.label,
-            style: AppTextStyles.labelSmall(context).copyWith(
-              color: color,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 /// Quiet neutral pill surfacing the ride's vehicle category (icon + label),
 /// data that previously existed on the model but was never rendered.
 class _ServiceVehicleChip extends StatelessWidget {
@@ -638,7 +572,7 @@ class _FareBlock extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          '${_formatFare(amount)} DZD',
+          '${formatFare(amount)} DZD',
           style: AppTextStyles.headingSmall(context).copyWith(
             fontSize: fareFontSize.sp,
             fontWeight: FontWeight.w700,
@@ -669,41 +603,6 @@ class _MetaDot extends StatelessWidget {
           color: AppColors.textSecondary(context),
         ),
       ),
-    );
-  }
-}
-
-class _LocationRow extends StatelessWidget {
-  const _LocationRow({
-    required this.icon,
-    required this.iconColor,
-    required this.address,
-    required this.iconSize,
-    required this.spacing,
-  });
-
-  final IconData icon;
-  final Color iconColor;
-  final String address;
-  final double iconSize;
-  final double spacing;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(icon, size: iconSize.w, color: iconColor),
-        SizedBox(width: spacing.w),
-        Expanded(
-          child: Text(
-            address,
-            style: AppTextStyles.bodySmall(context),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 }

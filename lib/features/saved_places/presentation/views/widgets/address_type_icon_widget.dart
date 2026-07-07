@@ -4,26 +4,36 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../saved_places/data/address_model.dart';
 
+String addressTypeAssetPath(AddressType type) => switch (type) {
+      AddressType.home => 'assets/icons/saved_places/maison.png',
+      AddressType.work => 'assets/icons/saved_places/work-tools.png',
+      AddressType.other =>
+        'assets/icons/saved_places/emplacement-sur-la-carte.png',
+    };
+
 class AddressTypeIconWidget extends StatelessWidget {
-  const AddressTypeIconWidget({super.key, required this.type});
+  const AddressTypeIconWidget({super.key, required this.type, this.size});
 
   final AddressType type;
+  final double? size;
 
   @override
   Widget build(BuildContext context) {
-    final icon = switch (type) {
-      AddressType.home => Icons.home_outlined,
-      AddressType.work => Icons.work_outline_rounded,
-      AddressType.other => Icons.location_on_outlined,
-    };
+    final boxSize = size ?? 46.w;
     return Container(
-      width: 42.w,
-      height: 42.w,
+      width: boxSize,
+      height: boxSize,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10.r),
+        color: AppColors.background(context),
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(color: AppColors.borderDefault(context), width: 1.w),
       ),
-      child: Icon(icon, color: AppColors.primary, size: 22.w),
+      child: Image.asset(
+        addressTypeAssetPath(type),
+        width: boxSize * 0.56,
+        height: boxSize * 0.56,
+      ),
     );
   }
 }

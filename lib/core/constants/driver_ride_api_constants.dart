@@ -3,6 +3,9 @@ abstract final class DriverRideApiConstants {
 
   static const String _base = '/api/driver/rides';
 
+  /// Paginated ride history (completed + cancelled rides, newest first).
+  static const String history = _base;
+
   static const String available = '$_base/available';
   static String bid(String rideRequestId) => '$_base/$rideRequestId/bid';
   static String arrived(String rideId) => '$_base/$rideId/arrived';

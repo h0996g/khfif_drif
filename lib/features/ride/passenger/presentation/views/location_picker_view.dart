@@ -13,6 +13,7 @@ import '../../../../../shared/widgets/bottomsheets/app_option_sheet.dart';
 import '../../../../../shared/widgets/primary_button.dart';
 import '../../../../saved_places/data/address_model.dart';
 import '../../../../saved_places/data/address_repository.dart';
+import '../../../../saved_places/presentation/views/widgets/address_type_icon_widget.dart';
 import '../../data/models/passenger_ride_models.dart';
 import '../cubit/location_cubit/location_picker_cubit.dart';
 import '../cubit/location_cubit/location_picker_state.dart';
@@ -104,11 +105,7 @@ class _LocationPickerViewState extends State<LocationPickerView> {
         options: [
           for (final address in addresses)
             AppSheetOption(
-              icon: switch (address.type) {
-                AddressType.home => Icons.home_outlined,
-                AddressType.work => Icons.work_outline_rounded,
-                AddressType.other => Icons.location_on_outlined,
-              },
+              leading: AddressTypeIconWidget(type: address.type, size: 40.w),
               label: address.label,
               subtitle: address.address,
               value: address,

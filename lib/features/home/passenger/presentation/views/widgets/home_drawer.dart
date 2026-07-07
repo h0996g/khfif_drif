@@ -18,6 +18,7 @@ import '../../cubit/passenger_home_cubit.dart';
 import '../../cubit/passenger_home_state.dart';
 
 const int _profileIndex = 1;
+const int _ridesIndex = 2;
 const int _savedPlacesIndex = 3;
 const int _switchRoleIndex = 8;
 const int _logoutIndex = 9;
@@ -149,10 +150,15 @@ class HomeDrawer extends StatelessWidget {
 
     final route = switch (index) {
       _profileIndex => RouteNames.passengerProfileEdit,
+      _ridesIndex => RouteNames.passengerRideHistory,
       _savedPlacesIndex => RouteNames.savedPlaces,
       _ => RouteNames.passengerHome,
     };
-    final selectedIndex = index == _profileIndex ? _profileIndex : 0;
+    // Highlight the active item only for routes with a dedicated screen.
+    final selectedIndex = switch (index) {
+      _profileIndex || _ridesIndex => index,
+      _ => 0,
+    };
 
     context.read<PassengerHomeCubit>().updateSelectedIndex(selectedIndex);
     ZoomDrawer.of(context)?.close();

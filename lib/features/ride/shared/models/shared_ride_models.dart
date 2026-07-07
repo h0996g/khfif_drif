@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 final class CoordinatePoint {
@@ -56,6 +57,55 @@ enum ServiceType {
         (e) => e.toJson() == value.toUpperCase(),
         orElse: () => ServiceType.ride,
       );
+}
+
+/// Lifecycle state of a finished or in-progress ride, as returned by the
+/// ride-history endpoints. Shared by the driver and passenger history surfaces.
+enum RideOutcome {
+  accepted,
+  arrived,
+  inProgress,
+  completed,
+  cancelled;
+
+  static RideOutcome fromJson(String value) => switch (value.toUpperCase()) {
+        'ACCEPTED' => accepted,
+        'ARRIVED' => arrived,
+        'IN_PROGRESS' => inProgress,
+        'COMPLETED' => completed,
+        _ => cancelled,
+      };
+
+  String get label => switch (this) {
+        accepted => 'Accepted',
+        arrived => 'Arrived',
+        inProgress => 'In Progress',
+        completed => 'Completed',
+        cancelled => 'Cancelled',
+      };
+
+  /// Wire value for the `state` query filter on the ride-history endpoints.
+  String get apiValue => switch (this) {
+        accepted => 'ACCEPTED',
+        arrived => 'ARRIVED',
+        inProgress => 'IN_PROGRESS',
+        completed => 'COMPLETED',
+        cancelled => 'CANCELLED',
+      };
+
+  Color get color => switch (this) {
+        completed => const Color(0xFF00C853),
+        cancelled => const Color(0xFFEF4444),
+        accepted || arrived || inProgress => const Color(0xFFF59E0B),
+      };
+
+  IconData get icon => switch (this) {
+        completed => Icons.check_circle_rounded,
+        cancelled => Icons.cancel_rounded,
+        accepted => Icons.handshake_outlined,
+        arrived => Icons.flag_outlined,
+        inProgress => Icons.local_taxi_rounded,
+      };
 }
 
 enum VehicleCategory {
@@ -117,4 +167,42 @@ final class CancelRideRequest {
         'reason': reason,
         if (note != null) 'note': note,
       };
+}
+
+/// Optional filters for the passenger/driver ride-history endpoints
+/// (`GET /api/passenger/rides`, `GET /api/driver/rides`).
+final class RideHistoryFilter extends Equatable {
+  const RideHistoryFilter({
+    this.state,
+    this.serviceType,
+    this.from,
+    this.to,
+  });
+
+  static const RideHistoryFilter empty = RideHistoryFilter();
+
+  final RideOutcome? state;
+  final ServiceType? serviceType;
+  final DateTime? from;
+  final DateTime? to;
+
+  bool get isEmpty =>
+      state == null && serviceType == null && from == null && to == null;
+
+  RideHistoryFilter copyWith({
+    RideOutcome? Function()? state,
+    ServiceType? Function()? serviceType,
+    DateTime? Function()? from,
+    DateTime? Function()? to,
+  }) {
+    return RideHistoryFilter(
+      state: state != null ? state() : this.state,
+      serviceType: serviceType != null ? serviceType() : this.serviceType,
+      from: from != null ? from() : this.from,
+      to: to != null ? to() : this.to,
+    );
+  }
+
+  @override
+  List<Object?> get props => [state, serviceType, from, to];
 }

@@ -1,12 +1,15 @@
 import '../../../../core/constants/driver_ride_api_constants.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../shared/utils/date_formatter.dart';
+import 'models/driver_ride_history_models.dart';
 import 'models/driver_ride_models.dart';
 
 final class DriverRideRepository {
   const DriverRideRepository();
 
   Future<AvailableRequestsResponse> listAvailableRides() async {
-    final response = await DioClient.get(path: DriverRideApiConstants.available);
+    final response =
+        await DioClient.get(path: DriverRideApiConstants.available);
     return AvailableRequestsResponse.fromJson(
         response.data as Map<String, dynamic>);
   }
@@ -57,5 +60,29 @@ final class DriverRideRepository {
     final data = response.data;
     if (data is! Map<String, dynamic>) return null;
     return ActiveDriverRideResponse.fromJson(data);
+  }
+
+  /// Paginated ride history (completed + cancelled rides, newest first).
+  Future<DriverRideHistoryResponse> listHistory({
+    int page = 0,
+    int size = 20,
+    RideOutcome? state,
+    ServiceType? serviceType,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    final response = await DioClient.get(
+      path: DriverRideApiConstants.history,
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (state != null) 'state': state.apiValue,
+        if (serviceType != null) 'serviceType': serviceType.toJson(),
+        if (from != null) 'from': toHistoryFilterDateTime(from),
+        if (to != null) 'to': toHistoryFilterDateTime(to, endOfDay: true),
+      },
+    );
+    return DriverRideHistoryResponse.fromJson(
+        response.data as Map<String, dynamic>);
   }
 }

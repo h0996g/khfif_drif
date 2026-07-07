@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../../../../../core/theme/app_colors.dart';
 import '../../../../../../../core/theme/app_text_styles.dart';
+import '../../../../../shared/utils/fare_formatter.dart';
 
 /// Bottom sheet to enter a bid for a ride request. Returns the entered fare in
 /// DZD, or `null` if dismissed. The input is constrained to the server's allowed
@@ -140,7 +141,7 @@ class _BidSheetState extends State<_BidSheet> {
                     child: Center(
                       child: Text(
                         _error.isEmpty
-                            ? 'Min ${_formatFare(_minFare)} – Max ${_formatFare(_maxFare)} DZD'
+                            ? 'Min ${formatFare(_minFare)} – Max ${formatFare(_maxFare)} DZD'
                             : _error,
                         style: AppTextStyles.labelSmall(context).copyWith(
                           color: _error.isEmpty
@@ -347,15 +348,4 @@ class _SubmitButton extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Space-groups thousands for readability: 1200 → "1 200".
-String _formatFare(int amount) {
-  final digits = amount.toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) buffer.write(' ');
-    buffer.write(digits[i]);
-  }
-  return buffer.toString();
 }

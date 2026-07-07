@@ -108,6 +108,93 @@
       }
     },
     "/api/passenger/rides": {
+      "get": {
+        "tags": ["Passenger Rides"],
+        "summary": "List ride history",
+        "description": "Returns completed and cancelled rides for the passenger, newest first.",
+        "operationId": "listHistory",
+        "parameters": [
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "ACCEPTED",
+                "ARRIVED",
+                "IN_PROGRESS",
+                "COMPLETED",
+                "CANCELLED"
+              ]
+            }
+          },
+          {
+            "name": "serviceType",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["RIDE", "DELIVERY"] }
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "format": "date-time" }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 20,
+              "maximum": 100,
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ride history page",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponsePassengerRideHistoryItemResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponsePassengerRideHistoryItemResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
       "post": {
         "tags": ["Passenger Rides"],
         "summary": "Create ride",
@@ -804,6 +891,7 @@
         "type": "object",
         "properties": {
           "rideId": { "type": "string", "format": "uuid" },
+          "rideRequestId": { "type": "string", "format": "uuid" },
           "state": {
             "type": "string",
             "enum": [
@@ -876,6 +964,49 @@
           "description": { "type": "string", "maxLength": 1024, "minLength": 0 }
         },
         "required": ["address", "label", "type"]
+      },
+      "PageResponsePassengerRideHistoryItemResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PassengerRideHistoryItemResponse"
+            }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" }
+        }
+      },
+      "PassengerRideHistoryItemResponse": {
+        "type": "object",
+        "properties": {
+          "rideId": { "type": "string", "format": "uuid" },
+          "rideRequestId": { "type": "string", "format": "uuid" },
+          "state": {
+            "type": "string",
+            "enum": [
+              "ACCEPTED",
+              "ARRIVED",
+              "IN_PROGRESS",
+              "COMPLETED",
+              "CANCELLED"
+            ]
+          },
+          "finalFare": { "type": "integer", "format": "int64" },
+          "pickupAddress": { "type": "string" },
+          "dropoffAddress": { "type": "string" },
+          "serviceType": { "type": "string" },
+          "driverFullName": { "type": "string" },
+          "vehicleModel": { "type": "string" },
+          "vehiclePlate": { "type": "string" },
+          "cancellationReason": { "type": "string" },
+          "acceptedAt": { "type": "string", "format": "date-time" },
+          "completedAt": { "type": "string", "format": "date-time" },
+          "cancelledAt": { "type": "string", "format": "date-time" }
+        }
       },
       "Coordinate": {
         "type": "object",

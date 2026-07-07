@@ -1,5 +1,7 @@
 import '../../../../core/constants/ride_api_constants.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../shared/utils/date_formatter.dart';
+import 'models/passenger_ride_history_models.dart';
 import 'models/passenger_ride_models.dart';
 
 final class PassengerRideRepository {
@@ -56,5 +58,29 @@ final class PassengerRideRepository {
   Future<ActiveRideResponse> getActiveRide() async {
     final response = await DioClient.get(path: PassengerRideApiConstants.active);
     return ActiveRideResponse.fromJson(response.data as Map<String, dynamic>);
+  }
+
+  /// Paginated ride history (completed + cancelled rides, newest first).
+  Future<PassengerRideHistoryResponse> listHistory({
+    int page = 0,
+    int size = 20,
+    RideOutcome? state,
+    ServiceType? serviceType,
+    DateTime? from,
+    DateTime? to,
+  }) async {
+    final response = await DioClient.get(
+      path: PassengerRideApiConstants.history,
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (state != null) 'state': state.apiValue,
+        if (serviceType != null) 'serviceType': serviceType.toJson(),
+        if (from != null) 'from': toHistoryFilterDateTime(from),
+        if (to != null) 'to': toHistoryFilterDateTime(to, endOfDay: true),
+      },
+    );
+    return PassengerRideHistoryResponse.fromJson(
+        response.data as Map<String, dynamic>);
   }
 }

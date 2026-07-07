@@ -8,7 +8,6 @@ import '../constants/api_constants.dart';
 import '../constants/auth_api_constants.dart';
 import '../errors/api_error_model.dart';
 import '../router/app_router.dart';
-import '../widgets/app_toast.dart';
 import '../router/route_names.dart';
 import '../session/auth_session.dart';
 import '../../features/auth/data/models/auth_tokens_model.dart';
@@ -51,8 +50,12 @@ final class DioClient {
     _dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) {
+          // Respect an explicitly provided Authorization header — e.g. the
+          // `Authorization: null` that refreshAccessToken sets to strip the
+          // stale bearer — instead of overwriting it. Other auth endpoints
+          // (switch-role, logout) still receive the access token normally.
           final token = AuthSession.accessToken;
-          if (token != null) {
+          if (token != null && !options.headers.containsKey('Authorization')) {
             options.headers['Authorization'] = 'Bearer $token';
           }
           handler.next(options);
@@ -98,20 +101,30 @@ final class DioClient {
             return handler.next(error);
           }
 
+          // All concurrent 401s join the same in-flight refresh instead of
+          // each racing/failing independently — otherwise only the first
+          // request to 401 benefits and the rest get force-logged-out even
+          // though the refresh succeeds moments later.
+          final String newAccessToken;
           try {
-            // All concurrent 401s join the same in-flight refresh instead of
-            // each racing/failing independently — otherwise only the first
-            // request to 401 benefits and the rest get force-logged-out even
-            // though the refresh succeeds moments later.
-            final newAccessToken = await refreshAccessToken();
-
-            final retryOptions = error.requestOptions;
-            retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
-            final retried = await _dio.fetch(retryOptions);
-            handler.resolve(retried);
+            newAccessToken = await refreshAccessToken();
           } catch (_) {
+            // Only a failed refresh means auth is genuinely revoked — tear the
+            // session down and re-login.
             await _forceLogout();
-            handler.next(error);
+            return handler.next(error);
+          }
+
+          // Refresh succeeded. A retry that still fails (persistent 401, a 403,
+          // a transient) is NOT an auth-revocation signal — surface it to the
+          // caller so the Cubit maps it to a normal failure state, but keep the
+          // session intact.
+          final retryOptions = error.requestOptions;
+          retryOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+          try {
+            handler.resolve(await _dio.fetch(retryOptions));
+          } on DioException catch (retryError) {
+            handler.next(retryError);
           }
         },
       ),
@@ -325,11 +338,10 @@ final class DioClient {
     final data = e.response?.data;
     final apiError = ApiErrorModel.tryParse(data);
     if (apiError != null && apiError.message.isNotEmpty) {
-      final statusCode = e.response?.statusCode;
-      if (statusCode != null && (statusCode == 401 || statusCode == 403)) {
-        AppToast.error(apiError.message);
-        await _forceLogout();
-      }
+      // Auth-revocation logout is owned solely by the 401 onError interceptor
+      // (which only tears down when the refresh itself fails). Do not log out
+      // here — a persistent 401/403 after a healthy refresh is surfaced as a
+      // normal error, not a reason to clear the session.
       return apiError.message;
     }
     return switch (e.type) {

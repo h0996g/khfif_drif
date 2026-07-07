@@ -48,48 +48,59 @@ class AddressCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(14.r),
-      decoration: BoxDecoration(
-        color: AppColors.surface(context),
-        borderRadius: BorderRadius.circular(16.r),
-      ),
-      child: Row(
-        children: [
-          AddressTypeIconWidget(type: address.type),
-          SizedBox(width: 14.w),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  address.label,
-                  style: AppTextStyles.bodyLarge(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                SizedBox(height: 3.h),
-                Text(
-                  address.address,
-                  style: AppTextStyles.bodySmall(context).copyWith(
-                    color: AppColors.textSecondary(context),
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+    return InkWell(
+      onTap: () => context.push(RouteNames.addressEdit, extra: address),
+      borderRadius: BorderRadius.circular(16.r),
+      child: Container(
+        padding: EdgeInsets.all(14.r),
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: BorderRadius.circular(16.r),
+          border:
+              Border.all(color: AppColors.borderDefault(context), width: 1.w),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.04),
+              blurRadius: 16.r,
+              offset: Offset(0, 4.h),
             ),
-          ),
-          IconButton(
-            icon: Icon(Icons.edit_outlined, size: 20.w),
-            onPressed: () =>
-                context.push(RouteNames.addressEdit, extra: address),
-          ),
-          IconButton(
-            icon: Icon(Icons.delete_outline_rounded, size: 20.w),
-            onPressed: () => _confirmDelete(context),
-          ),
-        ],
+          ],
+        ),
+        child: Row(
+          children: [
+            AddressTypeIconWidget(type: address.type),
+            SizedBox(width: 14.w),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    address.label,
+                    style: AppTextStyles.bodyLarge(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 3.h),
+                  Text(
+                    address.address,
+                    style: AppTextStyles.bodySmall(context).copyWith(
+                      color: AppColors.textSecondary(context),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.delete_outline_rounded, size: 20.w),
+              color: AppColors.textSecondary(context),
+              onPressed: () => _confirmDelete(context),
+            ),
+          ],
+        ),
       ),
     );
   }
