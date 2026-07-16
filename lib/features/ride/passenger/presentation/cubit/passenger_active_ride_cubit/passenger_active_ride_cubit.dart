@@ -48,11 +48,11 @@ final class PassengerActiveRideCubit extends Cubit<PassengerActiveRideState> {
   }
 
   Future<void> cancelRide(CancelReason reason, {String? note}) async {
-    final rideId = state.ride?.rideId;
-    if (rideId == null) return;
+    final rideRequestId = state.ride?.rideRequestId;
+    if (rideRequestId == null) return;
     try {
       await _repository.cancelRide(
-        rideId,
+        rideRequestId,
         CancelRideRequest(reason: reason.apiValue, note: note),
       );
       emit(state.copyWith(status: PassengerActiveRideStatus.cancelled));

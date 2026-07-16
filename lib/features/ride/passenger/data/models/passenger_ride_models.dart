@@ -266,6 +266,7 @@ final class DriverInRide {
 final class ActiveRideSummary {
   const ActiveRideSummary({
     required this.rideId,
+    required this.rideRequestId,
     required this.state,
     required this.finalFare,
     required this.driver,
@@ -277,6 +278,7 @@ final class ActiveRideSummary {
   });
 
   final String rideId;
+  final String rideRequestId;
   final String state;
   final int finalFare;
   final DriverInRide driver;
@@ -289,6 +291,7 @@ final class ActiveRideSummary {
   factory ActiveRideSummary.fromJson(Map<String, dynamic> json) =>
       ActiveRideSummary(
         rideId: json['rideId'] as String,
+        rideRequestId: json['rideRequestId'] as String,
         state: json['state'] as String,
         finalFare: json['finalFare'] as int,
         driver: DriverInRide.fromJson(json['driver'] as Map<String, dynamic>),

@@ -1,16 +1,48 @@
 {
-  "pickup": {
-    "address": "Aïn El Bey, Constantine ⵇⵙⴻⵟⵉⵏⴰ قسنطينة, Daïra Constantine, قسنطينة Constantine ⵇⵙⴻⵏⵟⵉⵏⴰ, 25000, ⵍⵣⵣⴰⵢⴻⵔ الجزائر",
-    "lat": 36.32273971674848,
-    "lng": 6.630593386230463
+  "request": {
+    "rideRequestId": "53c9d070-142c-4489-984d-2e3ac219de46",
+    "state": "ACCEPTED",
+    "proposedFare": 1000,
+    "expiresAt": "2026-07-16T12:10:37.947667Z",
+    "offerCount": 0,
+    "pickup": {
+      "lat": 36.33268764855415,
+      "lng": 6.1517393812010335,
+      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+    },
+    "dropoff": {
+      "lat": 36.343450379971664,
+      "lng": 6.152215336853006,
+      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+    }
   },
-  "dropoff": {
-    "address": "CW 175, Aïn El Bey, Ben Abdelmalek, Constantine ⵇⵙⴻⵟⵉⵏⴰ قسنطينة, Daïra Constantine, قسنطينة Constantine ⵇⵙⴻⵏⵟⵉⵏⴰ, 25003, ⵍⵣⵣⴰⵢⴻⵔ الجزائر",
-    "lat": 36.326450850497686,
-    "lng": 6.636401262817363
-  },
-  "serviceType": "RIDE",
-  "vehicleCategory": "CAR",
-  "femaleOnly": false,
-  "proposedFare": 2000
+  "ride": {
+    "rideId": "03cb3b78-ad78-4078-a5cc-f763ee7b98ff",
+    "rideRequestId": "53c9d070-142c-4489-984d-2e3ac219de46",
+    "state": "ACCEPTED",
+    "finalFare": 1000,
+    "driver": {
+      "id": "b2467a89-df28-4669-893c-982b7f2ebc3e",
+      "fullName": "house",
+      "phone": "+213555555555",
+      "vehicleModel": "Ooo",
+      "vehiclePlate": "21123 132 42",
+      "currentPosition": null,
+      "etaSeconds": 24
+    },
+    "pickup": {
+      "lat": 36.33268764855415,
+      "lng": 6.1517393812010335,
+      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+    },
+    "dropoff": {
+      "lat": 36.343450379971664,
+      "lng": 6.152215336853006,
+      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+    },
+    "acceptedAt": "2026-07-16T12:05:56.502354Z",
+    "arrivedAt": null,
+    "startedAt": null,
+    "arrivalWaitDeadline": null
+  }
 }
