@@ -19,6 +19,10 @@
     {
       "name": "Driver Rides",
       "description": "Browse available requests, bid, and manage active rides"
+    },
+    {
+      "name": "Driver Wallet",
+      "description": "Driver commission wallet — balance, ledger, and top-ups"
     }
   ],
   "paths": {
@@ -140,6 +144,130 @@
               }
             }
           }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/driver/wallet/topups": {
+      "get": {
+        "tags": ["Driver Wallet"],
+        "summary": "List own top-ups",
+        "description": "The driver's own top-up requests, most-recent-first.",
+        "operationId": "listTopUps",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top-up page",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseTopUpResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseTopUpResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      },
+      "post": {
+        "tags": ["Driver Wallet"],
+        "summary": "Submit top-up",
+        "description": "Submits a manual top-up request with a receipt image (multipart/form-data).",
+        "operationId": "submitTopUp",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "amountDzd": { "type": "string" },
+                  "channel": { "type": "string" },
+                  "receipt": { "type": "string", "format": "binary" }
+                },
+                "required": ["amountDzd", "channel", "receipt"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Top-up created (PENDING)",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/TopUpResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "TOPUP_BELOW_MINIMUM / TOPUP_RECEIPT_REQUIRED",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/TopUpResponse" }
+              }
+            }
+          },
+          "409": {
+            "description": "TOPUP_PENDING_EXISTS",
+            "content": {
+              "*/*": {
+                "schema": { "$ref": "#/components/schemas/TopUpResponse" }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/driver/wallet/topups/{id}/cancel": {
+      "post": {
+        "tags": ["Driver Wallet"],
+        "summary": "Cancel top-up",
+        "description": "Cancels a PENDING top-up request.",
+        "operationId": "cancelTopUp",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Cancelled" },
+          "404": { "description": "TOPUP_NOT_FOUND" },
+          "409": { "description": "TOPUP_NOT_PENDING" }
         },
         "security": [{ "bearerAuth": [] }]
       }
@@ -581,6 +709,82 @@
         "security": [{ "bearerAuth": [] }]
       }
     },
+    "/api/driver/wallet": {
+      "get": {
+        "tags": ["Driver Wallet"],
+        "summary": "Get wallet balance",
+        "description": "Returns the driver's current balance and gate status.",
+        "operationId": "getBalance",
+        "responses": {
+          "200": {
+            "description": "Balance",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletBalanceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/WalletBalanceResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
+    "/api/driver/wallet/transactions": {
+      "get": {
+        "tags": ["Driver Wallet"],
+        "summary": "List transactions",
+        "description": "Paginated ledger, most-recent-first.",
+        "operationId": "listTransactions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 0 }
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer", "format": "int32", "default": 20 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction page",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWalletTransactionResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageResponseWalletTransactionResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "bearerAuth": [] }]
+      }
+    },
     "/api/driver/rides": {
       "get": {
         "tags": ["Driver Rides"],
@@ -870,6 +1074,22 @@
           }
         }
       },
+      "TopUpResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "amountDzd": { "type": "integer", "format": "int64" },
+          "channel": { "type": "string", "enum": ["CASH", "BANK_TRANSFER"] },
+          "status": {
+            "type": "string",
+            "enum": ["PENDING", "APPROVED", "REJECTED", "CANCELLED"]
+          },
+          "creditedAmountDzd": { "type": "integer", "format": "int64" },
+          "decisionReason": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "decidedAt": { "type": "string", "format": "date-time" }
+        }
+      },
       "BidRequest": {
         "type": "object",
         "properties": {
@@ -1043,6 +1263,65 @@
       "DriverAvailabilityResponse": {
         "type": "object",
         "properties": { "isOnline": { "type": "boolean" } }
+      },
+      "WalletBalanceResponse": {
+        "type": "object",
+        "properties": {
+          "balanceDzd": { "type": "integer", "format": "int64" },
+          "minOnlineBalanceDzd": { "type": "integer", "format": "int64" },
+          "belowGate": { "type": "boolean" }
+        }
+      },
+      "PageResponseWalletTransactionResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WalletTransactionResponse"
+            }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" }
+        }
+      },
+      "WalletTransactionResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "TOPUP_CREDIT",
+              "RIDE_COMMISSION",
+              "RIDE_CANCEL_PENALTY",
+              "ADMIN_CREDIT",
+              "ADMIN_DEBIT",
+              "STARTING_CREDIT"
+            ]
+          },
+          "amountDzd": { "type": "integer", "format": "int64" },
+          "balanceAfterDzd": { "type": "integer", "format": "int64" },
+          "sourceType": { "type": "string" },
+          "sourceRef": { "type": "string", "format": "uuid" },
+          "note": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "PageResponseTopUpResponse": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/TopUpResponse" }
+          },
+          "page": { "type": "integer", "format": "int32" },
+          "size": { "type": "integer", "format": "int32" },
+          "totalElements": { "type": "integer", "format": "int64" },
+          "totalPages": { "type": "integer", "format": "int32" }
+        }
       },
       "DriverRideHistoryItemResponse": {
         "type": "object",

@@ -411,7 +411,12 @@
           },
           "vehicleTier": { "type": "string", "enum": ["STANDARD", "COMFORT"] },
           "isOnline": { "type": "boolean" },
-          "requiresRekyc": { "type": "boolean" }
+          "requiresRekyc": { "type": "boolean" },
+          "activeServiceTypes": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["RIDE", "DELIVERY"] },
+            "uniqueItems": true
+          }
         }
       },
       "MeProfileResponse": {
