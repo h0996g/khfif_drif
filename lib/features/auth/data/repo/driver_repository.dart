@@ -61,6 +61,9 @@ final class DriverRepository {
     final data = response.data as Map<String, dynamic>;
 
     await AuthSession.setWaitingKycStatus(true);
+    // Onboarding is over once an application exists — otherwise the app would
+    // reopen on the mode selection screen forever.
+    await AuthSession.setIsNewUser(false);
 
     return KycSubmitResult(
       submissionId: data['submissionId'] as String? ?? '',

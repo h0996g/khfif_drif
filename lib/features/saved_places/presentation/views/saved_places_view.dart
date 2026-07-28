@@ -33,8 +33,7 @@ class SavedPlacesView extends StatelessWidget {
               listenWhen: (prev, curr) =>
                   prev.deleteAddressStatus != curr.deleteAddressStatus,
               listener: (context, state) {
-                if (state.deleteAddressStatus ==
-                    DeleteAddressStatus.success) {
+                if (state.deleteAddressStatus == DeleteAddressStatus.success) {
                   AppToast.success('Address deleted');
                 } else if (state.deleteAddressStatus ==
                     DeleteAddressStatus.failure) {
@@ -61,8 +60,8 @@ class SavedPlacesView extends StatelessWidget {
                           ? Center(
                               child: Text(
                                 'No saved places yet',
-                                style: AppTextStyles.bodyMedium(context)
-                                    .copyWith(
+                                style:
+                                    AppTextStyles.bodyMedium(context).copyWith(
                                   color: AppColors.textSecondary(context),
                                 ),
                               ),
@@ -85,8 +84,7 @@ class SavedPlacesView extends StatelessWidget {
                         width: double.infinity,
                         height: 48.h,
                         child: OutlinedButton.icon(
-                          onPressed: () =>
-                              context.push(RouteNames.addressForm),
+                          onPressed: () => context.push(RouteNames.addressForm),
                           icon: const Icon(Icons.add_location_alt_outlined),
                           label: const Text('Add New Place'),
                           style: OutlinedButton.styleFrom(

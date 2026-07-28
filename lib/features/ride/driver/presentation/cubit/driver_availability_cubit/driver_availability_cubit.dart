@@ -1,5 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../../core/constants/wallet_api_constants.dart';
+import '../../../../../../core/errors/api_exception.dart';
 import '../../../../../../core/models/token_payload.dart';
 import '../../../../../../core/network/driver_location_streamer.dart';
 import '../../../../../../core/network/ride_socket_service.dart';
@@ -21,7 +23,11 @@ class DriverAvailabilityCubit extends Cubit<DriverAvailabilityState> {
 
   Future<void> toggle() async {
     if (state.status == DriverAvailabilityStatus.loading) return;
-    emit(state.copyWith(status: DriverAvailabilityStatus.loading));
+    emit(state.copyWith(
+      status: DriverAvailabilityStatus.loading,
+      errorMessage: '',
+      gatedByBalance: false,
+    ));
     try {
       final wasOnline = state.isOnline;
       final isOnline =
@@ -46,8 +52,16 @@ class DriverAvailabilityCubit extends Cubit<DriverAvailabilityState> {
         status: DriverAvailabilityStatus.success,
         isOnline: isOnline,
       ));
-    } catch (_) {
-      emit(state.copyWith(status: DriverAvailabilityStatus.failed));
+    } catch (e) {
+      // The wallet gate is the one failure with a fix the driver can act on,
+      // so it is flagged separately for a "top up" prompt instead of a toast.
+      final gated = e is ApiException &&
+          e.code == WalletErrorCodes.insufficientBalance;
+      emit(state.copyWith(
+        status: DriverAvailabilityStatus.failed,
+        errorMessage: e.toString(),
+        gatedByBalance: gated,
+      ));
     }
   }
 }

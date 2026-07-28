@@ -22,6 +22,7 @@ import '../../../../../ride/driver/presentation/views/widgets/driver_availabilit
 const int _profileIndex = 1;
 const int _ridesIndex = 2;
 const int _rideHistoryIndex = 3;
+const int _walletIndex = 4;
 const int _switchRoleIndex = 8;
 const int _logoutIndex = 9;
 
@@ -36,7 +37,7 @@ class DriverHomeDrawer extends StatelessWidget {
       const DrawerMenuItemData(Icons.directions_car_rounded, 'Rides'),
       const DrawerMenuItemData(Icons.history_rounded, 'Ride History'),
       const DrawerMenuItemData(
-          Icons.account_balance_wallet_outlined, 'Earnings'),
+          Icons.account_balance_wallet_outlined, 'Wallet'),
       const DrawerMenuItemData(Icons.motorcycle_outlined, 'Vehicle Info'),
     ];
 
@@ -131,11 +132,12 @@ class DriverHomeDrawer extends StatelessWidget {
       _profileIndex => RouteNames.driverProfileEdit,
       _ridesIndex => RouteNames.availableRides,
       _rideHistoryIndex => RouteNames.driverRideHistory,
+      _walletIndex => RouteNames.driverWallet,
       _ => RouteNames.driverHome,
     };
     // Highlight the active item only for routes with a dedicated screen.
     final selectedIndex = switch (index) {
-      _profileIndex || _ridesIndex || _rideHistoryIndex => index,
+      _profileIndex || _ridesIndex || _rideHistoryIndex || _walletIndex => index,
       _ => 0,
     };
 

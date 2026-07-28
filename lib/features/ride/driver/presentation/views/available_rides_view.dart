@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/route_names.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 import '../../../../../shared/widgets/top_bar.dart';
@@ -87,6 +89,23 @@ class _AvailableRidesViewState extends State<AvailableRidesView> {
       // not just this one) — no case needed here.
       case AvailableRidesStatus.bidSuccess:
         _showSnack(context, 'Bid submitted', AppColors.primary);
+      case AvailableRidesStatus.gatedByBalance:
+        // Actionable, unlike a generic failure: send the driver to the wallet
+        // rather than leaving them to guess why the bid bounced.
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(
+            SnackBar(
+              content: const Text('Top up your wallet to bid on rides'),
+              backgroundColor: AppColors.error,
+              behavior: SnackBarBehavior.floating,
+              action: SnackBarAction(
+                label: 'Top up',
+                textColor: AppColors.white,
+                onPressed: () => context.push(RouteNames.driverWallet),
+              ),
+            ),
+          );
       case AvailableRidesStatus.failure when state.rides.isNotEmpty:
         // List is still on screen; surface the bid/refresh error as a snackbar
         // instead of wiping the cards.

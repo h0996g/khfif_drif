@@ -60,6 +60,13 @@ import '../../features/ride/driver/presentation/cubit/driver_ride_history_cubit/
 import '../../features/ride/driver/presentation/views/available_rides_view.dart';
 import '../../features/ride/driver/presentation/views/driver_active_ride_view.dart';
 import '../../features/ride/driver/presentation/views/driver_ride_history_view.dart';
+import '../../features/wallet/driver/data/receipt_picker_service.dart';
+import '../../features/wallet/driver/data/wallet_repository.dart';
+import '../../features/wallet/driver/presentation/cubit/top_up_cubit/top_up_cubit.dart';
+import '../../features/wallet/driver/presentation/cubit/wallet_cubit/wallet_cubit.dart';
+import '../../features/wallet/driver/presentation/views/driver_wallet_view.dart';
+import '../../features/wallet/driver/presentation/views/top_up_form_view.dart';
+import '../../features/wallet/driver/presentation/views/top_up_history_view.dart';
 import '../session/auth_session.dart';
 import 'route_names.dart';
 
@@ -297,6 +304,12 @@ final class AppRouter {
             BlocProvider<AvailableRidesCubit>(
               create: (_) => AvailableRidesCubit(const DriverRideRepository()),
             ),
+            // Shell-scoped too: the balance gate is read by the availability
+            // toggle in the drawer as well as the wallet screens, and wallet
+            // events land on the same driver socket at any time.
+            BlocProvider<WalletCubit>(
+              create: (_) => WalletCubit(const WalletRepository())..load(),
+            ),
           ],
           child: DriverHomeShell(child: child),
         ),
@@ -363,6 +376,32 @@ final class AppRouter {
                   const DriverRideRepository(),
                 )..loadHistory(),
                 child: const DriverRideHistoryView(),
+              );
+            },
+          ),
+          GoRoute(
+            path: RouteNames.driverWallet,
+            builder: (context, state) => const DriverWalletView(),
+          ),
+          GoRoute(
+            path: RouteNames.driverTopUp,
+            builder: (context, state) {
+              return BlocProvider<TopUpCubit>(
+                create: (_) =>
+                    TopUpCubit(const WalletRepository(), ReceiptPickerService()),
+                child: const TopUpFormView(),
+              );
+            },
+          ),
+          GoRoute(
+            path: RouteNames.driverTopUpHistory,
+            builder: (context, state) {
+              return BlocProvider<TopUpCubit>(
+                create: (_) => TopUpCubit(
+                  const WalletRepository(),
+                  ReceiptPickerService(),
+                )..loadHistory(),
+                child: const TopUpHistoryView(),
               );
             },
           ),

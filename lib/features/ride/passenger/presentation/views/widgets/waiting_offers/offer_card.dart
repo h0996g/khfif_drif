@@ -168,38 +168,42 @@ class _FareStub extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 104.w,
-      padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 10.h),
+      width: 106.w,
+      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 10.h),
       color: AppColors.primary.withValues(alpha: 0.07),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                formatFare(fare),
-                style: AppTextStyles.headingSmall(context).copyWith(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w800,
-                  fontSize: 20.sp,
-                  height: 1.0,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-              ),
-              SizedBox(width: 3.w),
-              Padding(
-                padding: EdgeInsets.only(bottom: 1.h),
-                child: Text(
-                  'DZD',
-                  style: AppTextStyles.labelSmall(context).copyWith(
-                    color: AppColors.textSecondary(context),
-                    fontWeight: FontWeight.w600,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  formatFare(fare),
+                  style: AppTextStyles.headingSmall(context).copyWith(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 20.sp,
+                    height: 1.0,
+                    fontFeatures: const [FontFeature.tabularFigures()],
                   ),
                 ),
-              ),
-            ],
+                SizedBox(width: 3.w),
+                Padding(
+                  padding: EdgeInsets.only(bottom: 1.h),
+                  child: Text(
+                    'DZD',
+                    style: AppTextStyles.labelSmall(context).copyWith(
+                      color: AppColors.textSecondary(context),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
           if (proposedFare != null) ...[
             SizedBox(height: 5.h),
@@ -234,19 +238,23 @@ class _FareDeltaChip extends StatelessWidget {
         color: color.withValues(alpha: 0.14),
         borderRadius: BorderRadius.circular(6.r),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: 11.w, color: color),
-          SizedBox(width: 2.w),
-          Text(
-            label,
-            style: AppTextStyles.labelSmall(context).copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 11.w, color: color),
+            SizedBox(width: 2.w),
+            Text(
+              label,
+              style: AppTextStyles.labelSmall(context).copyWith(
+                color: color,
+                fontWeight: FontWeight.w700,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -422,23 +430,26 @@ class _DriverSide extends StatelessWidget {
                     ),
                   ),
                   onPressed: isAccepting ? null : onRefuse,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.close_rounded, size: 14.w),
-                      SizedBox(width: 4.w),
-                      Text(
-                        'Decline',
-                        style: AppTextStyles.labelSmall(context).copyWith(
-                          color: isAccepting
-                              ? AppColors.buttonDisabledText(context)
-                              : AppColors.text(context),
-                          fontWeight: FontWeight.w600,
-                          fontSize: 12.sp,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.close_rounded, size: 14.w),
+                        SizedBox(width: 4.w),
+                        Text(
+                          'Decline',
+                          style: AppTextStyles.labelSmall(context).copyWith(
+                            color: isAccepting
+                                ? AppColors.buttonDisabledText(context)
+                                : AppColors.text(context),
+                            fontWeight: FontWeight.w600,
+                            fontSize: 12.sp,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -457,21 +468,24 @@ class _DriverSide extends StatelessWidget {
                     ),
                   ),
                   onPressed: isAccepting ? null : onAccept,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.check_rounded, size: 15.w),
-                      SizedBox(width: 4.w),
-                      Text(
-                        'Accept',
-                        style: AppTextStyles.labelSmall(context).copyWith(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w700,
-                          fontSize: 12.sp,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.check_rounded, size: 15.w),
+                        SizedBox(width: 4.w),
+                        Text(
+                          'Accept',
+                          style: AppTextStyles.labelSmall(context).copyWith(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12.sp,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

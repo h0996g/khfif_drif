@@ -37,6 +37,13 @@ enum RideSocketEventType {
   offerExpired('offer.expired'),
   rideStateChanged('ride.state_changed'),
   rideCancelled('ride.cancelled'),
+  // Wallet downstream (driver only — see integration/epic-04-wallet.md §5)
+  walletTopUpApproved('wallet.topup_approved'),
+  walletTopUpRejected('wallet.topup_rejected'),
+  walletCommissionCharged('wallet.commission_charged'),
+  walletPenaltyCharged('wallet.penalty_charged'),
+  walletBalanceLow('wallet.balance_low'),
+  walletBalanceAdjusted('wallet.balance_adjusted'),
   // System
   systemTokenExpiring('system.token_expiring');
 
@@ -125,6 +132,34 @@ sealed class RideSocketEvent {
             lng: (payload['lng'] as num).toDouble(),
             capturedAt: payload['capturedAt'] as String,
           ),
+        RideSocketEventType.walletTopUpApproved => WalletTopUpApproved(
+            topUpId: payload['topUpId'] as String,
+            creditedAmountDzd: _asInt(payload['creditedAmountDzd']),
+            balanceDzd: _asInt(payload['balanceDzd']),
+          ),
+        RideSocketEventType.walletTopUpRejected => WalletTopUpRejected(
+            topUpId: payload['topUpId'] as String,
+            reason: payload['reason'] as String? ?? '',
+          ),
+        RideSocketEventType.walletCommissionCharged => WalletCommissionCharged(
+            rideId: payload['rideId'] as String,
+            amountDzd: _asInt(payload['amountDzd']),
+            balanceDzd: _asInt(payload['balanceDzd']),
+          ),
+        RideSocketEventType.walletPenaltyCharged => WalletPenaltyCharged(
+            rideId: payload['rideId'] as String,
+            amountDzd: _asInt(payload['amountDzd']),
+            balanceDzd: _asInt(payload['balanceDzd']),
+          ),
+        RideSocketEventType.walletBalanceLow => WalletBalanceLow(
+            balanceDzd: _asInt(payload['balanceDzd']),
+            thresholdDzd: _asInt(payload['thresholdDzd']),
+          ),
+        RideSocketEventType.walletBalanceAdjusted => WalletBalanceAdjusted(
+            direction: payload['direction'] as String? ?? '',
+            amountDzd: _asInt(payload['amountDzd']),
+            balanceDzd: _asInt(payload['newBalanceDzd']),
+          ),
         RideSocketEventType.systemTokenExpiring => SystemTokenExpiring(
             expiresAt: payload['expiresAt'] as String,
           ),
@@ -133,6 +168,9 @@ sealed class RideSocketEvent {
       return null;
     }
   }
+
+  static int _asInt(Object? value) =>
+      value is int ? value : (value is num ? value.toInt() : 0);
 }
 
 // ── Driver downstream ──────────────────────────────────────────────────────
@@ -292,6 +330,102 @@ final class RideCancelled extends RideSocketEvent {
   final String actorType;
   final String reason;
   final String occurredAt;
+}
+
+// ── Wallet downstream (driver only) ───────────────────────────────────────
+
+/// Common shape of every wallet event that carries the resulting balance —
+/// four of the six do, letting the wallet cubit patch its tile uniformly
+/// instead of refetching. `wallet.topup_rejected` moves no money, and
+/// `wallet.balance_low` merely restates the balance that just changed.
+sealed class WalletBalanceEvent extends RideSocketEvent {
+  const WalletBalanceEvent();
+
+  /// The balance after the move, straight from the payload.
+  int get balanceDzd;
+}
+
+/// An admin approved a top-up. `creditedAmountDzd` may differ from the amount
+/// the driver requested if the receipt showed something else.
+final class WalletTopUpApproved extends WalletBalanceEvent {
+  const WalletTopUpApproved({
+    required this.topUpId,
+    required this.creditedAmountDzd,
+    required this.balanceDzd,
+  });
+
+  final String topUpId;
+  final int creditedAmountDzd;
+  @override
+  final int balanceDzd;
+}
+
+/// An admin rejected a top-up; `reason` is free text meant for the driver.
+final class WalletTopUpRejected extends RideSocketEvent {
+  const WalletTopUpRejected({required this.topUpId, required this.reason});
+
+  final String topUpId;
+  final String reason;
+}
+
+/// A completed ride was settled. `amountDzd` is the **positive** commission
+/// that was debited — the ledger row carries the signed value.
+final class WalletCommissionCharged extends WalletBalanceEvent {
+  const WalletCommissionCharged({
+    required this.rideId,
+    required this.amountDzd,
+    required this.balanceDzd,
+  });
+
+  final String rideId;
+  final int amountDzd;
+  @override
+  final int balanceDzd;
+}
+
+/// A post-accept cancellation with a driver-fault reason
+/// (`DRIVER_TOO_FAR` / `DRIVER_VEHICLE_ISSUE`) charged a penalty.
+final class WalletPenaltyCharged extends WalletBalanceEvent {
+  const WalletPenaltyCharged({
+    required this.rideId,
+    required this.amountDzd,
+    required this.balanceDzd,
+  });
+
+  final String rideId;
+  final int amountDzd;
+  @override
+  final int balanceDzd;
+}
+
+/// The last debit pushed the balance under `minOnlineBalanceDzd`. May arrive
+/// immediately after a commission/penalty event for the same debit — expect
+/// two frames back to back. Never sent on credits, and never forces the driver
+/// offline mid-session; it only warns.
+final class WalletBalanceLow extends WalletBalanceEvent {
+  const WalletBalanceLow({
+    required this.balanceDzd,
+    required this.thresholdDzd,
+  });
+
+  @override
+  final int balanceDzd;
+  final int thresholdDzd;
+}
+
+/// An admin manually credited or debited the wallet.
+/// `direction` is `CREDIT` or `DEBIT`.
+final class WalletBalanceAdjusted extends WalletBalanceEvent {
+  const WalletBalanceAdjusted({
+    required this.direction,
+    required this.amountDzd,
+    required this.balanceDzd,
+  });
+
+  final String direction;
+  final int amountDzd;
+  @override
+  final int balanceDzd;
 }
 
 // ── System ─────────────────────────────────────────────────────────────────

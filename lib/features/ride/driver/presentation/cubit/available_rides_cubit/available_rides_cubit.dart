@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:khfif_drif/core/widgets/app_toast.dart';
 
+import '../../../../../../core/constants/wallet_api_constants.dart';
+import '../../../../../../core/errors/api_exception.dart';
 import '../../../../../../core/network/ride_socket_service.dart';
 import '../../../data/driver_ride_repository.dart';
 import '../../../data/models/driver_ride_models.dart';
@@ -49,9 +51,15 @@ final class AvailableRidesCubit extends Cubit<AvailableRidesState> {
       await _repository.submitBid(rideRequestId, fare);
       emit(state.copyWith(status: AvailableRidesStatus.bidSuccess));
     } catch (e) {
-      AppToast.error(e.toString());
+      // The wallet gate blocks bidding just as it blocks going online. It has
+      // a concrete fix, so it is surfaced as a prompt rather than a raw toast.
+      final gated =
+          e is ApiException && e.code == WalletErrorCodes.insufficientBalance;
+      if (!gated) AppToast.error(e.toString());
       emit(state.copyWith(
-        status: AvailableRidesStatus.failure,
+        status: gated
+            ? AvailableRidesStatus.gatedByBalance
+            : AvailableRidesStatus.failure,
         errorMessage: e.toString(),
       ));
     }

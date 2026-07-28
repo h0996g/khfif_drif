@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import '../constants/api_constants.dart';
 import '../constants/auth_api_constants.dart';
 import '../errors/api_error_model.dart';
+import '../errors/api_exception.dart';
 import '../router/app_router.dart';
 import '../router/route_names.dart';
 import '../session/auth_session.dart';
@@ -334,7 +335,8 @@ final class DioClient {
         '-${b.sublist(10, 16).map(h).join()}';
   }
 
-  static Future<String> _handleDioError(DioException e) async {
+  static Future<ApiException> _handleDioError(DioException e) async {
+    final status = e.response?.statusCode;
     final data = e.response?.data;
     final apiError = ApiErrorModel.tryParse(data);
     if (apiError != null && apiError.message.isNotEmpty) {
@@ -342,9 +344,13 @@ final class DioClient {
       // (which only tears down when the refresh itself fails). Do not log out
       // here — a persistent 401/403 after a healthy refresh is surfaced as a
       // normal error, not a reason to clear the session.
-      return apiError.message;
+      return ApiException(
+        message: apiError.message,
+        code: apiError.code,
+        statusCode: status,
+      );
     }
-    return switch (e.type) {
+    final message = switch (e.type) {
       DioExceptionType.connectionTimeout ||
       DioExceptionType.sendTimeout ||
       DioExceptionType.receiveTimeout =>
@@ -352,5 +358,6 @@ final class DioClient {
       DioExceptionType.connectionError => 'No connection. Check your network.',
       _ => 'Something went wrong. Please try again.',
     };
+    return ApiException(message: message, statusCode: status);
   }
 }

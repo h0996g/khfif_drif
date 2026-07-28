@@ -143,7 +143,11 @@ final class AuthSession {
 
   static String resolveInitialRoute() {
     if (!isLoggedIn) return RouteNames.phone;
-    if (isNewUser) return RouteNames.modeSelection;
+    // A submitted or approved driver application means onboarding is done, even
+    // if the isNewUser flag was never cleared (sessions from older builds).
+    if (isNewUser && !waitingKycStatus && !hasDriverProfile) {
+      return RouteNames.modeSelection;
+    }
     if (_lastRole == roleDriver) return RouteNames.driverHome;
     return RouteNames.passengerHome;
   }
