@@ -69,13 +69,10 @@ class _PassengerActiveRideViewState extends State<PassengerActiveRideView> {
           case PassengerActiveRideStatus.actionFailure:
             AppToast.error(state.errorMessage);
           case PassengerActiveRideStatus.completed:
+            AppToast.success('Ride completed!');
+            context.go(RouteNames.passengerHome);
           case PassengerActiveRideStatus.cancelled:
-            final message = state.status == PassengerActiveRideStatus.completed
-                ? 'Ride completed!'
-                : 'Ride was cancelled';
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(message)),
-            );
+            AppToast.warning('Ride was cancelled');
             context.go(RouteNames.passengerHome);
           default:
             break;

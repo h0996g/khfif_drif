@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:go_router/go_router.dart';
 
-import '../../../../../core/router/route_names.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 import '../../../../../shared/widgets/top_bar.dart';
@@ -35,9 +33,10 @@ class _AvailableRidesViewState extends State<AvailableRidesView> {
           children: [
             const TopBar(title: 'Available Rides'),
             Expanded(
-              child: BlocConsumer<AvailableRidesCubit, AvailableRidesState>(
-                listenWhen: (prev, curr) => prev.status != curr.status,
-                listener: _onStateChanged,
+              // Bid feedback (success, wallet gate, failures) and the
+              // offer-accepted navigation are owned by DriverHomeShell's
+              // listener so they fire on every driver screen, not just here.
+              child: BlocBuilder<AvailableRidesCubit, AvailableRidesState>(
                 builder: (context, state) {
                   if (state.rides.isEmpty) {
                     if (state.status == AvailableRidesStatus.loading) {
@@ -82,43 +81,6 @@ class _AvailableRidesViewState extends State<AvailableRidesView> {
     );
   }
 
-  void _onStateChanged(BuildContext context, AvailableRidesState state) {
-    switch (state.status) {
-      // Note: `offerAccepted` is handled globally by the shell-level
-      // BlocListener in DriverHomeShell (so navigation works on every screen,
-      // not just this one) — no case needed here.
-      case AvailableRidesStatus.bidSuccess:
-        _showSnack(context, 'Bid submitted', AppColors.primary);
-      case AvailableRidesStatus.gatedByBalance:
-        // Actionable, unlike a generic failure: send the driver to the wallet
-        // rather than leaving them to guess why the bid bounced.
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(
-            SnackBar(
-              content: const Text('Top up your wallet to bid on rides'),
-              backgroundColor: AppColors.error,
-              behavior: SnackBarBehavior.floating,
-              action: SnackBarAction(
-                label: 'Top up',
-                textColor: AppColors.white,
-                onPressed: () => context.push(RouteNames.driverWallet),
-              ),
-            ),
-          );
-      case AvailableRidesStatus.failure when state.rides.isNotEmpty:
-        // List is still on screen; surface the bid/refresh error as a snackbar
-        // instead of wiping the cards.
-        _showSnack(
-          context,
-          state.errorMessage.isEmpty ? 'Bid failed' : state.errorMessage,
-          AppColors.error,
-        );
-      default:
-        break;
-    }
-  }
-
   Future<void> _openBidSheet(
     BuildContext context,
     AvailableRequestCard ride,
@@ -131,17 +93,6 @@ class _AvailableRidesViewState extends State<AvailableRidesView> {
     }
   }
 
-  void _showSnack(BuildContext context, String message, Color color) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: color,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-  }
 }
 
 class _Message extends StatelessWidget {

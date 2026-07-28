@@ -71,9 +71,7 @@ class _DriverActiveRideViewState extends State<DriverActiveRideView> {
         listener: (context, state) {
           switch (state.status) {
             case DriverActiveRideStatus.cancelled:
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Ride was cancelled')),
-              );
+              AppToast.warning('Ride was cancelled');
               context.go(RouteNames.driverHome);
             case DriverActiveRideStatus.completed:
               AppToast.success(

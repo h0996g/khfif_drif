@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
+import '../../../../../core/widgets/app_toast.dart';
 import '../../../../home/passenger/presentation/views/widgets/top_bar.dart';
 import '../../../shared/widgets/ride_history_date_range_dialog.dart';
 import '../../../shared/widgets/ride_history_filter_bar.dart';
@@ -96,7 +97,10 @@ class _PassengerRideHistoryViewState extends State<PassengerRideHistoryView> {
                     prev.errorMessage != curr.errorMessage &&
                     curr.errorMessage.isNotEmpty &&
                     curr.rides.isNotEmpty,
-                listener: _onFailureWithList,
+                // Transient refresh/loadMore failures: toast them instead of
+                // wiping the cards already on screen.
+                listener: (context, state) =>
+                    AppToast.error(state.errorMessage),
                 builder: (context, state) {
                   if (state.rides.isEmpty) return _buildEmptyState(state);
 
@@ -151,22 +155,6 @@ class _PassengerRideHistoryViewState extends State<PassengerRideHistoryView> {
     );
   }
 
-  /// Surface transient failures (refresh / loadMore) as a snackbar instead of
-  /// wiping the cards that are already on screen.
-  void _onFailureWithList(
-    BuildContext context,
-    PassengerRideHistoryState state,
-  ) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          content: Text(state.errorMessage),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-  }
 }
 
 class _Message extends StatelessWidget {
