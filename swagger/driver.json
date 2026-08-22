@@ -1042,6 +1042,8 @@
             "enum": ["ACTIVE", "BLOCKED", "SUSPENDED"]
           },
           "dateOfBirth": { "type": "string", "format": "date" },
+          "preferredLanguage": { "type": "string", "enum": ["FR", "AR"] },
+          "profileCompleted": { "type": "boolean" },
           "kycStatus": {
             "type": "string",
             "enum": ["NONE", "PENDING", "APPROVED", "REJECTED", "REVOKED"]
@@ -1052,6 +1054,13 @@
             "enum": ["CAR", "MOTORCYCLE", "VAN"]
           },
           "vehicleTier": { "type": "string", "enum": ["STANDARD", "COMFORT"] },
+          "vehiclePlate": { "type": "string" },
+          "vehicleModel": { "type": "string" },
+          "activeServiceTypes": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["RIDE", "DELIVERY"] },
+            "uniqueItems": true
+          },
           "isOnline": { "type": "boolean" },
           "requiresRekyc": { "type": "boolean" }
         }

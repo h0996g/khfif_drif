@@ -15,5 +15,6 @@ abstract final class DriverApiConstants {
   static const String goOffline = '$_base/availability/offline';
 
   // Profile
+  static const String profile = '$_base/profile';
   static const String serviceTypes = '$_base/profile/service-types';
 }

@@ -23,7 +23,9 @@ class DriverProfileModel {
   final String? email;
 
   factory DriverProfileModel.fromJson(Map<String, dynamic> json) {
-    final driver = json['driver'] as Map<String, dynamic>? ?? {};
+    // GET /api/me/profile nests driver fields under 'driver'; the driver
+    // profile endpoints return them flat at the top level.
+    final driver = json['driver'] as Map<String, dynamic>? ?? json;
     final rawTypes = driver['activeServiceTypes'] as List<dynamic>? ?? [];
     return DriverProfileModel(
       fullName: json['fullName'] as String? ?? '',

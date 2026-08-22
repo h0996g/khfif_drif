@@ -388,7 +388,8 @@
         "properties": {
           "fullName": { "type": "string", "pattern": "^[\\p{L} '\\-]{2,100}$" },
           "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
-          "dateOfBirth": { "type": "string", "format": "date" }
+          "dateOfBirth": { "type": "string", "format": "date" },
+          "preferredLanguage": { "type": "string", "enum": ["FR", "AR"] }
         }
       },
       "DriverSummary": {
@@ -428,6 +429,7 @@
           "gender": { "type": "string", "enum": ["MALE", "FEMALE"] },
           "email": { "type": "string" },
           "dateOfBirth": { "type": "string", "format": "date" },
+          "preferredLanguage": { "type": "string", "enum": ["FR", "AR"] },
           "status": {
             "type": "string",
             "enum": ["ACTIVE", "BLOCKED", "SUSPENDED"]

@@ -15,8 +15,11 @@ import '../../../../home/passenger/presentation/views/widgets/top_bar.dart';
 import '../../../../home/driver/presentation/cubit/driver_home_cubit.dart';
 import '../../../../home/driver/presentation/cubit/driver_home_state.dart';
 import '../../data/driver_service_types_repository.dart';
+import '../../data/driver_profile_repository.dart';
 import '../cubit/driver_service_types_cubit/driver_service_types_cubit.dart';
+import '../cubit/driver_profile_cubit/driver_profile_cubit.dart';
 import 'widgets/driver_service_types_widget.dart';
+import 'widgets/driver_female_only_widget.dart';
 
 class DriverProfileView extends StatelessWidget {
   const DriverProfileView({super.key});
@@ -132,6 +135,22 @@ class DriverProfileView extends StatelessWidget {
                         child: const DriverServiceTypesWidget(),
                       ),
                       SizedBox(height: 24.h),
+                      const ProfileFieldLabelWidget(label: 'Preferences'),
+                      SizedBox(height: 8.h),
+                      BlocProvider(
+                        create: (_) => DriverProfileCubit(
+                          const DriverProfileRepository(),
+                        )..seed(
+                            context
+                                    .read<DriverHomeCubit>()
+                                    .state
+                                    .profile
+                                    ?.acceptsFemaleOnly ??
+                                false,
+                          ),
+                        child: const DriverFemaleOnlyWidget(),
+                      ),
+                      SizedBox(height: 24.h),
                     ],
                   ),
                 );
@@ -204,9 +223,8 @@ class _ReadOnlyGenderChip extends StatelessWidget {
             : AppColors.surface(context),
         borderRadius: BorderRadius.circular(12.r),
         border: Border.all(
-          color: isSelected
-              ? AppColors.primary
-              : AppColors.borderDefault(context),
+          color:
+              isSelected ? AppColors.primary : AppColors.borderDefault(context),
           width: isSelected ? 2.w : 1.5.w,
         ),
       ),

@@ -1,48 +1,30 @@
 {
-  "request": {
-    "rideRequestId": "53c9d070-142c-4489-984d-2e3ac219de46",
-    "state": "ACCEPTED",
-    "proposedFare": 1000,
-    "expiresAt": "2026-07-16T12:10:37.947667Z",
-    "offerCount": 0,
-    "pickup": {
-      "lat": 36.33268764855415,
-      "lng": 6.1517393812010335,
-      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+  "data": [
+    {
+      "submissionId": "45df7dad-770a-4f91-82e4-1a3b81366d47",
+      "driverId": "c7eb8643-de78-47d4-938a-e68b2c12586a",
+      "userId": "c9368a8d-fc54-4bee-a75e-45fdf6d5cebf",
+      "driverFullName": "ff ff",
+      "driverPhone": "+213666666666",
+      "submissionNumber": 1,
+      "resubmission": false,
+      "status": "SUBMITTED",
+      "submittedAt": "2026-08-22T13:29:12.619062Z"
     },
-    "dropoff": {
-      "lat": 36.343450379971664,
-      "lng": 6.152215336853006,
-      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
+    {
+      "submissionId": "90d82e00-443a-41b2-8ed0-715ed49c4a9d",
+      "driverId": "55b60d57-a063-408e-b566-96091019b778",
+      "userId": "6e063227-78f5-4ae3-bfd0-bbf1b6b889de",
+      "driverFullName": "oo",
+      "driverPhone": "+213777777771",
+      "submissionNumber": 1,
+      "resubmission": false,
+      "status": "SUBMITTED",
+      "submittedAt": "2026-08-22T13:31:37.259426Z"
     }
-  },
-  "ride": {
-    "rideId": "03cb3b78-ad78-4078-a5cc-f763ee7b98ff",
-    "rideRequestId": "53c9d070-142c-4489-984d-2e3ac219de46",
-    "state": "ACCEPTED",
-    "finalFare": 1000,
-    "driver": {
-      "id": "b2467a89-df28-4669-893c-982b7f2ebc3e",
-      "fullName": "house",
-      "phone": "+213555555555",
-      "vehicleModel": "Ooo",
-      "vehiclePlate": "21123 132 42",
-      "currentPosition": null,
-      "etaSeconds": 24
-    },
-    "pickup": {
-      "lat": 36.33268764855415,
-      "lng": 6.1517393812010335,
-      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
-    },
-    "dropoff": {
-      "lat": 36.343450379971664,
-      "lng": 6.152215336853006,
-      "address": "Aïn Choura, Mechtat Ouled Nsar, Ahmed Rachedi ⵃⵎⴻⴷ ⵔⴰⵛⴷⵉ أحمد راشدي, Daïra Oued Endja, ميلة ⵎⵉⵍⴰ, ⵍⵣⵣⴰⵢⴻⵔ الجزائر"
-    },
-    "acceptedAt": "2026-07-16T12:05:56.502354Z",
-    "arrivedAt": null,
-    "startedAt": null,
-    "arrivalWaitDeadline": null
-  }
+  ],
+  "page": 0,
+  "size": 15,
+  "totalElements": 2,
+  "totalPages": 1
 }
