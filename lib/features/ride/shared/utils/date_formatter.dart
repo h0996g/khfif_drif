@@ -12,14 +12,17 @@ String formatRideDate(String iso) {
 }
 
 /// Formats an ISO-8601 timestamp as `dd/MM/yyyy · HH:mm` — same date part as
-/// [formatRideDate] plus the local time-of-day, used by the ride-detail
-/// timeline. Unparseable input → `""`.
+/// [formatRideDate] plus the time-of-day, used by the ride-detail timeline.
+/// UTC input is converted to local time first; unparseable input → `""`.
 String formatRideDateTime(String iso) {
-  final date = DateTime.tryParse(iso);
-  if (date == null) return '';
+  final parsed = DateTime.tryParse(iso);
+  if (parsed == null) return '';
+  final date = parsed.toLocal();
+  final day = date.day.toString().padLeft(2, '0');
+  final month = date.month.toString().padLeft(2, '0');
   final hour = date.hour.toString().padLeft(2, '0');
   final minute = date.minute.toString().padLeft(2, '0');
-  return '${formatRideDate(iso)} · $hour:$minute';
+  return '$day/$month/${date.year} · $hour:$minute';
 }
 
 /// Formats a `from`/`to` ride-history filter boundary as a UTC ISO-8601
