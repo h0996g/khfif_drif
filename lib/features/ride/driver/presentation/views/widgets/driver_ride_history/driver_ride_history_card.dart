@@ -17,93 +17,101 @@ import '../../../../../shared/widgets/service_type_chip.dart';
 /// [formatFare], [initialsOf]) with history-specific chrome: a state badge,
 /// the passenger avatar + ride date, and an optional cancellation-reason box.
 class DriverRideHistoryCard extends StatelessWidget {
-  const DriverRideHistoryCard({super.key, required this.ride});
+  const DriverRideHistoryCard({super.key, required this.ride, this.onTap});
 
   final DriverRideHistoryItem ride;
 
+  /// Opens the ride-detail screen when set.
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 12.h),
-      padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 14.h),
-      decoration: BoxDecoration(
-        color: AppColors.surface(context),
-        borderRadius: BorderRadius.circular(12.r),
-        border: Border.all(color: AppColors.borderDefault(context), width: 1.w),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.04),
-            blurRadius: 16.r,
-            offset: Offset(0, 4.h),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // --- Header: service chip + state badge · fare ---
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 6.w,
-                  runSpacing: 4.h,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ServiceTypeChip(serviceType: ride.serviceType),
-                    _StateBadge(state: ride.state),
-                  ],
-                ),
-              ),
-              SizedBox(width: 6.w),
-              _FareBlock(amount: ride.finalFare),
-            ],
-          ),
-          SizedBox(height: 14.h),
-
-          // --- Route: pickup → dropoff ---
-          RideRoutePreview(
-            pickup: ride.pickupAddress,
-            dropoff: ride.dropoffAddress,
-          ),
-          SizedBox(height: 14.h),
-
-          // --- Footer: passenger · date ---
-          Row(
-            children: [
-              _Avatar(name: ride.passengerFullName),
-              SizedBox(width: 8.w),
-              Expanded(
-                child: Text(
-                  ride.passengerFullName.isEmpty
-                      ? 'Passenger'
-                      : ride.passengerFullName,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppTextStyles.labelMedium(context).copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              if (ride.displayDate != null) ...[
-                SizedBox(width: 8.w),
-                Text(
-                  formatRideDate(ride.displayDate!),
-                  style: AppTextStyles.labelSmall(context).copyWith(
-                    color: AppColors.textSecondary(context),
-                  ),
-                ),
-              ],
-            ],
-          ),
-
-          if (ride.state == RideOutcome.cancelled &&
-              (ride.cancellationReason?.isNotEmpty ?? false)) ...[
-            SizedBox(height: 12.h),
-            _CancellationReason(reason: ride.cancellationReason!),
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12.r),
+      child: Container(
+        margin: EdgeInsets.only(bottom: 12.h),
+        padding: EdgeInsets.fromLTRB(14.w, 12.h, 14.w, 14.h),
+        decoration: BoxDecoration(
+          color: AppColors.surface(context),
+          borderRadius: BorderRadius.circular(12.r),
+          border:
+              Border.all(color: AppColors.borderDefault(context), width: 1.w),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.black.withValues(alpha: 0.04),
+              blurRadius: 16.r,
+              offset: Offset(0, 4.h),
+            ),
           ],
-        ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // --- Header: service chip + state badge · fare ---
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Wrap(
+                    spacing: 6.w,
+                    runSpacing: 4.h,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ServiceTypeChip(serviceType: ride.serviceType),
+                      _StateBadge(state: ride.state),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 6.w),
+                _FareBlock(amount: ride.finalFare),
+              ],
+            ),
+            SizedBox(height: 14.h),
+
+            // --- Route: pickup → dropoff ---
+            RideRoutePreview(
+              pickup: ride.pickupAddress,
+              dropoff: ride.dropoffAddress,
+            ),
+            SizedBox(height: 14.h),
+
+            // --- Footer: passenger · date ---
+            Row(
+              children: [
+                _Avatar(name: ride.passengerFullName),
+                SizedBox(width: 8.w),
+                Expanded(
+                  child: Text(
+                    ride.passengerFullName.isEmpty
+                        ? 'Passenger'
+                        : ride.passengerFullName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTextStyles.labelMedium(context).copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+                if (ride.displayDate != null) ...[
+                  SizedBox(width: 8.w),
+                  Text(
+                    formatRideDate(ride.displayDate!),
+                    style: AppTextStyles.labelSmall(context).copyWith(
+                      color: AppColors.textSecondary(context),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+
+            if (ride.state == RideOutcome.cancelled &&
+                (ride.cancellationReason?.isNotEmpty ?? false)) ...[
+              SizedBox(height: 12.h),
+              _CancellationReason(reason: ride.cancellationReason!),
+            ],
+          ],
+        ),
       ),
     );
   }

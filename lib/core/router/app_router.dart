@@ -56,9 +56,11 @@ import '../../features/ride/driver/data/driver_ride_repository.dart';
 import '../../features/ride/driver/presentation/cubit/available_rides_cubit/available_rides_cubit.dart';
 import '../../features/ride/driver/presentation/cubit/driver_active_ride_cubit/driver_active_ride_cubit.dart';
 import '../../features/ride/driver/presentation/cubit/driver_availability_cubit/driver_availability_cubit.dart';
+import '../../features/ride/driver/presentation/cubit/driver_ride_detail_cubit/driver_ride_detail_cubit.dart';
 import '../../features/ride/driver/presentation/cubit/driver_ride_history_cubit/driver_ride_history_cubit.dart';
 import '../../features/ride/driver/presentation/views/available_rides_view.dart';
 import '../../features/ride/driver/presentation/views/driver_active_ride_view.dart';
+import '../../features/ride/driver/presentation/views/driver_ride_detail_view.dart';
 import '../../features/ride/driver/presentation/views/driver_ride_history_view.dart';
 import '../../features/wallet/driver/data/receipt_picker_service.dart';
 import '../../features/wallet/driver/data/wallet_repository.dart';
@@ -387,8 +389,8 @@ final class AppRouter {
             path: RouteNames.driverTopUp,
             builder: (context, state) {
               return BlocProvider<TopUpCubit>(
-                create: (_) =>
-                    TopUpCubit(const WalletRepository(), ReceiptPickerService()),
+                create: (_) => TopUpCubit(
+                    const WalletRepository(), ReceiptPickerService()),
                 child: const TopUpFormView(),
               );
             },
@@ -412,6 +414,19 @@ final class AppRouter {
                 create: (_) =>
                     DriverActiveRideCubit(const DriverRideRepository()),
                 child: const DriverActiveRideView(),
+              );
+            },
+          ),
+          GoRoute(
+            path: RouteNames.driverRideDetail,
+            builder: (context, state) {
+              final rideId = state.extra is String ? state.extra as String : '';
+              return BlocProvider<DriverRideDetailCubit>(
+                create: (_) => DriverRideDetailCubit(
+                  const DriverRideRepository(),
+                  rideId: rideId,
+                )..load(),
+                child: const DriverRideDetailView(),
               );
             },
           ),

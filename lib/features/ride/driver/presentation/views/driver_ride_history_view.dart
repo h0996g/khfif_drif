@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../../../core/router/route_names.dart';
 import '../../../../../core/theme/app_colors.dart';
 import '../../../../../core/theme/app_text_styles.dart';
 import '../../../../../core/widgets/app_toast.dart';
@@ -90,8 +92,8 @@ class _DriverRideHistoryViewState extends State<DriverRideHistoryView> {
               },
             ),
             Expanded(
-              child: BlocConsumer<DriverRideHistoryCubit,
-                  DriverRideHistoryState>(
+              child:
+                  BlocConsumer<DriverRideHistoryCubit, DriverRideHistoryState>(
                 listenWhen: (prev, curr) =>
                     prev.errorMessage != curr.errorMessage &&
                     curr.errorMessage.isNotEmpty &&
@@ -110,15 +112,21 @@ class _DriverRideHistoryViewState extends State<DriverRideHistoryView> {
                     child: ListView.builder(
                       controller: _scrollController,
                       physics: const AlwaysScrollableScrollPhysics(),
-                      padding:
-                          EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
+                      padding: EdgeInsets.fromLTRB(16.w, 16.h, 16.w, 24.h),
                       itemCount:
                           state.rides.length + (state.hasReachedMax ? 0 : 1),
                       itemBuilder: (context, index) {
                         if (index >= state.rides.length) {
                           return _ListFooter(isLoading: state.isLoadingMore);
                         }
-                        return DriverRideHistoryCard(ride: state.rides[index]);
+                        final ride = state.rides[index];
+                        return DriverRideHistoryCard(
+                          ride: ride,
+                          onTap: () => context.push(
+                            RouteNames.driverRideDetail,
+                            extra: ride.rideId,
+                          ),
+                        );
                       },
                     ),
                   );
@@ -151,7 +159,6 @@ class _DriverRideHistoryViewState extends State<DriverRideHistoryView> {
           'appear here.',
     );
   }
-
 }
 
 class _Message extends StatelessWidget {

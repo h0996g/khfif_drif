@@ -3,7 +3,7 @@
 Spec vs. app implementation status. Source: `swagger/driver.json` + `swagger/websocket.json` (driver surface).
 Legend: ✅ implemented & wired to UI · ❌ not implemented · ⚠️ partial / by design
 
-**Summary: 19/21 REST endpoints done (1 by-design WS substitution) · 8/11 WS events handled**
+**Summary: 20/21 REST endpoints done (1 by-design WS substitution) · 8/11 WS events handled**
 
 Last checked: 2026-08-22
 
@@ -38,7 +38,7 @@ Last checked: 2026-08-22
 | ✅ | `POST /api/driver/availability/online` | `driver_availability_repository.dart:8` → online toggle |
 | ✅ | `POST /api/driver/availability/offline` | `driver_availability_repository.dart:16` |
 
-### Rides — ✅ 8/9
+### Rides — ✅ 9/9
 
 | Status | Endpoint | Implementation |
 |--------|----------|----------------|
@@ -50,7 +50,7 @@ Last checked: 2026-08-22
 | ✅ | `POST /api/driver/rides/{rideId}/cancel` | `driver_ride_repository.dart:49` |
 | ✅ | `GET /api/driver/rides/active` | `driver_ride_repository.dart:58` |
 | ✅ | `GET /api/driver/rides` (history, paginated + filters) | `driver_ride_repository.dart:66` |
-| ❌ | `GET /api/driver/rides/{rideId}` (ride detail) | No repository method; only list/active are used |
+| ✅ | `GET /api/driver/rides/{rideId}` (ride detail) | `driver_ride_repository.dart:91` → ride detail screen (history card tap) |
 
 ### Wallet — ✅ 5/5
 

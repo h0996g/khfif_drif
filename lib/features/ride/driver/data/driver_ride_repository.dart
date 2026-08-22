@@ -1,6 +1,7 @@
 import '../../../../core/constants/driver_ride_api_constants.dart';
 import '../../../../core/network/dio_client.dart';
 import '../../shared/utils/date_formatter.dart';
+import 'models/driver_ride_detail_models.dart';
 import 'models/driver_ride_history_models.dart';
 import 'models/driver_ride_models.dart';
 
@@ -84,5 +85,13 @@ final class DriverRideRepository {
     );
     return DriverRideHistoryResponse.fromJson(
         response.data as Map<String, dynamic>);
+  }
+
+  /// Full detail for a single past ride.
+  Future<DriverRideDetail> getRideDetail(String rideId) async {
+    final response = await DioClient.get(
+      path: DriverRideApiConstants.detail(rideId),
+    );
+    return DriverRideDetail.fromJson(response.data as Map<String, dynamic>);
   }
 }

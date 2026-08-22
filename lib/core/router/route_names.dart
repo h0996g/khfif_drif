@@ -28,6 +28,7 @@ abstract final class RouteNames {
   static const String waitingOffers = '/waiting-offers';
   static const String availableRides = '/available-rides';
   static const String driverRideHistory = '/driver-ride-history';
+  static const String driverRideDetail = '/driver-ride-detail';
   static const String driverWallet = '/driver-wallet';
   static const String driverTopUp = '/driver-top-up';
   static const String driverTopUpHistory = '/driver-top-up-history';

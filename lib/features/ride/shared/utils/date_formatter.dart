@@ -11,6 +11,17 @@ String formatRideDate(String iso) {
   return '$day/$month/${date.year}';
 }
 
+/// Formats an ISO-8601 timestamp as `dd/MM/yyyy · HH:mm` — same date part as
+/// [formatRideDate] plus the local time-of-day, used by the ride-detail
+/// timeline. Unparseable input → `""`.
+String formatRideDateTime(String iso) {
+  final date = DateTime.tryParse(iso);
+  if (date == null) return '';
+  final hour = date.hour.toString().padLeft(2, '0');
+  final minute = date.minute.toString().padLeft(2, '0');
+  return '${formatRideDate(iso)} · $hour:$minute';
+}
+
 /// Formats a `from`/`to` ride-history filter boundary as a UTC ISO-8601
 /// date-time. `showDatePicker` returns a local, time-of-day-less [DateTime];
 /// serializing it directly (`toIso8601String()`) omits the offset/`Z`
